@@ -61,7 +61,8 @@
     "isemail": "^3.2.0",
     "jsonwebtoken": "^8.5.1",
     "loopback-connector-mysql": "^5.4.4",
-    "loopback-connector-postgresql": "^5.2.0"
+    "loopback-connector-postgresql": "^5.2.0",
+    "zenroom": "^1.1.5"
   },
   "devDependencies": {
     "@loopback/build": "^3.1.1",
