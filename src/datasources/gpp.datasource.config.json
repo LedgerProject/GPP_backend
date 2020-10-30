@@ -1,5 +1,5 @@
 {
-  "name": "GppDatasource",
+  "name": "Gpp",
   "connector": "postgresql",
   "url": "",
   "host": "localhost",

@@ -2,6 +2,9 @@ export const CredentialsSchema = {
   type: 'object',
   required: ['email', 'password'],
   properties: {
+    userType: {
+      type: 'string',
+    },
     email: {
       type: 'string',
       format: 'email',

@@ -45,7 +45,7 @@ npm install
 4. Update database details in src/datasources/gpp.datasource.config.json file
 ```sh
 {
-  "name": "GppDatasource",
+  "name": "GppDataSource",
   "connector": "postgresql",
   "url": "",
   "host": "localhost",

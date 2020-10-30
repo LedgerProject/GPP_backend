@@ -1,20 +1,20 @@
+import { AuthenticationComponent, registerAuthenticationStrategy } from "@loopback/authentication";
 import { BootMixin } from '@loopback/boot';
 import { ApplicationConfig } from '@loopback/core';
-import {
-  RestExplorerBindings,
-  RestExplorerComponent,
-} from '@loopback/rest-explorer';
 import { RepositoryMixin } from '@loopback/repository';
 import { RestApplication } from '@loopback/rest';
+import {
+  RestExplorerBindings,
+  RestExplorerComponent
+} from '@loopback/rest-explorer';
 import { ServiceMixin } from '@loopback/service-proxy';
 import path from 'path';
+import { JWTStrategy } from "./authentication-stategies/jwt-strategy";
+import { PasswordHasherBindings, TokenServiceBindings, TokenServiceConstants, UserServiceBindings } from './keys';
 import { MySequence } from './sequence';
 import { BcryptHasher } from './services/hash.password.bcrypt';
-import { MyUserService } from './services/user.service';
 import { JWTService } from './services/jwt-service';
-import { TokenServiceConstants, TokenServiceBindings, UserServiceBindings, PasswordHasherBindings } from './keys';
-import { AuthenticationComponent, registerAuthenticationStrategy } from "@loopback/authentication";
-import { JWTStrategy } from "./authentication-stategies/jwt-strategy"
+import { MyUserService } from './services/user.service';
 
 export class ApiApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
@@ -26,7 +26,7 @@ export class ApiApplication extends BootMixin(
     this.setupBinding();
 
     this.component(AuthenticationComponent);
-    registerAuthenticationStrategy(this, JWTStrategy);
+    registerAuthenticationStrategy(this as any, JWTStrategy);
 
     // Set up the custom sequence
     this.sequence(MySequence);

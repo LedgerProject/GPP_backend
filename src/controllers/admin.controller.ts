@@ -2,7 +2,6 @@ import { inject } from "@loopback/core";
 import { repository } from "@loopback/repository";
 import { getJsonSchemaRef, getModelSchemaRef, post, requestBody } from "@loopback/rest";
 import * as _ from 'lodash';
-import { PermissionKeys } from "../authorization/permission-keys";
 import { PasswordHasherBindings } from "../keys";
 import { User } from "../models";
 import { UserRepository } from "../repositories";
@@ -37,22 +36,21 @@ export class AdminController {
       'application/json': {
         schema: getModelSchemaRef(User, {
           title: 'NewUser',
-          exclude: ['isuser', 'permissions', 'additionalProp1'],
+          exclude: ['idUser', 'permissions', 'additionalProp1'],
         }),
       },
     },
   })
   admin: User) {
-    validateCredentials(_.pick(admin, ['email', 'password']));
-    admin.permissions = [
+    validateCredentials(_.pick(admin, ['userType', 'email', 'password']));
+    /*admin.permissions = [
       PermissionKeys.BlogManagement,
       PermissionKeys.UserManagement
-    ]
+    ]*/
     admin.password = await this.hasher.hashPassword(admin.password);
     const newAdmin = await this.userRepository.create(admin);
     delete newAdmin.password;
 
     return newAdmin;
   }
-
 }

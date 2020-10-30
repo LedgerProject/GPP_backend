@@ -1,68 +1,92 @@
-import { Entity, model, property } from '@loopback/repository';
+import { Entity, model, property, hasMany} from '@loopback/repository';
+import {OrganizationUser} from './organization-user.model';
 
-@model({ settings: { strict: false } })
+@model({
+  settings: { idInjection: false, postgresql: { schema: 'public', table: 'users' } }
+})
 export class User extends Entity {
   @property({
     type: 'string',
     id: true,
-    generated: true,
+    postgresql: { columnName: 'idUser', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
-  iduser?: string;
+  idUser?: string;
 
   @property({
     type: 'string',
     required: true,
+    length: 30,
+    postgresql: { columnName: 'userType', dataType: 'character varying', dataLength: 30, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
-  firstname: string;
+  userType: string;
 
   @property({
     type: 'string',
     required: true,
+    length: 50,
+    postgresql: { columnName: 'firstName', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
-  lastname: string;
+  firstName: string;
 
   @property({
     type: 'string',
     required: true,
+    length: 50,
+    postgresql: { columnName: 'lastName', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
+  })
+  lastName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+    length: 150,
+    postgresql: { columnName: 'email', dataType: 'character varying', dataLength: 150, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   email: string;
 
   @property({
     type: 'boolean',
+    postgresql: { columnName: 'emailConfirmed', dataType: 'boolean', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
-  emailconfirmed: boolean;
+  emailConfirmed: boolean;
 
   @property({
     type: 'string',
     required: true,
+    postgresql: { columnName: 'password', dataType: 'character varying', dataLength: 150, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   password: string;
 
   @property({
     type: 'string',
+    postgresql: { columnName: 'passwordRecoveryToken', dataType: 'character varying', dataLength: 150, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
-  passwordrecoverytoken: string;
+  passwordRecoveryToken: string;
 
   @property({
     type: 'date',
+    postgresql: { columnName: 'passwordRecoveryDate', dataType: 'timestamp without time zone', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
-  passwordrecoverydate: string;
+  passwordRecoveryDate: string;
 
   @property.array(String)
   permissions: String[]
 
   @property({
     type: 'string',
+    postgresql: { columnName: 'idNationality', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
-  idnationality: string;
+  idNationality: string;
 
   @property({
     type: 'string',
+    postgresql: { columnName: 'gender', dataType: 'character varying', dataLength: 10, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   gender: string;
 
   @property({
     type: 'date',
+    postgresql: { columnName: 'birthday', dataType: 'date', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   birthday: string;
 

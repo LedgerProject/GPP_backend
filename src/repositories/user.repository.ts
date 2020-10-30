@@ -1,9 +1,11 @@
-import { inject } from '@loopback/core';
-import { DefaultCrudRepository } from '@loopback/repository';
-import { GppDatasourceDataSource } from '../datasources';
-import { User, UserRelations } from '../models';
+import { inject, Getter} from '@loopback/core';
+import { DefaultCrudRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
+import { GppDataSource } from '../datasources';
+import { User, UserRelations, UserToken, OrganizationUser} from '../models';
+import {OrganizationUserRepository} from './organization-user.repository';
 
 export type Credentials = {
+  userType: string;
   email: string;
   password: string;
 };
@@ -14,9 +16,15 @@ export class UserRepository extends DefaultCrudRepository<
   UserRelations
   > {
 
+  public readonly userTokens: HasManyRepositoryFactory<UserToken, typeof User.prototype.idUser>;
+
+  public readonly organizationUsers: HasManyRepositoryFactory<OrganizationUser, typeof User.prototype.idUser>;
+
   constructor(
-    @inject('datasources.Gpp') dataSource: GppDatasourceDataSource,
+    @inject('datasources.GppDataSource') dataSource: GppDataSource, @repository.getter('OrganizationUserRepository') protected organizationUserRepositoryGetter: Getter<OrganizationUserRepository>,
   ) {
     super(User, dataSource);
+    this.organizationUsers = this.createHasManyRepositoryFactoryFor('organizationUsers', organizationUserRepositoryGetter,);
+    this.registerInclusionResolver('organizationUsers', this.organizationUsers.inclusionResolver);
   }
 }

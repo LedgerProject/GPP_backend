@@ -43,7 +43,7 @@ export class JWTService {
       userProfile = Object.assign(
         { [securityId]: '', name: '', permissions: [] },
         {
-          id: decryptedToken.id,
+          idUser: decryptedToken.idUser,
           name: decryptedToken.name,
           permissions: decryptedToken.permissions,
           email: decryptedToken.email

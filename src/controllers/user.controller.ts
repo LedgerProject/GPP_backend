@@ -1,10 +1,11 @@
 import { authenticate, AuthenticationBindings } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { Count, CountSchema, Filter, repository, Where } from '@loopback/repository';
-import { del, get, getFilterSchemaFor, getJsonSchemaRef, getModelSchemaRef, getWhereSchemaFor, param, post, put, requestBody } from '@loopback/rest';
+import { del, get, getFilterSchemaFor, getJsonSchemaRef, getModelSchemaRef, getWhereSchemaFor, HttpErrors, param, post, put, requestBody } from '@loopback/rest';
 import { securityId, UserProfile } from '@loopback/security';
 import * as _ from 'lodash';
 import { PermissionKeys } from '../authorization/permission-keys';
+import { UserTypeKeys } from '../authorization/user-type-keys';
 import { PasswordHasherBindings, TokenServiceBindings, UserServiceBindings } from '../keys';
 import { User } from '../models';
 import { Credentials, UserRepository } from '../repositories';
@@ -26,6 +27,7 @@ export class UserController {
     public jwtService: JWTService,
   ) { }
 
+  //*** USER SIGNUP ***/
   @post('/users/signup', {
     responses: {
       '200': {
@@ -36,30 +38,90 @@ export class UserController {
       },
     },
   })
-  async signup(@requestBody({
-    content: {
-      'application/json': {
-        schema: getModelSchemaRef(User, {
-          title: 'NewUser',
-          exclude: ['iduser', 'permissions', 'additionalProp1'],
-        }),
+  async signup(
+    @param.query.string('secretKey') secretKey: string,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(User, {
+            title: 'NewUser',
+            exclude: ['idUser', 'permissions', 'additionalProp1'],
+          }),
+        },
       },
-    },
-  })
+    }
+  )
   userData: User) {
-    validateCredentials(_.pick(userData, ['email', 'password']));
-    userData.permissions = [
-      PermissionKeys.AuthFeatures,
-      PermissionKeys.GetBlogs
-    ]
+    // Credentials validations
+    validateCredentials(_.pick(userData, ['userType', 'email', 'password']));
+
+    // Check: if it is a GPP operator, if secretKey is correct
+    if (userData.userType === UserTypeKeys.gppOperator && secretKey !== 'initGPP2020!') {
+      throw new HttpErrors.Forbidden('Wrong secret key');
+    }
+
+    // Check: email duplication
+    let filter: Filter = {where:{"email": userData.email, "userType": userData.userType}};
+
+    if (userData.userType != "user") {
+      filter = {where:{"and" : [{"email": userData.email}, {"or" : [{"userType": UserTypeKeys.gppOperator}, {"userType": UserTypeKeys.operator}]}]}}
+    }
+
+    if((await this.userRepository.find(filter))[0] != undefined){
+      throw new HttpErrors.BadRequest('This email already exists');
+    }
+
+    // Roles association
+    switch (userData.userType) {
+      case UserTypeKeys.gppOperator:
+        userData.permissions = [
+          PermissionKeys.CountriesManagement,
+          PermissionKeys.GeneralUsersManagement,
+          PermissionKeys.GeneralStructuresManagement,
+          PermissionKeys.CheckTokenDocWallet,
+          PermissionKeys.OrganizationCreation,
+          PermissionKeys.AuthFeatures,
+          PermissionKeys.ProfileEdit
+        ]
+        break;
+
+      case UserTypeKeys.operator:
+        userData.permissions = [
+          PermissionKeys.OrganizationUsersManagement,
+          PermissionKeys.OrganizationStructuresManagement,
+          PermissionKeys.CheckTokenDocWallet,
+          PermissionKeys.OrganizationCreation,
+          PermissionKeys.AuthFeatures,
+          PermissionKeys.ProfileEdit
+        ]
+        break;
+
+      default:
+        userData.permissions = [
+          PermissionKeys.DocWalletManagement,
+          PermissionKeys.StructuresList,
+          PermissionKeys.AuthFeatures,
+          PermissionKeys.ProfileEdit
+        ]
+    }
+
+    // Set emailConfirmed to false
+    userData.emailConfirmed = false;
+
+    // Password hashing
     userData.password = await this.hasher.hashPassword(userData.password)
 
+    // User creation
     const newUser = await this.userRepository.create(userData);
+    delete newUser.idUser;
+    delete newUser.userType;
+    delete newUser.emailConfirmed;
     delete newUser.password;
 
     return newUser;
   }
 
+  //*** USER LOGIN ***/
   @post('/users/login', {
     responses: {
       '200': {
@@ -79,7 +141,8 @@ export class UserController {
       },
     },
   })
-  async login(@requestBody(CredentialsRequestBody) credentials: Credentials): Promise<{ token: string }> {
+  async login(
+    @requestBody(CredentialsRequestBody) credentials: Credentials): Promise<{ token: string }> {
     const user = await this.userService.verifyCredentials(credentials);
     const userProfile = this.userService.convertToUserProfile(user);
     userProfile.permissions = user.permissions;
@@ -87,102 +150,14 @@ export class UserController {
     return Promise.resolve({ token: jwt });
   }
 
-
-  @authenticate('jwt', { required: [PermissionKeys.UserBasic] })
-  @get('/users/count', {
-    responses: {
-      '200': {
-        description: 'User model count',
-        content: { 'application/json': { schema: CountSchema } },
-      },
-    },
-  })
-  async count(
-    @param.query.object('where', getWhereSchemaFor(User)) where?: Where<User>,
-  ): Promise<Count> {
-    return this.userRepository.count(where);
-  }
-
-  @authenticate('jwt', { required: [PermissionKeys.UserManagement] })
-  @get('/users', {
-    responses: {
-      '200': {
-        description: 'Array of User model instances',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'array',
-              items: getModelSchemaRef(User, { includeRelations: true }),
-            },
-          },
-        },
-      },
-    },
-  })
-  async find(
-    @param.query.object('filter', getFilterSchemaFor(User)) filter?: Filter<User>,
-  ): Promise<User[]> {
-    return this.userRepository.find(filter);
-  }
-
-  @authenticate('jwt', { required: [PermissionKeys.UserManagement] })
-  @get('/users/{id}', {
-    responses: {
-      '200': {
-        description: 'User model instance',
-        content: {
-          'application/json': {
-            schema: getModelSchemaRef(User, { includeRelations: true }),
-          },
-        },
-      },
-    },
-  })
-  async findById(
-    @param.path.string('id') id: string,
-    @param.query.object('filter', getFilterSchemaFor(User)) filter?: Filter<User>
-  ): Promise<User> {
-    return this.userRepository.findById(id, filter);
-  }
-
-  @authenticate('jwt', { required: [PermissionKeys.UserManagement] })
-  @put('/users/{id}', {
-    responses: {
-      '204': {
-        description: 'User PUT success',
-      },
-    },
-  })
-  async replaceById(
-    @param.path.string('id') id: string,
-    @requestBody() user: User,
-  ): Promise<void> {
-    await this.userRepository.replaceById(id, user);
-  }
-
-
-  @authenticate('jwt', { required: [PermissionKeys.UserManagement] })
-  @del('/users/{id}', {
-    responses: {
-      '204': {
-        description: 'User DELETE success',
-      },
-    },
-  })
-  async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.userRepository.deleteById(id);
-  }
-
+  //*** USER PROFILE ***/
   @get('/users/me')
   @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
   async me(
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile
   ): Promise<UserProfile> {
-    // console.log(currentUser);
-    currentUser.iduser = currentUser[securityId];
     delete currentUser[securityId];
     return Promise.resolve(currentUser);
   }
-
 }

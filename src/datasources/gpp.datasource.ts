@@ -1,8 +1,12 @@
 import { inject, lifeCycleObserver, LifeCycleObserver, ValueOrPromise } from '@loopback/core';
 import { juggler } from '@loopback/repository';
 
+// Fix for parsing of numeric fields
+const types = require('pg').types
+types.setTypeParser(1700, 'text', parseFloat);
+
 const config = {
-  "name": "Gpp",
+  "name": "GppDataSource",
   "connector": "postgresql",
   "url": "",
   "host": "localhost",
@@ -17,9 +21,9 @@ const config = {
 // gracefully. The `stop()` method is inherited from `juggler.DataSource`.
 // Learn more at https://loopback.io/doc/en/lb4/Life-cycle.html
 @lifeCycleObserver('datasource')
-export class GppDatasourceDataSource extends juggler.DataSource
+export class GppDataSource extends juggler.DataSource
   implements LifeCycleObserver {
-  static dataSourceName = 'Gpp';
+  static dataSourceName = 'GppDataSource';
 
   constructor(
     @inject('datasources.config.postgres', { optional: true })

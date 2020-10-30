@@ -18,6 +18,7 @@ export class MyUserService implements UserService<User, Credentials> {
   async verifyCredentials(credentials: Credentials): Promise<User> {
     const foundUser = await this.userRepository.findOne({
       where: {
+        userType: credentials.userType,
         email: credentials.email,
       },
     });
@@ -46,6 +47,6 @@ export class MyUserService implements UserService<User, Credentials> {
         ? `${user.firstName} ${user.lastName}`
         : user.lastName;
     }
-    return { [securityId]: `${user.id}`, name: userName, email: user.email }
+    return { [securityId]: `${user.idUser}`, name: userName, email: user.email, idUser: user.idUser }
   }
 }
