@@ -76,11 +76,7 @@ export class StructureController {
   ): Promise<void> {
     // If operator, check if it is an owned structure
     if (this.user.userType === 'operator') {
-      const filterOwner: Filter = { where: { "idStructure": id, "idOrganization": this.user.idOrganization } };
-      const structureOwned = await this.structureRepository.findOne(filterOwner);
-      if (!structureOwned) {
-        throw new HttpErrors.Forbidden("Structure not owned");
-      }
+      await this.checkStructureOwner(id, this.user.idOrganization);
     }
 
     await this.structureRepository.updateById(id, structure);

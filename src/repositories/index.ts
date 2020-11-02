@@ -1,3 +1,4 @@
+export * from './icon.repository';
 export * from './organization-user.repository';
 export * from './organization.repository';
 export * from './organizations-users-view.repository';

@@ -3,6 +3,7 @@ export const enum PermissionKeys {
     CountriesManagement = 'CountriesManagement',
     GeneralUsersManagement = 'GeneralUsersManagement',
     GeneralStructuresManagement = 'GeneralStructuresManagement',
+    GeneralIconsManagement = 'GeneralIconsManagement',
 
     // Operator permissions
     OrganizationAdministrator = 'OrganizationAdministrator',

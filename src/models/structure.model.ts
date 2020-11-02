@@ -93,6 +93,12 @@ export class Structure extends Entity {
   })
   website?: string;
 
+  @property({
+    type: 'string',
+    postgresql: { columnName: 'idIcon', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
+  })
+  idIcon?: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
