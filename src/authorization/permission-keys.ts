@@ -9,7 +9,10 @@ export const enum PermissionKeys {
     OrganizationUsersManagement = 'OrganizationUsersManagement',
     OrganizationStructuresManagement = 'OrganizationStructuresManagement',
     StructureCreation = 'StructureCreation', //Managed: permette di creare nuove strutture
+    StructureUpdate = 'StructureUpdate', //Managed: permette di modificare le strutture
     StructureList = 'StructureList',  //Managed: permette di visualizzare l'elenco delle strutture
+    StructureDetail = 'StructureDetail', //Managed: permette di visualizzare il dettaglio di una struttura
+    StructureDelete = 'StructureDelete', //Managed: permette di eliminare la struttura
 
     // GPP operator + operator permissions
     CheckTokenDocWallet = 'CheckTokenDocWallet',

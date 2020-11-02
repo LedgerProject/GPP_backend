@@ -163,7 +163,10 @@ export class UserController {
           userProfile.permissions.push(PermissionKeys.OrganizationUsersManagement);
           userProfile.permissions.push(PermissionKeys.OrganizationStructuresManagement);
           userProfile.permissions.push(PermissionKeys.StructureCreation);
+          userProfile.permissions.push(PermissionKeys.StructureUpdate);
           userProfile.permissions.push(PermissionKeys.StructureList);
+          userProfile.permissions.push(PermissionKeys.StructureDetail);
+          userProfile.permissions.push(PermissionKeys.StructureDelete);
         } else {
           if (permissions?.includes(PermissionKeys.OrganizationUsersManagement)) {
             userProfile.permissions.push(PermissionKeys.OrganizationUsersManagement);
@@ -171,7 +174,10 @@ export class UserController {
           if (permissions?.includes(PermissionKeys.OrganizationStructuresManagement)) {
             userProfile.permissions.push(PermissionKeys.OrganizationStructuresManagement);
             userProfile.permissions.push(PermissionKeys.StructureCreation);
+            userProfile.permissions.push(PermissionKeys.StructureUpdate);
             userProfile.permissions.push(PermissionKeys.StructureList);
+            userProfile.permissions.push(PermissionKeys.StructureDetail);
+            userProfile.permissions.push(PermissionKeys.StructureDelete);
           }
         }
 
@@ -262,7 +268,10 @@ export class UserController {
           userProfile.permissions.push(PermissionKeys.OrganizationUsersManagement);
           userProfile.permissions.push(PermissionKeys.OrganizationStructuresManagement);
           userProfile.permissions.push(PermissionKeys.StructureCreation);
+          userProfile.permissions.push(PermissionKeys.StructureUpdate);
           userProfile.permissions.push(PermissionKeys.StructureList);
+          userProfile.permissions.push(PermissionKeys.StructureDetail);
+          userProfile.permissions.push(PermissionKeys.StructureDelete);
         } else {
           if (permissions?.includes(PermissionKeys.OrganizationUsersManagement)) {
             userProfile.permissions.push(PermissionKeys.OrganizationUsersManagement);
@@ -270,7 +279,10 @@ export class UserController {
           if (permissions?.includes(PermissionKeys.OrganizationStructuresManagement)) {
             userProfile.permissions.push(PermissionKeys.OrganizationStructuresManagement);
             userProfile.permissions.push(PermissionKeys.StructureCreation);
+            userProfile.permissions.push(PermissionKeys.StructureUpdate);
             userProfile.permissions.push(PermissionKeys.StructureList);
+            userProfile.permissions.push(PermissionKeys.StructureDetail);
+            userProfile.permissions.push(PermissionKeys.StructureDelete);
           }
         }
       } else {
@@ -313,5 +325,11 @@ export class UserController {
     const filter: Filter = { where: { "idUser": currentUser.idUser, "confirmed": true } };
     const myOrganizations = await this.organizationsUsersViewRepository.find(filter);
     return myOrganizations;
+  }
+
+  @get('/users/upload')
+  async upload(
+  ): Promise<any> {
+    return "pippo";
   }
 }
