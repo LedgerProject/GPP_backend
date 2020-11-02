@@ -1,14 +1,17 @@
+//Loopback imports
 import { authenticate, AuthenticationBindings } from '@loopback/authentication';
 import { inject } from '@loopback/core';
-import { Count, CountSchema, Filter, repository, Where } from '@loopback/repository';
-import { del, get, getFilterSchemaFor, getJsonSchemaRef, getModelSchemaRef, getWhereSchemaFor, HttpErrors, param, post, put, requestBody } from '@loopback/rest';
+import { Filter, repository } from '@loopback/repository';
+import { get, getJsonSchemaRef, getModelSchemaRef, HttpErrors, param, post, requestBody } from '@loopback/rest';
 import { securityId, UserProfile } from '@loopback/security';
-import * as _ from 'lodash';
+//Various imports
+import _ from 'lodash';
+//GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { UserTypeKeys } from '../authorization/user-type-keys';
 import { PasswordHasherBindings, TokenServiceBindings, UserServiceBindings } from '../keys';
-import { User } from '../models';
-import { Credentials, UserRepository } from '../repositories';
+import { OrganizationsUsersView, User } from '../models';
+import { Credentials, OrganizationsUsersViewRepository, OrganizationUserRepository, UserRepository } from '../repositories';
 import { BcryptHasher } from '../services/hash.password.bcrypt';
 import { JWTService } from '../services/jwt-service';
 import { MyUserService } from '../services/user.service';
@@ -19,6 +22,10 @@ export class UserController {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
+    @repository(OrganizationsUsersViewRepository)
+    public organizationsUsersViewRepository: OrganizationsUsersViewRepository,
+    @repository(OrganizationUserRepository)
+    public organizationUserRepository: OrganizationUserRepository,
     @inject(PasswordHasherBindings.PASSWORD_HASHER)
     public hasher: BcryptHasher,
     @inject(UserServiceBindings.USER_SERVICE)
@@ -50,8 +57,8 @@ export class UserController {
         },
       },
     }
-  )
-  userData: User) {
+    )
+    userData: User) {
     // Credentials validations
     validateCredentials(_.pick(userData, ['userType', 'email', 'password']));
 
@@ -61,48 +68,14 @@ export class UserController {
     }
 
     // Check: email duplication
-    let filter: Filter = {where:{"email": userData.email, "userType": userData.userType}};
+    let filter: Filter = { where: { "email": userData.email, "userType": userData.userType } };
 
-    if (userData.userType != "user") {
-      filter = {where:{"and" : [{"email": userData.email}, {"or" : [{"userType": UserTypeKeys.gppOperator}, {"userType": UserTypeKeys.operator}]}]}}
+    if (userData.userType !== "user") {
+      filter = { where: { "and": [{ "email": userData.email }, { "or": [{ "userType": UserTypeKeys.gppOperator }, { "userType": UserTypeKeys.operator }] }] } }
     }
 
-    if((await this.userRepository.find(filter))[0] != undefined){
+    if ((await this.userRepository.find(filter))[0] !== undefined) {
       throw new HttpErrors.BadRequest('This email already exists');
-    }
-
-    // Roles association
-    switch (userData.userType) {
-      case UserTypeKeys.gppOperator:
-        userData.permissions = [
-          PermissionKeys.CountriesManagement,
-          PermissionKeys.GeneralUsersManagement,
-          PermissionKeys.GeneralStructuresManagement,
-          PermissionKeys.CheckTokenDocWallet,
-          PermissionKeys.OrganizationCreation,
-          PermissionKeys.AuthFeatures,
-          PermissionKeys.ProfileEdit
-        ]
-        break;
-
-      case UserTypeKeys.operator:
-        userData.permissions = [
-          PermissionKeys.OrganizationUsersManagement,
-          PermissionKeys.OrganizationStructuresManagement,
-          PermissionKeys.CheckTokenDocWallet,
-          PermissionKeys.OrganizationCreation,
-          PermissionKeys.AuthFeatures,
-          PermissionKeys.ProfileEdit
-        ]
-        break;
-
-      default:
-        userData.permissions = [
-          PermissionKeys.DocWalletManagement,
-          PermissionKeys.StructuresList,
-          PermissionKeys.AuthFeatures,
-          PermissionKeys.ProfileEdit
-        ]
     }
 
     // Set emailConfirmed to false
@@ -145,7 +118,176 @@ export class UserController {
     @requestBody(CredentialsRequestBody) credentials: Credentials): Promise<{ token: string }> {
     const user = await this.userService.verifyCredentials(credentials);
     const userProfile = this.userService.convertToUserProfile(user);
-    userProfile.permissions = user.permissions;
+
+    switch (user.userType) {
+      case UserTypeKeys.gppOperator:
+        userProfile.permissions = [
+          PermissionKeys.CountriesManagement,
+          PermissionKeys.GeneralUsersManagement,
+          PermissionKeys.GeneralStructuresManagement,
+          PermissionKeys.CheckTokenDocWallet,
+          PermissionKeys.OrganizationCreation,
+          PermissionKeys.MyOrganizationList,
+          PermissionKeys.AuthFeatures,
+          PermissionKeys.ProfileEdit
+        ]
+        break;
+
+      case UserTypeKeys.operator:
+        userProfile.permissions = [
+          PermissionKeys.CheckTokenDocWallet,
+          PermissionKeys.OrganizationCreation,
+          PermissionKeys.MyOrganizationList,
+          PermissionKeys.AuthFeatures,
+          PermissionKeys.ProfileEdit
+        ];
+        break;
+
+      default:
+        userProfile.permissions = [
+          PermissionKeys.DocWalletManagement,
+          PermissionKeys.StructuresList,
+          PermissionKeys.AuthFeatures,
+          PermissionKeys.ProfileEdit
+        ]
+    }
+
+    if (user!.userType !== UserTypeKeys.gppOperator) {
+      // Check permissions for first organization
+      const filter: Filter = { where: { "idUser": user.idUser } };
+      const firstOrganization = await this.organizationUserRepository.findOne(filter);
+
+      if (firstOrganization !== undefined) {
+        const permissions = firstOrganization?.permissions
+        if (permissions?.includes(PermissionKeys.OrganizationAdministrator)) {
+          userProfile.permissions.push(PermissionKeys.OrganizationUsersManagement);
+          userProfile.permissions.push(PermissionKeys.OrganizationStructuresManagement);
+          userProfile.permissions.push(PermissionKeys.StructureCreation);
+          userProfile.permissions.push(PermissionKeys.StructureList);
+        } else {
+          if (permissions?.includes(PermissionKeys.OrganizationUsersManagement)) {
+            userProfile.permissions.push(PermissionKeys.OrganizationUsersManagement);
+          }
+          if (permissions?.includes(PermissionKeys.OrganizationStructuresManagement)) {
+            userProfile.permissions.push(PermissionKeys.OrganizationStructuresManagement);
+            userProfile.permissions.push(PermissionKeys.StructureCreation);
+            userProfile.permissions.push(PermissionKeys.StructureList);
+          }
+        }
+
+        // Associate idOrganization to the userProfile
+        userProfile.idOrganization = firstOrganization?.idOrganization;
+      }
+    } else {
+      // Associate idOrganization null to the userProfile
+      userProfile.idOrganization = null;
+    }
+
+    // Associate userType to the userProfile
+    userProfile.userType = user.userType;
+
+    //userProfile.permissions = user.permissions;
+    const jwt = await this.jwtService.generateToken(userProfile);
+    return Promise.resolve({ token: jwt });
+  }
+
+  //*** CHANGE ORGANIZATION ***/
+  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
+  @get('/users/change-organization/{id}', {
+    responses: {
+      '200': {
+        description: 'Token change organization',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                token: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async changeOrganization(
+    @param.path.string('id') id: string,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
+  ): Promise<{ token: string }> {
+    const filter: Filter = { where: { "idUser": currentUser.idUser } };
+    const user = await this.userRepository.findOne(filter);
+
+    const userProfile = this.userService.convertToUserProfile(user!);
+
+    switch (user!.userType) {
+      case UserTypeKeys.gppOperator:
+        userProfile.permissions = [
+          PermissionKeys.CountriesManagement,
+          PermissionKeys.GeneralUsersManagement,
+          PermissionKeys.GeneralStructuresManagement,
+          PermissionKeys.StructureCreation,
+          PermissionKeys.CheckTokenDocWallet,
+          PermissionKeys.OrganizationCreation,
+          PermissionKeys.MyOrganizationList,
+          PermissionKeys.AuthFeatures,
+          PermissionKeys.ProfileEdit
+        ]
+        break;
+
+      case UserTypeKeys.operator:
+        userProfile.permissions = [
+          PermissionKeys.CheckTokenDocWallet,
+          PermissionKeys.OrganizationCreation,
+          PermissionKeys.MyOrganizationList,
+          PermissionKeys.AuthFeatures,
+          PermissionKeys.ProfileEdit
+        ];
+        break;
+
+      default:
+        throw new HttpErrors.Forbidden('Not allowed');
+    }
+
+    if (user!.userType !== UserTypeKeys.gppOperator) {
+      // Check permissions for first organization
+      const filterOrg: Filter = { where: { "idUser": user!.idUser, "idOrganization": id } };
+      const firstOrganization = await this.organizationUserRepository.findOne(filterOrg);
+
+      if (firstOrganization !== undefined) {
+        const permissions = firstOrganization?.permissions
+        if (permissions?.includes(PermissionKeys.OrganizationAdministrator)) {
+          userProfile.permissions.push(PermissionKeys.OrganizationUsersManagement);
+          userProfile.permissions.push(PermissionKeys.OrganizationStructuresManagement);
+          userProfile.permissions.push(PermissionKeys.StructureCreation);
+          userProfile.permissions.push(PermissionKeys.StructureList);
+        } else {
+          if (permissions?.includes(PermissionKeys.OrganizationUsersManagement)) {
+            userProfile.permissions.push(PermissionKeys.OrganizationUsersManagement);
+          }
+          if (permissions?.includes(PermissionKeys.OrganizationStructuresManagement)) {
+            userProfile.permissions.push(PermissionKeys.OrganizationStructuresManagement);
+            userProfile.permissions.push(PermissionKeys.StructureCreation);
+            userProfile.permissions.push(PermissionKeys.StructureList);
+          }
+        }
+      } else {
+        throw new HttpErrors.Forbidden('Wrong organization');
+      }
+
+      // Associate idOrganization to the userProfile
+      userProfile.idOrganization = id;
+    } else {
+      // Associate idOrganization to null value
+      userProfile.idOrganization = null;
+    }
+
+    // Associate userType to the userProfile
+    userProfile.userType = user!.userType;
+
+    //userProfile.permissions = user.permissions;
     const jwt = await this.jwtService.generateToken(userProfile);
     return Promise.resolve({ token: jwt });
   }
@@ -159,5 +301,17 @@ export class UserController {
   ): Promise<UserProfile> {
     delete currentUser[securityId];
     return Promise.resolve(currentUser);
+  }
+
+  //*** USER OWNED ORGANIZATIONS ***/
+  @authenticate('jwt', { required: [PermissionKeys.MyOrganizationList] })
+  @get('/users/my-organizations')
+  async getMyOrganizations(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
+  ): Promise<OrganizationsUsersView[]> {
+    const filter: Filter = { where: { "idUser": currentUser.idUser, "confirmed": true } };
+    const myOrganizations = await this.organizationsUsersViewRepository.find(filter);
+    return myOrganizations;
   }
 }

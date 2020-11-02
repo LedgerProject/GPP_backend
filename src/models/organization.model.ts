@@ -1,14 +1,13 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
-import {OrganizationUser} from './organization-user.model';
+import { Entity, model, property } from '@loopback/repository';
 
 @model({
-  settings: {idInjection: false, postgresql: {schema: 'public', table: 'organizations'}}
+  settings: { idInjection: false, postgresql: { schema: 'public', table: 'organizations' } }
 })
 export class Organization extends Entity {
   @property({
     type: 'string',
     id: true,
-    postgresql: {columnName: 'idOrganization', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'idOrganization', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idOrganization: string;
 
@@ -16,7 +15,7 @@ export class Organization extends Entity {
     type: 'string',
     required: true,
     length: 100,
-    postgresql: {columnName: 'name', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'name', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   name: string;
 

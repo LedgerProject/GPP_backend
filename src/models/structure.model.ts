@@ -6,15 +6,13 @@ import { Entity, model, property } from '@loopback/repository';
 export class Structure extends Entity {
   @property({
     type: 'string',
-    required: true,
-    id: 1,
+    id: true,
     postgresql: { columnName: 'idStructure', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idStructure: string;
 
   @property({
     type: 'string',
-    required: true,
     postgresql: { columnName: 'idOrganization', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idOrganization: string;

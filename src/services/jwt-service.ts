@@ -1,7 +1,7 @@
-import { UserProfile, securityId } from '@loopback/security';
-import { promisify } from 'util';
-import { HttpErrors } from '@loopback/rest';
 import { inject } from '@loopback/core';
+import { HttpErrors } from '@loopback/rest';
+import { securityId, UserProfile } from '@loopback/security';
+import { promisify } from 'util';
 import { TokenServiceBindings } from '../keys';
 const jwt = require('jsonwebtoken');
 const signAsync = promisify(jwt.sign);
@@ -44,8 +44,10 @@ export class JWTService {
         { [securityId]: '', name: '', permissions: [] },
         {
           idUser: decryptedToken.idUser,
+          userType: decryptedToken.userType,
           name: decryptedToken.name,
           permissions: decryptedToken.permissions,
+          idOrganization: decryptedToken.idOrganization,
           email: decryptedToken.email
         },
       );

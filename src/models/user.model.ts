@@ -1,5 +1,5 @@
-import { Entity, model, property, hasMany} from '@loopback/repository';
-import {OrganizationUser} from './organization-user.model';
+//Loopback imports
+import { Entity, model, property } from '@loopback/repository';
 
 @model({
   settings: { idInjection: false, postgresql: { schema: 'public', table: 'users' } }
@@ -68,9 +68,6 @@ export class User extends Entity {
     postgresql: { columnName: 'passwordRecoveryDate', dataType: 'timestamp without time zone', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   passwordRecoveryDate: string;
-
-  @property.array(String)
-  permissions: String[]
 
   @property({
     type: 'string',

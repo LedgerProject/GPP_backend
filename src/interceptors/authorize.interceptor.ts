@@ -1,18 +1,10 @@
-import {
-  globalInterceptor,
-  Interceptor,
-  InvocationContext,
-  InvocationResult,
-  Provider,
-  ValueOrPromise,
-  Getter,
-} from '@loopback/context';
-import { inject } from '@loopback/core';
 import { AuthenticationBindings, AuthenticationMetadata } from '@loopback/authentication';
-import { RequiredPermissions, MyUserProfile } from '../types';
-
-import { intersection } from 'lodash';
+import { Getter, globalInterceptor, Interceptor, InvocationContext, InvocationResult, Provider, ValueOrPromise } from '@loopback/context';
+import { inject } from '@loopback/core';
 import { HttpErrors } from '@loopback/rest';
+import { intersection } from 'lodash';
+import { MyUserProfile, RequiredPermissions } from '../types';
+
 
 /**
  * This class will be bound to the application as an `Interceptor` during
@@ -48,13 +40,13 @@ export class AuthorizeInterceptor implements Provider<Interceptor> {
   ) {
     try {
       // Add pre-invocation logic here
-      if (!this.metadata) return await next();
+      if (!this.metadata) return next();
       const result = await next();
 
       const requiredPermissions = this.metadata.options as RequiredPermissions;
-      console.log("Required Permissions: ", requiredPermissions)
+      //console.log("Required Permissions: ", requiredPermissions)
       const user = await this.getCurrentUser();
-      console.log("User Permissions: ", user.permissions)
+      //console.log("User Permissions: ", user.permissions)
       const results = intersection(user.permissions, requiredPermissions.required).length;
       // if (results !== requiredPermissions.required.length) {
       if (!results) {

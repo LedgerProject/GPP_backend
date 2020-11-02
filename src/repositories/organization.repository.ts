@@ -1,22 +1,19 @@
-import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
-import {Organization, OrganizationRelations, OrganizationUser} from '../models';
-import {GppDataSource} from '../datasources';
-import {inject, Getter} from '@loopback/core';
-import {OrganizationUserRepository} from './organization-user.repository';
+//Loopback imports
+import { inject } from '@loopback/core';
+import { DefaultCrudRepository } from '@loopback/repository';
+//GPP imports
+import { GppDataSource } from '../datasources';
+import { Organization, OrganizationRelations } from '../models';
 
 export class OrganizationRepository extends DefaultCrudRepository<
   Organization,
   typeof Organization.prototype.idOrganization,
   OrganizationRelations
-> {
-
-  public readonly organizationUsers: HasManyRepositoryFactory<OrganizationUser, typeof Organization.prototype.idOrganization>;
+  > {
 
   constructor(
-    @inject('datasources.GppDataSource') dataSource: GppDataSource, @repository.getter('OrganizationUserRepository') protected organizationUserRepositoryGetter: Getter<OrganizationUserRepository>,
+    @inject('datasources.GppDataSource') dataSource: GppDataSource,
   ) {
     super(Organization, dataSource);
-    this.organizationUsers = this.createHasManyRepositoryFactoryFor('organizationUsers', organizationUserRepositoryGetter,);
-    this.registerInclusionResolver('organizationUsers', this.organizationUsers.inclusionResolver);
   }
 }

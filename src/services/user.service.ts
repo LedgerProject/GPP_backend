@@ -1,12 +1,12 @@
 import { UserService } from '@loopback/authentication';
-import { UserProfile, securityId } from '@loopback/security';
-import { Credentials, UserRepository } from '../repositories/user.repository';
-import { User } from '../models';
+import { inject } from '@loopback/core';
 import { repository } from '@loopback/repository';
 import { HttpErrors } from '@loopback/rest';
-import { inject } from '@loopback/core';
-import { BcryptHasher } from './hash.password.bcrypt';
+import { securityId, UserProfile } from '@loopback/security';
 import { PasswordHasherBindings } from '../keys';
+import { User } from '../models';
+import { Credentials, UserRepository } from '../repositories/user.repository';
+import { BcryptHasher } from './hash.password.bcrypt';
 
 export class MyUserService implements UserService<User, Credentials> {
   constructor(
