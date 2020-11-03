@@ -1,3 +1,4 @@
+// Loopback imports
 import { Entity, model, property } from '@loopback/repository';
 
 @model({
@@ -6,8 +7,7 @@ import { Entity, model, property } from '@loopback/repository';
 export class Category extends Entity {
   @property({
     type: 'string',
-    required: true,
-    id: 1,
+    id: true,
     postgresql: { columnName: 'IdCategory', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idCategory: string;

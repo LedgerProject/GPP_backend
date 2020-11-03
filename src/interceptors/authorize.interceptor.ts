@@ -1,10 +1,12 @@
+// Loopback imports
 import { AuthenticationBindings, AuthenticationMetadata } from '@loopback/authentication';
 import { Getter, globalInterceptor, Interceptor, InvocationContext, InvocationResult, Provider, ValueOrPromise } from '@loopback/context';
 import { inject } from '@loopback/core';
 import { HttpErrors } from '@loopback/rest';
+// Other imports
 import { intersection } from 'lodash';
-import { MyUserProfile, RequiredPermissions } from '../types';
-
+// GPP imports
+import { MyUserProfile, RequiredPermissions } from '../authorization/types';
 
 /**
  * This class will be bound to the application as an `Interceptor` during
@@ -38,25 +40,23 @@ export class AuthorizeInterceptor implements Provider<Interceptor> {
     invocationCtx: InvocationContext,
     next: () => ValueOrPromise<InvocationResult>,
   ) {
-    try {
-      // Add pre-invocation logic here
-      if (!this.metadata) return next();
-      const result = await next();
-
-      const requiredPermissions = this.metadata.options as RequiredPermissions;
-      //console.log("Required Permissions: ", requiredPermissions)
-      const user = await this.getCurrentUser();
-      //console.log("User Permissions: ", user.permissions)
-      const results = intersection(user.permissions, requiredPermissions.required).length;
-      // if (results !== requiredPermissions.required.length) {
-      if (!results) {
-        throw new HttpErrors.Forbidden('INVALID ACCESS PERMISSIONS')
-      }
-
-      return result;
-    } catch (err) {
+    //try {
+    // Add pre-invocation logic here
+    if (!this.metadata) return next();
+    const requiredPermissions = this.metadata.options as RequiredPermissions;
+    //console.log("Required Permissions: ", requiredPermissions)
+    const user = await this.getCurrentUser();
+    //console.log("User Permissions: ", user.permissions)
+    const results = intersection(user.permissions, requiredPermissions.required).length;
+    // if (results !== requiredPermissions.required.length) {
+    if (!results) {
+      throw new HttpErrors.Forbidden('INVALID ACCESS PERMISSIONS')
+    }
+    const result = await next();
+    return result;
+    /*} catch (err) {
       // Add error handling logic here
       throw err;
-    }
+    }*/
   }
 }

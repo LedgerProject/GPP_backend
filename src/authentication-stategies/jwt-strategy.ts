@@ -1,8 +1,10 @@
+// Loopback imports
 import { AuthenticationStrategy } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { HttpErrors, Request } from '@loopback/rest';
 import { UserProfile } from '@loopback/security';
-import { TokenServiceBindings } from '../keys';
+// GPP imports
+import { TokenServiceBindings } from '../authorization/keys';
 import { JWTService } from '../services/jwt-service';
 
 export class JWTStrategy implements AuthenticationStrategy {

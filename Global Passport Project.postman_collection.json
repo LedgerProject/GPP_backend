@@ -1,0 +1,748 @@
+{
+	"info": {
+		"_postman_id": "bf3da666-5484-4fd9-b896-4c30e1a65438",
+		"name": "Global Passport Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "icons",
+			"item": [
+				{
+					"name": "icons",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"string\",\n  \"image\": \"string\",\n  \"marker\": \"string\"\n}"
+						},
+						"url": {
+							"raw": "http://10.8.0.1:3001/icons",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"icons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "icons",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://10.8.0.1:3001/icons?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"icons"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "icons/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://10.8.0.1:3001/icons/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"icons",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "icons/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idIcon\": \"string\",\n  \"name\": \"string\",\n  \"image\": \"string\",\n  \"marker\": \"string\"\n}"
+						},
+						"url": {
+							"raw": "http://10.8.0.1:3001/icons/:id",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"icons",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "icons/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://10.8.0.1:3001/icons/:id",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"icons",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "organizations",
+			"item": [
+				{
+					"name": "organizations",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"string\"\n}"
+						},
+						"url": {
+							"raw": "http://10.8.0.1:3001/organizations",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "structures",
+			"item": [
+				{
+					"name": "structures",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idOrganization\": \"string\",\n  \"alias\": \"string\",\n  \"name\": \"string\",\n  \"address\": \"string\",\n  \"city\": \"string\",\n  \"latitude\": 0,\n  \"longitude\": 0,\n  \"email\": \"string\",\n  \"phoneNumberPrefix\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"website\": \"string\",\n  \"idIcon\": \"string\"\n}"
+						},
+						"url": {
+							"raw": "http://10.8.0.1:3001//structures",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"",
+								"structures"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "structures",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://10.8.0.1:3001/structures?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"structures"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "structures/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://10.8.0.1:3001/structures/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"structures",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "structures/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idStructure\": \"string\",\n  \"idOrganization\": \"string\",\n  \"alias\": \"string\",\n  \"name\": \"string\",\n  \"address\": \"string\",\n  \"city\": \"string\",\n  \"latitude\": 0,\n  \"longitude\": 0,\n  \"email\": \"string\",\n  \"phoneNumberPrefix\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"website\": \"string\",\n  \"idIcon\": \"string\"\n}"
+						},
+						"url": {
+							"raw": "http://10.8.0.1:3001/structures/:id",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"structures",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "icons/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "structures/:id",
+							"host": [
+								"structures"
+							],
+							"path": [
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "users/login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userType\": \"string\",\n  \"email\": \"user@example.com\",\n  \"password\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://10.8.0.1:3001/users/login",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "users/signup?secretKey",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userType\": \"string\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"email\": \"string\",\n  \"emailConfirmed\": true,\n  \"password\": \"string\",\n  \"passwordRecoveryToken\": \"string\",\n  \"passwordRecoveryDate\": \"2020-11-03T12:03:58.201Z\",\n  \"idNationality\": \"string\",\n  \"gender\": \"string\",\n  \"birthday\": \"2020-11-03T12:03:58.201Z\"\n}"
+						},
+						"url": {
+							"raw": "http://10.8.0.1:3001/users/signup?secretKey",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"users",
+								"signup"
+							],
+							"query": [
+								{
+									"key": "secretKey",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "users/me",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://10.8.0.1:3001/users/me",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "users/my-organizations",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://10.8.0.1:3001/users/my-organizations",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"users",
+								"my-organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "users/change-organization/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://10.8.0.1:3001/users/change-organization/:id",
+							"protocol": "http",
+							"host": [
+								"10",
+								"8",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"users",
+								"change-organization",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "ping",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://10.8.0.1:3001/ping",
+					"protocol": "http",
+					"host": [
+						"10",
+						"8",
+						"0",
+						"1"
+					],
+					"port": "3001",
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -1,7 +1,8 @@
-import {Entity, model, property} from '@loopback/repository';
+// Loopback imports
+import { Entity, model, property } from '@loopback/repository';
 
 @model({
-  settings: {idInjection: false, postgresql: {schema: 'public', table: 'encryptedChunk'}}
+  settings: { idInjection: false, postgresql: { schema: 'public', table: 'encryptedChunk' } }
 })
 export class EncryptedChunk extends Entity {
   @property({
@@ -9,14 +10,14 @@ export class EncryptedChunk extends Entity {
     required: true,
     scale: 0,
     id: 1,
-    postgresql: {columnName: 'id', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'NO'},
+    postgresql: { columnName: 'id', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'NO' },
   })
   id: number;
 
   @property({
     type: 'string',
     required: true,
-    postgresql: {columnName: 'idUser', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'idUser', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idUser: string;
 
@@ -24,48 +25,48 @@ export class EncryptedChunk extends Entity {
     type: 'string',
     required: true,
     length: 50,
-    postgresql: {columnName: 'name', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'name', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   name: string;
 
   @property({
     type: 'string',
     length: 50,
-    postgresql: {columnName: 'uploadReferenceId', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
+    postgresql: { columnName: 'uploadReferenceId', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   uploadReferenceId?: string;
 
   @property({
     type: 'string',
     length: 32,
-    postgresql: {columnName: 'chunkIndexId', dataType: 'character varying', dataLength: 32, dataPrecision: null, dataScale: null, nullable: 'YES'},
+    postgresql: { columnName: 'chunkIndexId', dataType: 'character varying', dataLength: 32, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   chunkIndexId?: string;
 
   @property({
     type: 'string',
     length: 32,
-    postgresql: {columnName: 'checksum', dataType: 'character varying', dataLength: 32, dataPrecision: null, dataScale: null, nullable: 'YES'},
+    postgresql: { columnName: 'checksum', dataType: 'character varying', dataLength: 32, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   checksum?: string;
 
   @property({
     type: 'string',
     length: 32,
-    postgresql: {columnName: 'header', dataType: 'character varying', dataLength: 32, dataPrecision: null, dataScale: null, nullable: 'YES'},
+    postgresql: { columnName: 'header', dataType: 'character varying', dataLength: 32, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   header?: string;
 
   @property({
     type: 'string',
     length: 32,
-    postgresql: {columnName: 'iv', dataType: 'character varying', dataLength: 32, dataPrecision: null, dataScale: null, nullable: 'YES'},
+    postgresql: { columnName: 'iv', dataType: 'character varying', dataLength: 32, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   iv?: string;
 
   @property({
     type: 'string',
-    postgresql: {columnName: 'text', dataType: 'text', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES'},
+    postgresql: { columnName: 'text', dataType: 'text', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   text?: string;
 

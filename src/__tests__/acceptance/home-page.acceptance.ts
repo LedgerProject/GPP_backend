@@ -1,13 +1,13 @@
-import {Client} from '@loopback/testlab';
-import {ApiApplication} from '../..';
-import {setupApplication} from './test-helper';
+import { Client } from '@loopback/testlab';
+import { GPPBackend } from '../..';
+import { setupApplication } from './test-helper';
 
 describe('HomePage', () => {
-  let app: ApiApplication;
+  let app: GPPBackend;
   let client: Client;
 
   before('setupApplication', async () => {
-    ({app, client} = await setupApplication());
+    ({ app, client } = await setupApplication());
   });
 
   after(async () => {

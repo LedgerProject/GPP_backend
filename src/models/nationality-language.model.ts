@@ -1,24 +1,24 @@
-import {Entity, model, property} from '@loopback/repository';
+// Loopback imports
+import { Entity, model, property } from '@loopback/repository';
 
 @model({
   settings: {
     idInjection: false,
-    postgresql: {schema: 'public', table: 'nationalitiesLanguages'}
+    postgresql: { schema: 'public', table: 'nationalitiesLanguages' }
   }
 })
 export class NationalityLanguage extends Entity {
   @property({
     type: 'string',
-    required: true,
-    id: 1,
-    postgresql: {columnName: 'idNationalityLanguage', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    id: true,
+    postgresql: { columnName: 'idNationalityLanguage', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idNationalityLanguage: string;
 
   @property({
     type: 'string',
     required: true,
-    postgresql: {columnName: 'idNationality', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'idNationality', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idNationality: string;
 
@@ -26,7 +26,7 @@ export class NationalityLanguage extends Entity {
     type: 'string',
     required: true,
     length: 50,
-    postgresql: {columnName: 'alias', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'alias', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   alias: string;
 
@@ -34,7 +34,7 @@ export class NationalityLanguage extends Entity {
     type: 'string',
     required: true,
     length: 50,
-    postgresql: {columnName: 'nationality', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'nationality', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   nationality: string;
 
@@ -42,7 +42,7 @@ export class NationalityLanguage extends Entity {
     type: 'string',
     required: true,
     length: 2,
-    postgresql: {columnName: 'language', dataType: 'character', dataLength: 2, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'language', dataType: 'character', dataLength: 2, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   language: string;
 

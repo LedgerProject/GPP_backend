@@ -1,24 +1,24 @@
-import {Entity, model, property} from '@loopback/repository';
+// Loopback imports
+import { Entity, model, property } from '@loopback/repository';
 
 @model({
   settings: {
     idInjection: false,
-    postgresql: {schema: 'public', table: 'countriesTopicsLanguages'}
+    postgresql: { schema: 'public', table: 'countriesTopicsLanguages' }
   }
 })
 export class CountryTopicLanguage extends Entity {
   @property({
     type: 'string',
-    required: true,
-    id: 1,
-    postgresql: {columnName: 'idCountryTopicLanguage', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    id: true,
+    postgresql: { columnName: 'idCountryTopicLanguage', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idCountryTopicLanguage: string;
 
   @property({
     type: 'string',
     required: true,
-    postgresql: {columnName: 'idCountryTopic', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'idCountryTopic', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idCountryTopic: string;
 
@@ -26,14 +26,14 @@ export class CountryTopicLanguage extends Entity {
     type: 'string',
     required: true,
     length: 100,
-    postgresql: {columnName: 'topic', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'topic', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   topic: string;
 
   @property({
     type: 'string',
     required: true,
-    postgresql: {columnName: 'description', dataType: 'text', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'description', dataType: 'text', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   description: string;
 

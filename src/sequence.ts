@@ -1,15 +1,7 @@
+// Loopback imports
 import { AuthenticateFn, AuthenticationBindings, AUTHENTICATION_STRATEGY_NOT_FOUND, USER_PROFILE_NOT_FOUND } from '@loopback/authentication';
 import { inject } from '@loopback/context';
-import {
-  FindRoute,
-  InvokeMethod,
-  ParseParams,
-  Reject,
-  RequestContext,
-  RestBindings,
-  Send,
-  SequenceHandler
-} from '@loopback/rest';
+import { FindRoute, InvokeMethod, ParseParams, Reject, RequestContext, RestBindings, Send, SequenceHandler } from '@loopback/rest';
 
 const SequenceActions = RestBindings.SequenceActions;
 

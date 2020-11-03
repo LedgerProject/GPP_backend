@@ -4,24 +4,24 @@ import { inject } from '@loopback/core';
 import { Filter, repository } from '@loopback/repository';
 import { get, getJsonSchemaRef, getModelSchemaRef, HttpErrors, param, post, requestBody } from '@loopback/rest';
 import { securityId, UserProfile } from '@loopback/security';
-//Various imports
+import { Base64 } from 'js-base64';
+//Other imports
 import _ from 'lodash';
+import { PasswordHasherBindings, TokenServiceBindings, UserServiceBindings } from '../authorization/keys';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { UserTypeKeys } from '../authorization/user-type-keys';
-import { PasswordHasherBindings, TokenServiceBindings, UserServiceBindings } from '../keys';
 import { OrganizationsUsersView, User } from '../models';
 import { Credentials, OrganizationsUsersViewRepository, OrganizationUserRepository, UserRepository } from '../repositories';
 import { BcryptHasher } from '../services/hash.password.bcrypt';
 import { JWTService } from '../services/jwt-service';
 import { MyUserService } from '../services/user.service';
 import { validateCredentials } from '../services/validator';
+import scenarios from '../services/zenroom-scenarios';
 import { CredentialsRequestBody } from './specs/user.controller.spec';
-const zenroom = require('zenroom');
-import scenarios from '../services/zenroom-scenarios'
 import fs = require('fs');
-import { Base64 } from 'js-base64';
 
+const zenroom = require('zenroom');
 const MAX_CHAR_SIZE = 999999;
 
 export class UserController {
@@ -339,50 +339,50 @@ export class UserController {
   async upload(
   ): Promise<any> {
 
-    function chunkString(str:string, length:number) {
+    function chunkString(str: string, length: number) {
       return str.match(new RegExp('.{1,' + length + '}', 'g'));
     }
 
-    var contents = fs.readFileSync('files/4mb.jpg', 'utf8');
+    const contents = fs.readFileSync('files/4mb.jpg', 'utf8');
 
-    var encodedString = Base64.encode(contents);
+    const encodedString = Base64.encode(contents);
     const stringChunks: any = chunkString(encodedString, MAX_CHAR_SIZE);
 
-    const encryptedChunks : string[] = [];
-    let indexId :number = 0;
-    
-    stringChunks.forEach(function(element:any){
-      const savedLines:any = []
+    const encryptedChunks: string[] = [];
+    let indexId = 0;
 
-      const printFunction = (text:any) => {
-        savedLines.push(text) 
+    stringChunks.forEach(function (element: any) {
+      const savedLines: any = []
+
+      const printFunction = (text: any) => {
+        savedLines.push(text)
       }
 
-      const keys : any = {
+      const keys: any = {
         "password": "myVerySecretPassword"
       }
 
-      const data : any =  {
+      const data: any = {
         "header": "A very important secret",
         "message": element
       }
 
       zenroom
-      .print(printFunction)
-      .script(scenarios.encrypt())
-      //.conf("memmanager=lw")
-      .keys(keys)
-      .data(data)
-      .zencode_exec()
+        .print(printFunction)
+        .script(scenarios.encrypt())
+        //.conf("memmanager=lw")
+        .keys(keys)
+        .data(data)
+        .zencode_exec()
 
-      let objectToSave = JSON.parse(savedLines);
+      const objectToSave = JSON.parse(savedLines);
       objectToSave.indexId = indexId;
       indexId++;
 
       encryptedChunks.push(objectToSave);
     });
-    
+
     return encryptedChunks;
   }
-  
+
 }

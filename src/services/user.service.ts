@@ -1,9 +1,11 @@
+// Loopback imports
 import { UserService } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { repository } from '@loopback/repository';
 import { HttpErrors } from '@loopback/rest';
 import { securityId, UserProfile } from '@loopback/security';
-import { PasswordHasherBindings } from '../keys';
+// GPP imports
+import { PasswordHasherBindings } from '../authorization/keys';
 import { User } from '../models';
 import { Credentials, UserRepository } from '../repositories/user.repository';
 import { BcryptHasher } from './hash.password.bcrypt';

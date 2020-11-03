@@ -1,3 +1,4 @@
+// Loopback imports
 import { Entity, model, property } from '@loopback/repository';
 
 @model({
@@ -6,8 +7,7 @@ import { Entity, model, property } from '@loopback/repository';
 export class CountryLanguage extends Entity {
   @property({
     type: 'string',
-    required: true,
-    id: 1,
+    id: true,
     postgresql: { columnName: 'idCountryLanguage', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idCountryLanguage: string;

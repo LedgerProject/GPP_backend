@@ -1,28 +1,28 @@
-import {Entity, model, property} from '@loopback/repository';
+// Loopback imports
+import { Entity, model, property } from '@loopback/repository';
 
 @model({
-  settings: {idInjection: false, postgresql: {schema: 'public', table: 'structuresCategories'}}
+  settings: { idInjection: false, postgresql: { schema: 'public', table: 'structuresCategories' } }
 })
 export class StructureCategory extends Entity {
   @property({
     type: 'string',
-    required: true,
-    id: 1,
-    postgresql: {columnName: 'idStructureCategory', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    id: true,
+    postgresql: { columnName: 'idStructureCategory', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idStructureCategory: string;
 
   @property({
     type: 'string',
     required: true,
-    postgresql: {columnName: 'idStructure', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'idStructure', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idStructure: string;
 
   @property({
     type: 'string',
     required: true,
-    postgresql: {columnName: 'idCategory', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'idCategory', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idCategory: string;
 

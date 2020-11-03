@@ -1,21 +1,21 @@
-import {Entity, model, property} from '@loopback/repository';
+// Loopback imports
+import { Entity, model, property } from '@loopback/repository';
 
 @model({
-  settings: {idInjection: false, postgresql: {schema: 'public', table: 'documents'}}
+  settings: { idInjection: false, postgresql: { schema: 'public', table: 'documents' } }
 })
 export class Document extends Entity {
   @property({
     type: 'string',
-    required: true,
-    id: 1,
-    postgresql: {columnName: 'idDocument', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    id: true,
+    postgresql: { columnName: 'idDocument', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idDocument: string;
 
   @property({
     type: 'string',
     required: true,
-    postgresql: {columnName: 'idUser', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'idUser', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idUser: string;
 
@@ -23,7 +23,7 @@ export class Document extends Entity {
     type: 'string',
     required: true,
     length: 50,
-    postgresql: {columnName: 'title', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'title', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   title: string;
 
@@ -31,21 +31,21 @@ export class Document extends Entity {
     type: 'number',
     required: true,
     scale: 0,
-    postgresql: {columnName: 'bytes', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'NO'},
+    postgresql: { columnName: 'bytes', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'NO' },
   })
   bytes: number;
 
   @property({
     type: 'number',
     scale: 0,
-    postgresql: {columnName: 'widthPixel', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'YES'},
+    postgresql: { columnName: 'widthPixel', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'YES' },
   })
   widthPixel?: number;
 
   @property({
     type: 'number',
     scale: 0,
-    postgresql: {columnName: 'heightPixel', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'YES'},
+    postgresql: { columnName: 'heightPixel', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'YES' },
   })
   heightPixel?: number;
 
@@ -53,7 +53,7 @@ export class Document extends Entity {
     type: 'string',
     required: true,
     length: 50,
-    postgresql: {columnName: 'fileFolder', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'fileFolder', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   fileFolder: string;
 
@@ -61,7 +61,7 @@ export class Document extends Entity {
     type: 'string',
     required: true,
     length: 50,
-    postgresql: {columnName: 'imageFolder', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'imageFolder', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   imageFolder: string;
 
@@ -69,7 +69,7 @@ export class Document extends Entity {
     type: 'string',
     required: true,
     length: 5,
-    postgresql: {columnName: 'extension', dataType: 'character varying', dataLength: 5, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'extension', dataType: 'character varying', dataLength: 5, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   extension: string;
 

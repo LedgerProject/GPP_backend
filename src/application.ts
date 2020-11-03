@@ -1,32 +1,32 @@
+// Loopback imports
 import { AuthenticationComponent, registerAuthenticationStrategy } from "@loopback/authentication";
 import { BootMixin } from '@loopback/boot';
 import { ApplicationConfig } from '@loopback/core';
 import { RepositoryMixin } from '@loopback/repository';
 import { RestApplication } from '@loopback/rest';
-import {
-  RestExplorerBindings,
-  RestExplorerComponent
-} from '@loopback/rest-explorer';
+import { RestExplorerBindings, RestExplorerComponent } from '@loopback/rest-explorer';
 import { ServiceMixin } from '@loopback/service-proxy';
+// Other imports
 import path from 'path';
+// GPP imports
 import { JWTStrategy } from "./authentication-stategies/jwt-strategy";
-import { PasswordHasherBindings, TokenServiceBindings, TokenServiceConstants, UserServiceBindings } from './keys';
+import { PasswordHasherBindings, TokenServiceBindings, TokenServiceConstants, UserServiceBindings } from './authorization/keys';
 import { MySequence } from './sequence';
 import { BcryptHasher } from './services/hash.password.bcrypt';
 import { JWTService } from './services/jwt-service';
 import { MyUserService } from './services/user.service';
 
-export class ApiApplication extends BootMixin(
+export class GPPBackend extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
-    // set up bindings
+    // Set up bindings
     this.setupBinding();
 
     this.component(AuthenticationComponent);
-    registerAuthenticationStrategy(this as any, JWTStrategy);
+    registerAuthenticationStrategy(this, JWTStrategy);
 
     // Set up the custom sequence
     this.sequence(MySequence);

@@ -1,3 +1,4 @@
+// Loopback imports
 import { inject, lifeCycleObserver, LifeCycleObserver, ValueOrPromise } from '@loopback/core';
 import { juggler } from '@loopback/repository';
 
@@ -6,14 +7,14 @@ const types = require('pg').types
 types.setTypeParser(1700, 'text', parseFloat);
 
 const config = {
-  "name": "GppDataSource",
+  "name": process.env.DB_DATASOURCE,
   "connector": "postgresql",
   "url": "",
-  "host": "localhost",
-  "port": 5432,
-  "user": "gpp_user",
-  "password": "btE63!DfE82wD74",
-  "database": "gpp_db"
+  "host": process.env.DB_HOST,
+  "port": process.env.DB_PORT,
+  "user": process.env.DB_USER,
+  "password": process.env.DB_PWD,
+  "database": process.env.DB_NAME
 }
 
 // Observe application's life cycle to disconnect the datasource when

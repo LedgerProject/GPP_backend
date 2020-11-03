@@ -1,6 +1,9 @@
-import * as isEmail from 'isemail';
-import { Credentials } from '../repositories/user.repository';
+// Loopback imports
 import { HttpErrors } from '@loopback/rest';
+// Other imports
+import * as isEmail from 'isemail';
+// GPP imports
+import { Credentials } from '../repositories/user.repository';
 
 export function validateCredentials(credentials: Credentials) {
   if (!isEmail.validate(credentials.email)) {

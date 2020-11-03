@@ -1,3 +1,4 @@
+// Loopback imports
 import { Entity, model, property } from '@loopback/repository';
 
 @model({
@@ -93,6 +94,24 @@ export class StructuresView extends Entity {
     postgresql: { columnName: 'website', dataType: 'character varying', dataLength: 150, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   website?: string;
+
+  @property({
+    type: 'string',
+    postgresql: { columnName: 'idIcon', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
+  })
+  idIcon?: string;
+
+  @property({
+    type: 'string',
+    postgresql: { columnName: 'iconimage', dataType: 'text', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
+  })
+  iconimage?: string;
+
+  @property({
+    type: 'string',
+    postgresql: { columnName: 'iconmarker', dataType: 'text', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
+  })
+  iconmarker?: string;
 
   // Define well-known properties here
 

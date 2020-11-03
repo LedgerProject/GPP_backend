@@ -1,8 +1,12 @@
+// Loopback imports
 import { inject } from '@loopback/core';
 import { HttpErrors } from '@loopback/rest';
 import { securityId, UserProfile } from '@loopback/security';
+// Other imports
 import { promisify } from 'util';
-import { TokenServiceBindings } from '../keys';
+// GPP imports
+import { TokenServiceBindings } from '../authorization/keys';
+
 const jwt = require('jsonwebtoken');
 const signAsync = promisify(jwt.sign);
 const verifyAsync = promisify(jwt.verify);

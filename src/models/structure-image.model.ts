@@ -1,21 +1,21 @@
-import {Entity, model, property} from '@loopback/repository';
+// Loopback imports
+import { Entity, model, property } from '@loopback/repository';
 
 @model({
-  settings: {idInjection: false, postgresql: {schema: 'public', table: 'structuresImages'}}
+  settings: { idInjection: false, postgresql: { schema: 'public', table: 'structuresImages' } }
 })
 export class StructureImage extends Entity {
   @property({
     type: 'string',
-    required: true,
-    id: 1,
-    postgresql: {columnName: 'idStructureImage', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    id: true,
+    postgresql: { columnName: 'idStructureImage', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idStructureImage: string;
 
   @property({
     type: 'string',
     required: true,
-    postgresql: {columnName: 'idStructure', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'idStructure', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idStructure: string;
 
@@ -23,7 +23,7 @@ export class StructureImage extends Entity {
     type: 'string',
     required: true,
     length: 100,
-    postgresql: {columnName: 'imageFolder', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'imageFolder', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   imageFolder: string;
 
@@ -31,7 +31,7 @@ export class StructureImage extends Entity {
     type: 'string',
     required: true,
     length: 50,
-    postgresql: {columnName: 'imageFile', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: { columnName: 'imageFile', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   imageFile: string;
 
@@ -39,7 +39,7 @@ export class StructureImage extends Entity {
     type: 'number',
     required: true,
     scale: 0,
-    postgresql: {columnName: 'sorting', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'NO'},
+    postgresql: { columnName: 'sorting', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'NO' },
   })
   sorting: number;
 

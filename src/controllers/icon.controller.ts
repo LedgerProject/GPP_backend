@@ -13,8 +13,30 @@ export class IconController {
     public iconRepository: IconRepository,
   ) { }
 
-  //*** ICON CREATION ***/
+  //*** ICON LIST ***/
+  @get('/icons', {
+    responses: {
+      '200': {
+        description: 'Array of Icon model instances',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              items: getModelSchemaRef(Icon, { includeRelations: true }),
+            },
+          },
+        },
+      },
+    },
+  })
   @authenticate('jwt', { required: [PermissionKeys.GeneralIconsManagement] })
+  async find(
+    @param.query.object('filter', getFilterSchemaFor(Icon)) filter?: Filter<Icon>,
+  ): Promise<Icon[]> {
+    return this.iconRepository.find(filter);
+  }
+
+  //*** ICON INSERT ***/
   @post('/icons', {
     responses: {
       '200': {
@@ -23,6 +45,7 @@ export class IconController {
       },
     },
   })
+  @authenticate('jwt', { "required": [PermissionKeys.GeneralIconsManagement] })
   async create(
     @requestBody({
       content: {
@@ -39,7 +62,7 @@ export class IconController {
     return this.iconRepository.create(icon);
   }
 
-  @authenticate('jwt', { required: [PermissionKeys.GeneralIconsManagement] })
+  //*** ICON DETAIL ***/
   @get('/icons/{id}', {
     responses: {
       '200': {
@@ -52,6 +75,7 @@ export class IconController {
       },
     },
   })
+  @authenticate('jwt', { required: [PermissionKeys.GeneralIconsManagement] })
   async findById(
     @param.path.string('id') id: string,
     @param.query.object('filter', getFilterSchemaFor(Icon)) filter?: Filter<Icon>
@@ -59,7 +83,7 @@ export class IconController {
     return this.iconRepository.findById(id, filter);
   }
 
-  @authenticate('jwt', { required: [PermissionKeys.GeneralIconsManagement] })
+  //*** ICON UPDATE ***/
   @patch('/icons/{id}', {
     responses: {
       '204': {
@@ -67,6 +91,7 @@ export class IconController {
       },
     },
   })
+  @authenticate('jwt', { required: [PermissionKeys.GeneralIconsManagement] })
   async updateById(
     @param.path.string('id') id: string,
     @requestBody({
@@ -81,7 +106,7 @@ export class IconController {
     await this.iconRepository.updateById(id, icon);
   }
 
-  @authenticate('jwt', { required: [PermissionKeys.GeneralIconsManagement] })
+  //*** ICON DELETE ***/
   @del('/icons/{id}', {
     responses: {
       '204': {
@@ -89,6 +114,7 @@ export class IconController {
       },
     },
   })
+  @authenticate('jwt', { required: [PermissionKeys.GeneralIconsManagement] })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.iconRepository.deleteById(id);
   }

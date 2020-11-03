@@ -1,3 +1,4 @@
+// Loopback imports
 import { Entity, model, property } from '@loopback/repository';
 
 @model({ settings: { idInjection: false, postgresql: { schema: 'public', table: 'icons' } } })

@@ -1,8 +1,10 @@
+// Loopback imports
 import { TokenService, UserService } from '@loopback/authentication';
 import { BindingKey } from '@loopback/core';
-import { User } from './models';
-import { Credentials } from './repositories/user.repository';
-import { PasswordHasher } from './services/hash.password.bcrypt';
+// GPP imports
+import { User } from '../models';
+import { Credentials } from '../repositories/user.repository';
+import { PasswordHasher } from '../services/hash.password.bcrypt';
 
 export namespace TokenServiceConstants {
   export const TOKEN_SECRET_VALUE = '138asda8213';

@@ -1,10 +1,12 @@
-import {ApiApplication} from './application';
-import {ApplicationConfig} from '@loopback/core';
+// Loopback imports
+import { ApplicationConfig } from '@loopback/core';
+// GPP imports
+import { GPPBackend } from './application';
 
-export {ApiApplication};
+export { GPPBackend };
 
 export async function main(options: ApplicationConfig = {}) {
-  const app = new ApiApplication(options);
+  const app = new GPPBackend(options);
   await app.boot();
   await app.start();
 
