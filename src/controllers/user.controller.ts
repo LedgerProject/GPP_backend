@@ -337,28 +337,50 @@ export class UserController {
   async upload(
   ): Promise<any> {
 
-    const savedLines:any = []
-    const printFunction = (text:any) => { savedLines.push(text) }
+    function chunkString(str:string, length:number) {
+      return str.match(new RegExp('.{1,' + length + '}', 'g'));
+    }
 
-    var contents = fs.readFileSync('src/controllers/8kb.txt', 'utf8');
+    var contents = fs.readFileSync('src/controllers/2mb.jpg', 'utf8');
+
     var encodedString = Base64.encode(contents);
+    const stringChunks: any = chunkString(encodedString, 20000);
 
-    const keys : any = {
-      "password": "myVerySecretPassword"
-    }
+    const encryptedChunks : string[] = [];
+    let indexId :number = 0;
+    
+    stringChunks.forEach(function(element:any){
+      const savedLines:any = []
 
-    const data : any =     {
-      "header": "A very important secret",
-      "message": encodedString
-    }
+      const printFunction = (text:any) => {
+        savedLines.push(text) 
+      }
 
-    zenroom
+      const keys : any = {
+        "password": "myVerySecretPassword"
+      }
+
+      const data : any =  {
+        "header": "A very important secret",
+        "message": element
+      }
+
+      zenroom
       .print(printFunction)
       .script(scenarios.encrypt())
+      //.conf("memmanager=lw")
       .keys(keys)
       .data(data)
       .zencode_exec()
 
-    return JSON.parse(savedLines);
+      let objectToSave = JSON.parse(savedLines);
+      objectToSave.indexId = indexId;
+      indexId++;
+
+      encryptedChunks.push(objectToSave);
+    });
+    
+    return encryptedChunks;
   }
+  
 }
