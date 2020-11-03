@@ -87,6 +87,13 @@ export class User extends Entity {
   })
   birthday: string;
 
+  @property({
+    type: 'string',
+    required: true,
+    postgresql: { columnName: 'idIcon', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
+  })
+  idIcon: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
