@@ -1,3 +1,4 @@
+export * from './encrypted-chunk.repository';
 export * from './icon.repository';
 export * from './organization-user.repository';
 export * from './organization.repository';
