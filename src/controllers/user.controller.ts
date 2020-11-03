@@ -17,6 +17,10 @@ import { JWTService } from '../services/jwt-service';
 import { MyUserService } from '../services/user.service';
 import { validateCredentials } from '../services/validator';
 import { CredentialsRequestBody } from './specs/user.controller.spec';
+const zenroom = require('zenroom');
+import scenarios from './tools'
+import fs = require('fs');
+import { Base64 } from 'js-base64';
 
 export class UserController {
   constructor(
@@ -332,6 +336,29 @@ export class UserController {
   @get('/users/upload')
   async upload(
   ): Promise<any> {
-    return "pippo";
+
+    const savedLines:any = []
+    const printFunction = (text:any) => { savedLines.push(text) }
+
+    var contents = fs.readFileSync('src/controllers/8kb.txt', 'utf8');
+    var encodedString = Base64.encode(contents);
+
+    const keys : any = {
+      "password": "myVerySecretPassword"
+    }
+
+    const data : any =     {
+      "header": "A very important secret",
+      "message": encodedString
+    }
+
+    zenroom
+      .print(printFunction)
+      .script(scenarios.encrypt())
+      .keys(keys)
+      .data(data)
+      .zencode_exec()
+
+    return JSON.parse(savedLines);
   }
 }
