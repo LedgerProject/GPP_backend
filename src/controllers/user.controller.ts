@@ -10,8 +10,8 @@ import _ from 'lodash';
 import { PermissionKeys } from '../authorization/permission-keys';
 import { UserTypeKeys } from '../authorization/user-type-keys';
 import { PasswordHasherBindings, TokenServiceBindings, UserServiceBindings } from '../keys';
-import { OrganizationsUsersView, User } from '../models';
-import { Credentials, OrganizationsUsersViewRepository, OrganizationUserRepository, UserRepository } from '../repositories';
+import { OrganizationsUsersView, User, EncryptedChunk } from '../models';
+import { Credentials, EncryptedChunkRepository, OrganizationsUsersViewRepository, OrganizationUserRepository, UserRepository } from '../repositories';
 import { BcryptHasher } from '../services/hash.password.bcrypt';
 import { JWTService } from '../services/jwt-service';
 import { MyUserService } from '../services/user.service';
@@ -28,6 +28,8 @@ export class UserController {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
+    @repository(EncryptedChunkRepository)
+    public encryptedChunkRepository: EncryptedChunkRepository,
     @repository(OrganizationsUsersViewRepository)
     public organizationsUsersViewRepository: OrganizationsUsersViewRepository,
     @repository(OrganizationUserRepository)
@@ -336,21 +338,27 @@ export class UserController {
   }
 
   @get('/users/upload')
+  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
   async upload(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
   ): Promise<any> {
 
     function chunkString(str:string, length:number) {
       return str.match(new RegExp('.{1,' + length + '}', 'g'));
     }
 
-    var contents = fs.readFileSync('files/4mb.jpg', 'utf8');
+    const fileName = 'files/8kb.txt';
+
+    var contents = fs.readFileSync(fileName, 'utf8');
 
     var encodedString = Base64.encode(contents);
     const stringChunks: any = chunkString(encodedString, MAX_CHAR_SIZE);
 
     const encryptedChunks : string[] = [];
     let indexId :number = 0;
-    
+    let fileUUID = 'uuid';
+
     stringChunks.forEach(function(element:any){
       const savedLines:any = []
 
@@ -379,7 +387,17 @@ export class UserController {
       objectToSave.indexId = indexId;
       indexId++;
 
-      encryptedChunks.push(objectToSave);
+      //encryptedChunks.push(objectToSave);
+
+      let encryptedChunkToSave:EncryptedChunk = new EncryptedChunk();
+      encryptedChunkToSave.idUser = currentUser.idUser;
+      encryptedChunkToSave.checksum = objectToSave.checksum;
+      encryptedChunkToSave.iv = objectToSave.iv;
+      encryptedChunkToSave.name = fileName;
+      encryptedChunkToSave.uploadReferenceId = fileUUID;
+      encryptedChunkToSave.chunkIndexId = objectToSave.indexId;
+      this.encryptedChunkRepository.create(encryptedChunkToSave);
+
     });
     
     return encryptedChunks;
