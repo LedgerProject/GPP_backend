@@ -18,9 +18,11 @@ import { MyUserService } from '../services/user.service';
 import { validateCredentials } from '../services/validator';
 import { CredentialsRequestBody } from './specs/user.controller.spec';
 const zenroom = require('zenroom');
-import scenarios from './tools'
+import scenarios from '../services/zenroom-scenarios'
 import fs = require('fs');
 import { Base64 } from 'js-base64';
+
+const MAX_CHAR_SIZE = 999999;
 
 export class UserController {
   constructor(
@@ -341,10 +343,10 @@ export class UserController {
       return str.match(new RegExp('.{1,' + length + '}', 'g'));
     }
 
-    var contents = fs.readFileSync('src/controllers/2mb.jpg', 'utf8');
+    var contents = fs.readFileSync('files/4mb.jpg', 'utf8');
 
     var encodedString = Base64.encode(contents);
-    const stringChunks: any = chunkString(encodedString, 20000);
+    const stringChunks: any = chunkString(encodedString, MAX_CHAR_SIZE);
 
     const encryptedChunks : string[] = [];
     let indexId :number = 0;
