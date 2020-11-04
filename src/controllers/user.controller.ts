@@ -23,7 +23,7 @@ import fs = require('fs');
 import { v4 as uuid } from 'uuid'
 
 const zenroom = require('zenroom');
-const MAX_CHAR_SIZE = 999999;
+const MAX_CHAR_SIZE = 700000;
 
 export class UserController {
   constructor(
@@ -349,7 +349,7 @@ export class UserController {
       return str.match(new RegExp('.{1,' + length + '}', 'g'));
     }
 
-    const fileName = 'files/8kb.txt';
+    const fileName = 'files/2mbfile.txt';
     var contents = fs.readFileSync(fileName, 'utf8');
 
     const encodedString = Base64.encode(contents);
