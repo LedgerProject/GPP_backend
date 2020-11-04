@@ -8,7 +8,7 @@ export class Category extends Entity {
   @property({
     type: 'string',
     id: true,
-    postgresql: { columnName: 'IdCategory', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
+    postgresql: { columnName: 'idCategory', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idCategory: string;
 
@@ -16,7 +16,7 @@ export class Category extends Entity {
     type: 'string',
     required: true,
     length: 50,
-    postgresql: { columnName: 'Identifier', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
+    postgresql: { columnName: 'identifier', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   identifier: string;
 
@@ -24,7 +24,7 @@ export class Category extends Entity {
     type: 'string',
     required: true,
     length: 20,
-    postgresql: { columnName: 'Type', dataType: 'character varying', dataLength: 20, dataPrecision: null, dataScale: null, nullable: 'NO' },
+    postgresql: { columnName: 'type', dataType: 'character varying', dataLength: 20, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   type: string;
 
