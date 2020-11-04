@@ -6,7 +6,7 @@ import { juggler } from '@loopback/repository';
 const types = require('pg').types
 types.setTypeParser(1700, 'text', parseFloat);
 
-const config = {
+/*const config = {
   "name": process.env.DB_DATASOURCE,
   "connector": "postgresql",
   "url": "",
@@ -15,6 +15,17 @@ const config = {
   "user": process.env.DB_USER,
   "password": process.env.DB_PWD,
   "database": process.env.DB_NAME
+}*/
+
+const config = {
+  "name": "GppDataSource",
+  "connector": "postgresql",
+  "url": "",
+  "host": "localhost",
+  "port": 5432,
+  "user": "postgres",
+  "password": "iBdj172EgdCk!ye",
+  "database": "gpp_db"
 }
 
 // Observe application's life cycle to disconnect the datasource when
