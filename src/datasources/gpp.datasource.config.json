@@ -1,0 +1,10 @@
+{
+    "name": "GppDataSource",
+    "connector": "postgresql",
+    "url": "",
+    "host": "localhost",
+    "port": 5432,
+    "user": "postgres",
+    "password": "iBdj172EgdCk!ye",
+    "database": "gpp_db"
+  }

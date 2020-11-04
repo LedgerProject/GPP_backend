@@ -6,13 +6,16 @@ import { del, get, getFilterSchemaFor, getModelSchemaRef, HttpErrors, param, pat
 import { SecurityBindings, UserProfile } from '@loopback/security';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
-import { Structure, StructuresView } from '../models';
-import { StructureRepository, StructuresViewRepository } from '../repositories';
+import { Structure, StructureLanguage, StructuresView } from '../models';
+import { StructureRepository, StructureLanguageRepository, StructuresViewRepository } from '../repositories';
+import { checkStructureOwner } from '../services/structure.service';
 
 export class StructureController {
   constructor(
     @repository(StructureRepository)
     public structureRepository: StructureRepository,
+    @repository(StructureLanguageRepository)
+    public structureLanguageRepository: StructureLanguageRepository,
     @repository(StructuresViewRepository)
     public structuresViewRepository: StructuresViewRepository,
     @inject(SecurityBindings.USER)
@@ -20,7 +23,6 @@ export class StructureController {
   ) { }
 
   //*** NEW STRUCTURE ***/
-  @authenticate('jwt', { required: [PermissionKeys.StructureCreation, PermissionKeys.GeneralStructuresManagement] })
   @post('/structures', {
     responses: {
       '200': {
@@ -29,6 +31,7 @@ export class StructureController {
       },
     },
   })
+  @authenticate('jwt', { required: [PermissionKeys.StructureCreation, PermissionKeys.GeneralStructuresManagement] })
   async create(
     @requestBody({
       content: {
@@ -43,7 +46,7 @@ export class StructureController {
     structure: Omit<Structure, 'idStructure'>,
   ): Promise<Structure> {
     // Get the current idOrganization
-    if (this.user.userType === 'operator') {
+    if (this.user.userType !== 'gppOperator') {
       if (this.user.idOrganization) {
         structure.idOrganization = this.user.idOrganization;
       } else {
@@ -55,7 +58,6 @@ export class StructureController {
   }
 
   //*** STRUCTURE UPDATE ***/
-  @authenticate('jwt', { required: [PermissionKeys.StructureUpdate, PermissionKeys.GeneralStructuresManagement] })
   @patch('/structures/{id}', {
     responses: {
       '204': {
@@ -63,6 +65,7 @@ export class StructureController {
       },
     },
   })
+  @authenticate('jwt', { required: [PermissionKeys.StructureUpdate, PermissionKeys.GeneralStructuresManagement] })
   async updateById(
     @param.path.string('id') id: string,
     @requestBody({
@@ -75,15 +78,14 @@ export class StructureController {
     structure: Structure,
   ): Promise<void> {
     // If operator, check if it is an owned structure
-    if (this.user.userType === 'operator') {
-      await this.checkStructureOwner(id, this.user.idOrganization);
+    if (this.user.userType !== 'gppOperator') {
+      await checkStructureOwner(id, this.user.idOrganization, this.structureRepository);
     }
 
     await this.structureRepository.updateById(id, structure);
   }
 
   //*** STRUCTURES LIST ***/
-  @authenticate('jwt', { required: [PermissionKeys.StructureList, PermissionKeys.GeneralStructuresManagement] })
   @get('/structures', {
     responses: {
       '200': {
@@ -99,11 +101,12 @@ export class StructureController {
       },
     },
   })
+  @authenticate('jwt', { required: [PermissionKeys.StructureList, PermissionKeys.GeneralStructuresManagement] })
   async find(
     @param.query.object('filter', getFilterSchemaFor(StructuresView)) filter?: Filter<StructuresView>,
   ): Promise<StructuresView[]> {
     // If operator, show only the owned organizations
-    if (this.user.userType === 'operator') {
+    if (this.user.userType !== 'gppOperator') {
       if (filter === undefined) {
         filter = {};
       }
@@ -119,7 +122,6 @@ export class StructureController {
   }
 
   //*** STRUCTURE DETAIL ***/
-  @authenticate('jwt', { required: [PermissionKeys.StructureDetail, PermissionKeys.GeneralStructuresManagement] })
   @get('/structures/{id}', {
     responses: {
       '200': {
@@ -132,20 +134,20 @@ export class StructureController {
       },
     },
   })
+  @authenticate('jwt', { required: [PermissionKeys.StructureDetail, PermissionKeys.GeneralStructuresManagement] })
   async findById(
     @param.path.string('id') id: string,
     @param.query.object('filter', getFilterSchemaFor(Structure)) filter?: Filter<Structure>
   ): Promise<Structure> {
     // If operator, check if it is an owned structure
-    if (this.user.userType === 'operator') {
-      await this.checkStructureOwner(id, this.user.idOrganization);
+    if (this.user.userType !== 'gppOperator') {
+      await checkStructureOwner(id, this.user.idOrganization, this.structureRepository);
     }
 
     return this.structureRepository.findById(id, filter);
   }
 
   //*** STRUCTURE DELETE ***/
-  @authenticate('jwt', { required: [PermissionKeys.StructureDelete, PermissionKeys.GeneralStructuresManagement] })
   @del('/structures/{id}', {
     responses: {
       '204': {
@@ -153,20 +155,42 @@ export class StructureController {
       },
     },
   })
+  @authenticate('jwt', { required: [PermissionKeys.StructureDelete, PermissionKeys.GeneralStructuresManagement] })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     // If operator, check if it is an owned structure
-    if (this.user.userType === 'operator') {
-      await this.checkStructureOwner(id, this.user.idOrganization);
+    if (this.user.userType !== 'gppOperator') {
+      await checkStructureOwner(id, this.user.idOrganization, this.structureRepository);
     }
 
     await this.structureRepository.deleteById(id);
   }
 
-  async checkStructureOwner(idStructure: string, idOrganization: string) {
-    const filterOwner: Filter = { where: { "idStructure": idStructure, "idOrganization": idOrganization } };
-    const structureOwned = await this.structureRepository.findOne(filterOwner);
-    if (!structureOwned) {
-      throw new HttpErrors.Forbidden("Structure not owned");
+  //*** STRUCTURE LANGUAGE LIST ***/
+  @get('/structures/{id}/structures-languages', {
+    responses: {
+      '200': {
+        description: 'Array of StructureLanguage model instances',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              items: getModelSchemaRef(StructureLanguage, {includeRelations: true}),
+            },
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt', { required: [PermissionKeys.StructureDetail, PermissionKeys.GeneralStructuresManagement] })
+  async findLanguages(
+    @param.path.string('id') id: string,
+  ): Promise<StructureLanguage[]> {
+    // If operator, check if it is an owned structure
+    if (this.user.userType !== 'gppOperator') {
+      await checkStructureOwner(id, this.user.idOrganization, this.structureRepository);
     }
+
+    const filter: Filter = { where: { "idStructure": id } };
+    return this.structureLanguageRepository.find(filter);
   }
 }

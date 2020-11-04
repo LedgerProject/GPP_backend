@@ -22,18 +22,9 @@ export class StructureImage extends Entity {
   @property({
     type: 'string',
     required: true,
-    length: 100,
-    postgresql: { columnName: 'imageFolder', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'NO' },
+    postgresql: { columnName: 'image', dataType: 'text', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
-  imageFolder: string;
-
-  @property({
-    type: 'string',
-    required: true,
-    length: 50,
-    postgresql: { columnName: 'imageFile', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
-  })
-  imageFile: string;
+  image: string;
 
   @property({
     type: 'number',
