@@ -7,9 +7,8 @@ import { Entity, model, property } from '@loopback/repository';
 export class EncryptedChunk extends Entity {
   @property({
     type: 'number',
-    required: true,
     scale: 0,
-    id: 1,
+    id: true,
     postgresql: { columnName: 'id', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'NO' },
   })
   id: number;
