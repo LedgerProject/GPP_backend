@@ -20,6 +20,7 @@ import { validateCredentials } from '../services/validator';
 import scenarios from '../services/zenroom-scenarios';
 import { CredentialsRequestBody } from './specs/user.controller.spec';
 import fs = require('fs');
+import { v4 as uuid } from 'uuid'
 
 const zenroom = require('zenroom');
 const MAX_CHAR_SIZE = 999999;
@@ -357,7 +358,7 @@ export class UserController {
 
     const encryptedChunks : string[] = [];
     let indexId :number = 0;
-    let fileUUID = 'uuid';
+    let fileUUID = uuid();
 
     stringChunks.forEach((element: any) => {
       const savedLines: any = []
@@ -387,19 +388,20 @@ export class UserController {
       objectToSave.indexId = indexId;
       indexId++;
 
-      //encryptedChunks.push(objectToSave);
-
       let encryptedChunkToSave:EncryptedChunk = new EncryptedChunk();
       encryptedChunkToSave.idUser = currentUser.idUser;
-      encryptedChunkToSave.checksum = objectToSave.checksum;
-      encryptedChunkToSave.iv = objectToSave.iv;
+      encryptedChunkToSave.header = objectToSave.secret_message.header;
+      encryptedChunkToSave.text = objectToSave.secret_message.text;
+      encryptedChunkToSave.checksum = objectToSave.secret_message.checksum;
+      encryptedChunkToSave.iv = objectToSave.secret_message.iv;
       encryptedChunkToSave.name = fileName;
       encryptedChunkToSave.uploadReferenceId = fileUUID;
       encryptedChunkToSave.chunkIndexId = objectToSave.indexId;
+
       this.encryptedChunkRepository.create(encryptedChunkToSave);
     });
 
-    return encryptedChunks;
+    return {"uploadedFile":fileUUID};
   }
 
 }
