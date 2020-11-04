@@ -17,12 +17,12 @@ import { BcryptHasher } from '../services/hash.password.bcrypt';
 import { JWTService } from '../services/jwt-service';
 import { MyUserService } from '../services/user.service';
 import { validateCredentials } from '../services/validator';
-import scenarios from '../services/zenroom-scenarios';
+import { chunkString } from "../services/string-splitter"
+import { encrypt, decrypt } from "../services/zenroom-service"
 import { CredentialsRequestBody } from './specs/user.controller.spec';
 import fs = require('fs');
 import { v4 as uuid } from 'uuid'
 
-const zenroom = require('zenroom');
 const MAX_CHAR_SIZE = 700000;
 
 export class UserController {
@@ -345,10 +345,6 @@ export class UserController {
     currentUser: UserProfile
   ): Promise<any> {
 
-    function chunkString(str: string, length: number) {
-      return str.match(new RegExp('.{1,' + length + '}', 'g'));
-    }
-
     const fileName = 'files/2mbfile.txt';
     var contents = fs.readFileSync(fileName, 'utf8');
 
@@ -359,29 +355,8 @@ export class UserController {
     let fileUUID = uuid();
 
     stringChunks.forEach((element: any) => {
-      const savedLines: any = []
-
-      const printFunction = (text: any) => {
-        savedLines.push(text)
-      }
-
-      const keys: any = {
-        "password": currentUser.idUser
-      }
-
-      const data: any = {
-        "header": "A very important secret",
-        "message": element
-      }
-
-      zenroom
-        .print(printFunction)
-        .script(scenarios.encrypt())
-        .keys(keys)
-        .data(data)
-        .zencode_exec()
-
-      const objectToSave = JSON.parse(savedLines);
+      const objectToSave = encrypt(element, currentUser.idUser);
+      
       objectToSave.indexId = indexId;
       indexId++;
 
@@ -409,8 +384,6 @@ export class UserController {
     currentUser: UserProfile
   ): Promise<any> {
 
-    console.log(uploadReferenceId);
-
     const filter: Filter = { where: { 
         "uploadReferenceId": uploadReferenceId,
         "idUser": currentUser.idUser
@@ -422,35 +395,8 @@ export class UserController {
     let textDecrypted : string = "";
 
     encryptedChunks.forEach((chunk: any) => {
-      const savedLines: any = []
-
-      const printFunction = (text: any) => {
-        savedLines.push(text)
-      }
-
-      const keys: any = {
-        "password": currentUser.idUser
-      }
-
-      const data: any = {
-        "secret_message": {
-          "checksum": chunk.checksum,
-          "header": chunk.header,
-          "iv": chunk.iv,
-          "text": chunk.text
-        }
-      }
-
-      zenroom
-        .print(printFunction)
-        .script(scenarios.decrypt())
-        .keys(keys)
-        .data(data)
-        .zencode_exec()
-
-      const result = JSON.parse(savedLines);
+      const result = decrypt(chunk, currentUser.idUser)
       textDecrypted = textDecrypted + result.textDecrypted;
-
     });
 
     const text = Base64.decode(textDecrypted);
