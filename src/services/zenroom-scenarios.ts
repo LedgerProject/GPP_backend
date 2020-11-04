@@ -1,4 +1,4 @@
-var scenarios : any = {
+const scenarios : any = {
     encrypt: function(){
         return `Scenario 'ecdh': Encrypt a message with the password 
         Given that I have a 'string' named 'password' 
