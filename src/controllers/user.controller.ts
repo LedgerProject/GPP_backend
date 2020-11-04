@@ -350,13 +350,11 @@ export class UserController {
     }
 
     const fileName = 'files/8kb.txt';
-
     var contents = fs.readFileSync(fileName, 'utf8');
 
     const encodedString = Base64.encode(contents);
     const stringChunks: any = chunkString(encodedString, MAX_CHAR_SIZE);
 
-    const encryptedChunks : string[] = [];
     let indexId :number = 0;
     let fileUUID = uuid();
 
@@ -368,7 +366,7 @@ export class UserController {
       }
 
       const keys: any = {
-        "password": "myVerySecretPassword"
+        "password": currentUser.idUser
       }
 
       const data: any = {
@@ -379,7 +377,6 @@ export class UserController {
       zenroom
         .print(printFunction)
         .script(scenarios.encrypt())
-        //.conf("memmanager=lw")
         .keys(keys)
         .data(data)
         .zencode_exec()
@@ -401,7 +398,63 @@ export class UserController {
       this.encryptedChunkRepository.create(encryptedChunkToSave);
     });
 
-    return {"uploadedFile":fileUUID};
+    return {"uploadReferenceId":fileUUID};
+  }
+
+  @get('/users/download/{uploadReferenceId}')
+  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
+  async download(
+    @param.path.string('uploadReferenceId') uploadReferenceId: string,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
+  ): Promise<any> {
+
+    console.log(uploadReferenceId);
+
+    const filter: Filter = { where: { 
+        "uploadReferenceId": uploadReferenceId,
+        "idUser": currentUser.idUser
+      },
+      order: ['chunkIndexId ASC']
+    };
+
+    let encryptedChunks : EncryptedChunk[] = await this.encryptedChunkRepository.find(filter);
+    let textDecrypted : string = "";
+
+    encryptedChunks.forEach((chunk: any) => {
+      const savedLines: any = []
+
+      const printFunction = (text: any) => {
+        savedLines.push(text)
+      }
+
+      const keys: any = {
+        "password": currentUser.idUser
+      }
+
+      const data: any = {
+        "secret_message": {
+          "checksum": chunk.checksum,
+          "header": chunk.header,
+          "iv": chunk.iv,
+          "text": chunk.text
+        }
+      }
+
+      zenroom
+        .print(printFunction)
+        .script(scenarios.decrypt())
+        .keys(keys)
+        .data(data)
+        .zencode_exec()
+
+      const result = JSON.parse(savedLines);
+      textDecrypted = textDecrypted + result.textDecrypted;
+
+    });
+
+    const text = Base64.decode(textDecrypted);
+    return text;
   }
 
 }
