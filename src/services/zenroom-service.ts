@@ -1,5 +1,5 @@
 import { EncryptedChunk } from '../models';
-import scenarios from '../services/zenroom-scenarios';
+import { ENCRYPT, DECRYPT } from '../scenarios/zenroom-scenarios'
 const zenroom = require('zenroom');
 /* 
   This function is using zenroom to encrypt a given string with the password
@@ -22,14 +22,12 @@ export function encrypt(stringToEncrypt: string, password:string) {
 
   zenroom
     .print(printFunction)
-    .script(scenarios.encrypt())
+    .script(ENCRYPT)
     .keys(keys)
     .data(data)
     .zencode_exec()
-
-  const objectToSave = JSON.parse(savedLines);
   
-  return objectToSave;
+  return JSON.parse(savedLines);
 }
 /* 
   This function is using zenroom to decrypt a specific chunk
@@ -55,12 +53,10 @@ export function decrypt(chunk: EncryptedChunk, password:string) {
 
   zenroom
     .print(printFunction)
-    .script(scenarios.decrypt())
+    .script(DECRYPT)
     .keys(keys)
     .data(data)
     .zencode_exec()
-
-  const result = JSON.parse(savedLines);
   
-  return result;
+  return JSON.parse(savedLines);
 }
