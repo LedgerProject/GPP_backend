@@ -1,4 +1,6 @@
-export const CredentialsSchema = {
+import { SchemaObject } from "@loopback/rest";
+
+const CredentialsSchema: SchemaObject = {
   type: 'object',
   required: ['email', 'password'],
   properties: {
@@ -11,15 +13,15 @@ export const CredentialsSchema = {
     },
     password: {
       type: 'string',
-      minlenght: 8,
+      minLength: 8,
     },
   },
 };
 
 export const CredentialsRequestBody = {
-  description: 'The Input of login function',
+  description: 'The input of login function',
   required: true,
   content: {
-    'application/json': { schema: CredentialsSchema }
-  }
-}
+    'application/json': {schema: CredentialsSchema},
+  },
+};
