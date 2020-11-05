@@ -16,7 +16,7 @@ import { MySequence } from './sequence';
 import { BcryptHasher } from './services/hash.password.bcrypt';
 import { JWTService } from './services/jwt-service';
 import { MyUserService } from './services/user.service';
-import {FILE_UPLOAD_SERVICE, STORAGE_DIRECTORY} from './keys';
+import {FILE_UPLOAD_SERVICE, MEMORY_UPLOAD_SERVICE, STORAGE_DIRECTORY} from './keys';
 import multer from "multer";
 
 export class GPPBackend extends BootMixin(
@@ -45,6 +45,9 @@ export class GPPBackend extends BootMixin(
 
     // Configure file upload with multer options
     this.configureFileUpload(options.fileStorageDirectory);
+
+    //Configure memory upload
+    this.configureMemoryUpload();
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
@@ -91,5 +94,15 @@ export class GPPBackend extends BootMixin(
     };
     // Configure the file upload service with multer options
     this.configure(FILE_UPLOAD_SERVICE).to(multerOptions);
+  }
+
+  /**
+   * Configure `multer` options for file upload
+   */
+  protected configureMemoryUpload() {
+    const multerOptions: multer.Options = {
+      storage: multer.memoryStorage()
+    };
+    this.configure(MEMORY_UPLOAD_SERVICE).to(multerOptions);
   }
 }

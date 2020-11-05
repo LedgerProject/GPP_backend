@@ -16,7 +16,6 @@ export function encrypt(stringToEncrypt: string, password:string) {
   }
 
   const data: any = {
-    "header": "A very important secret",
     "message": stringToEncrypt
   }
 

@@ -4,13 +4,17 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {BindingKey} from '@loopback/core';
-import {FileUploadHandler} from './types';
+import {FileUploadHandler, MemoryUploadHandler} from './types';
 
 /**
  * Binding key for the file upload service
  */
 export const FILE_UPLOAD_SERVICE = BindingKey.create<FileUploadHandler>(
   'services.FileUpload',
+);
+
+export const MEMORY_UPLOAD_SERVICE = BindingKey.create<MemoryUploadHandler>(
+  'services.MemoryUpload',
 );
 
 /**
