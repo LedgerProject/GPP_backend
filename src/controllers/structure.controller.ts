@@ -6,8 +6,8 @@ import { del, get, getFilterSchemaFor, getModelSchemaRef, HttpErrors, param, pat
 import { SecurityBindings, UserProfile } from '@loopback/security';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
-import { Structure, StructureLanguage, StructuresView } from '../models';
-import { StructureRepository, StructureLanguageRepository, StructuresViewRepository } from '../repositories';
+import { Structure, StructuresCategoriesView, StructureLanguage, StructuresView } from '../models';
+import { StructureRepository, StructuresCategoriesViewRepository, StructureLanguageRepository, StructuresViewRepository } from '../repositories';
 import { checkStructureOwner } from '../services/structure.service';
 
 export class StructureController {
@@ -18,11 +18,13 @@ export class StructureController {
     public structureLanguageRepository: StructureLanguageRepository,
     @repository(StructuresViewRepository)
     public structuresViewRepository: StructuresViewRepository,
+    @repository(StructuresCategoriesViewRepository)
+    public structuresCategoriesViewRepository: StructuresCategoriesViewRepository,
     @inject(SecurityBindings.USER)
     public user: UserProfile
   ) { }
 
-  //*** NEW STRUCTURE ***/
+  //*** INSERT ***/
   @post('/structures', {
     responses: {
       '200': {
@@ -57,7 +59,7 @@ export class StructureController {
     return this.structureRepository.create(structure);
   }
 
-  //*** STRUCTURE UPDATE ***/
+  //*** UPDATE ***/
   @patch('/structures/{id}', {
     responses: {
       '204': {
@@ -85,7 +87,7 @@ export class StructureController {
     await this.structureRepository.updateById(id, structure);
   }
 
-  //*** STRUCTURES LIST ***/
+  //*** LIST ***/
   @get('/structures', {
     responses: {
       '200': {
@@ -121,7 +123,7 @@ export class StructureController {
     return this.structuresViewRepository.find(filter);
   }
 
-  //*** STRUCTURE DETAIL ***/
+  //*** DETAILS ***/
   @get('/structures/{id}', {
     responses: {
       '200': {
@@ -147,7 +149,7 @@ export class StructureController {
     return this.structureRepository.findById(id, filter);
   }
 
-  //*** STRUCTURE DELETE ***/
+  //*** DELETE ***/
   @del('/structures/{id}', {
     responses: {
       '204': {
@@ -165,7 +167,7 @@ export class StructureController {
     await this.structureRepository.deleteById(id);
   }
 
-  //*** STRUCTURE LANGUAGE LIST ***/
+  //*** LANGUAGES LIST ***/
   @get('/structures/{id}/structures-languages', {
     responses: {
       '200': {
@@ -192,5 +194,34 @@ export class StructureController {
 
     const filter: Filter = { where: { "idStructure": id } };
     return this.structureLanguageRepository.find(filter);
+  }
+
+  //*** CATEGORIES LIST ***/
+  @get('/structures/{id}/structures-categories', {
+    responses: {
+      '200': {
+        description: 'Array of StructureCategory model instances',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              items: getModelSchemaRef(StructuresCategoriesView, {includeRelations: true}),
+            },
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt', { required: [PermissionKeys.StructureDetail, PermissionKeys.GeneralStructuresManagement] })
+  async findCategories(
+    @param.path.string('id') id: string,
+  ): Promise<StructuresCategoriesView[]> {
+    // If operator, check if it is an owned structure
+    if (this.user.userType !== 'gppOperator') {
+      await checkStructureOwner(id, this.user.idOrganization, this.structureRepository);
+    }
+
+    const filter: Filter = { where: { "idStructure": id } };
+    return this.structuresCategoriesViewRepository.find(filter);
   }
 }

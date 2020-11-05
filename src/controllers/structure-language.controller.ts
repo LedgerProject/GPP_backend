@@ -20,7 +20,7 @@ export class StructureLanguageController {
     public user: UserProfile
   ) {}
 
-  //*** NEW STRUCTURE LANGUAGE ***/
+  //*** INSERT ***/
   @post('/structures-languages', {
     responses: {
       '200': {
@@ -57,7 +57,7 @@ export class StructureLanguageController {
     return this.structureLanguageRepository.create(structureLanguage);
   }
 
-  //*** UPDATE STRUCTURE LANGUAGE ***/
+  //*** UPDATE ***/
   @patch('/structures-languages/{id}', {
     responses: {
       '204': {
@@ -91,7 +91,7 @@ export class StructureLanguageController {
     await this.structureLanguageRepository.updateById(id, structureLanguage);
   }
 
-  //*** STRUCTURE LANGUAGE DETAIL ***/
+  //*** DETAILS ***/
   @get('/structures-languages/{id}', {
     responses: {
       '200': {

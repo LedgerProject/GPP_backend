@@ -6,6 +6,832 @@
 	},
 	"item": [
 		{
+			"name": "categories",
+			"item": [
+				{
+					"name": "categories",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/categories?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categories",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"identifier\": \"string\",\n  \"type\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/categories",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categories/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/categories/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categories/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idCategory\": \"string\",\n  \"identifier\": \"string\",\n  \"type\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/categories/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categories/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/categories/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categories/:id/categories-languages",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/categories/:id/categories-languages",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories",
+								":id",
+								"categories-languages"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "categoriesLanguages",
+			"item": [
+				{
+					"name": "categories-languages",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idCategory\": \"string\",\n  \"alias\": \"string\",\n  \"category\": \"string\",\n  \"language\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/categories-languages",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories-languages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categories-languages/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/categories-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategoryLanguage\": true,\n    \"idCategory\": true,\n    \"alias\": true,\n    \"category\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories-languages",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategoryLanguage\": true,\n    \"idCategory\": true,\n    \"alias\": true,\n    \"category\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categories-languages/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idCategoryLanguage\": \"string\",\n  \"idCategory\": \"string\",\n  \"alias\": \"string\",\n  \"category\": \"string\",\n  \"language\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/categories-languages/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories-languages",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "countries",
+			"item": [
+				{
+					"name": "countries",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"identifier\": \"string\",\n  \"completed\": true\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "countries",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "countries/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "countries/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idCountry\": \"string\",\n  \"identifier\": \"string\",\n  \"completed\": true\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "countries/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "countries/:id/countries-languages",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries/:id/countries-languages",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries",
+								":id",
+								"countries-languages"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "countriesLanguages",
+			"item": [
+				{
+					"name": "countries-languages",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idCountry\": \"string\",\n  \"alias\": \"string\",\n  \"country\": \"string\",\n  \"language\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries-languages",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries-languages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "countries-languages/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryLanguage\": true,\n    \"idCountry\": true,\n    \"alias\": true,\n    \"country\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries-languages",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryLanguage\": true,\n    \"idCountry\": true,\n    \"alias\": true,\n    \"country\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "countries-languages/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idCountryLanguage\": \"string\",\n  \"idCountry\": \"string\",\n  \"alias\": \"string\",\n  \"country\": \"string\",\n  \"language\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries-languages/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries-languages",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
 			"name": "icons",
 			"item": [
 				{
@@ -36,18 +862,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"string\",\n  \"image\": \"string\",\n  \"marker\": \"string\"\n}"
+							"raw": "{\n  \"name\": \"string\",\n  \"image\": \"string\",\n  \"marker\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
 						},
 						"url": {
-							"raw": "http://10.8.0.1:3001/icons",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}/icons",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"icons"
 							]
@@ -76,15 +902,12 @@
 							}
 						],
 						"url": {
-							"raw": "http://10.8.0.1:3001/icons?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}/icons?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"icons"
 							],
@@ -114,15 +937,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://10.8.0.1:3001/icons/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"icons",
 								":id"
@@ -136,7 +956,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
@@ -166,18 +987,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idIcon\": \"string\",\n  \"name\": \"string\",\n  \"image\": \"string\",\n  \"marker\": \"string\"\n}"
+							"raw": "{\n  \"idIcon\": \"string\",\n  \"name\": \"string\",\n  \"image\": \"string\",\n  \"marker\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
 						},
 						"url": {
-							"raw": "http://10.8.0.1:3001/icons/:id",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:id",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"icons",
 								":id"
@@ -185,7 +1006,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
@@ -209,18 +1031,18 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": ""
+							"raw": "",
+							"options": {
+								"raw": {}
+							}
 						},
 						"url": {
-							"raw": "http://10.8.0.1:3001/icons/:id",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:id",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"icons",
 								":id"
@@ -228,7 +1050,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
@@ -269,18 +1092,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"string\"\n}"
+							"raw": "{\n  \"name\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
 						},
 						"url": {
-							"raw": "http://10.8.0.1:3001/organizations",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}/organizations",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"organizations"
 							]
@@ -322,18 +1145,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idOrganization\": \"string\",\n  \"alias\": \"string\",\n  \"name\": \"string\",\n  \"address\": \"string\",\n  \"city\": \"string\",\n  \"latitude\": 0,\n  \"longitude\": 0,\n  \"email\": \"string\",\n  \"phoneNumberPrefix\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"website\": \"string\",\n  \"idIcon\": \"string\"\n}"
+							"raw": "{\n  \"idOrganization\": \"string\",\n  \"alias\": \"string\",\n  \"name\": \"string\",\n  \"address\": \"string\",\n  \"city\": \"string\",\n  \"latitude\": 0,\n  \"longitude\": 0,\n  \"email\": \"string\",\n  \"phoneNumberPrefix\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"website\": \"string\",\n  \"idIcon\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
 						},
 						"url": {
-							"raw": "http://10.8.0.1:3001//structures",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}//structures",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"",
 								"structures"
@@ -358,15 +1181,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://10.8.0.1:3001/structures?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"structures"
 							],
@@ -396,15 +1216,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://10.8.0.1:3001/structures/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"structures",
 								":id"
@@ -418,7 +1235,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
@@ -448,18 +1266,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idStructure\": \"string\",\n  \"idOrganization\": \"string\",\n  \"alias\": \"string\",\n  \"name\": \"string\",\n  \"address\": \"string\",\n  \"city\": \"string\",\n  \"latitude\": 0,\n  \"longitude\": 0,\n  \"email\": \"string\",\n  \"phoneNumberPrefix\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"website\": \"string\",\n  \"idIcon\": \"string\"\n}"
+							"raw": "{\n  \"idStructure\": \"string\",\n  \"idOrganization\": \"string\",\n  \"alias\": \"string\",\n  \"name\": \"string\",\n  \"address\": \"string\",\n  \"city\": \"string\",\n  \"latitude\": 0,\n  \"longitude\": 0,\n  \"email\": \"string\",\n  \"phoneNumberPrefix\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"website\": \"string\",\n  \"idIcon\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
 						},
 						"url": {
-							"raw": "http://10.8.0.1:3001/structures/:id",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures/:id",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"structures",
 								":id"
@@ -467,7 +1285,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
@@ -494,17 +1313,476 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "structures/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures/:id",
+							"protocol": "{{protocol}}",
 							"host": [
-								"structures"
+								"{{host}}"
 							],
+							"port": "{{port}}",
 							"path": [
+								"structures",
 								":id"
 							],
 							"variable": [
 								{
 									"key": "id",
 									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "structures/:id/structures-languages",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures/:id/structures-languages",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"structures",
+								":id",
+								"structures-languages"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "structures/:id/structures-categories",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures/:id/structures-categories",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"structures",
+								":id",
+								"structures-categories"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "structuresCategories",
+			"item": [
+				{
+					"name": "structures-categories",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idStructure\": \"string\",\n  \"idCategory\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures-categories",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"structures-categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "structures-categories/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures-categories/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"structures-categories",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "structuresImages",
+			"item": [
+				{
+					"name": "structures-images",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idStructure\": \"string\",\n  \"image\": \"string\",\n  \"sorting\": 0\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures-images",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"structures-images"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "structures-images/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idStructureImage\": \"string\",\n  \"idStructure\": \"string\",\n  \"image\": \"string\",\n  \"sorting\": 0\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures-images/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"structures-images",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "structures-images/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures-images/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"structures-images",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "structuresLanguages",
+			"item": [
+				{
+					"name": "structures-languages",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idStructure\": \"string\",\n  \"description\": \"string\",\n  \"language\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures-languages",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"structures-languages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "structures-languages/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idStructureLanguage\": \"string\",\n  \"idStructure\": \"string\",\n  \"description\": \"string\",\n  \"language\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures-languages/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"structures-languages",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "structures-languages/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructureLanguage\": true,\n    \"idStructure\": true,\n    \"description\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"structures-languages",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructureLanguage\": true,\n    \"idStructure\": true,\n    \"description\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
@@ -538,15 +1816,12 @@
 							}
 						},
 						"url": {
-							"raw": "http://10.8.0.1:3001/users/login",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}/users/login",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"users",
 								"login"
@@ -573,18 +1848,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"userType\": \"string\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"email\": \"string\",\n  \"emailConfirmed\": true,\n  \"password\": \"string\",\n  \"passwordRecoveryToken\": \"string\",\n  \"passwordRecoveryDate\": \"2020-11-03T12:03:58.201Z\",\n  \"idNationality\": \"string\",\n  \"gender\": \"string\",\n  \"birthday\": \"2020-11-03T12:03:58.201Z\"\n}"
+							"raw": "{\n  \"userType\": \"string\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"email\": \"string\",\n  \"emailConfirmed\": true,\n  \"password\": \"string\",\n  \"passwordRecoveryToken\": \"string\",\n  \"passwordRecoveryDate\": \"2020-11-03T12:03:58.201Z\",\n  \"idNationality\": \"string\",\n  \"gender\": \"string\",\n  \"birthday\": \"2020-11-03T12:03:58.201Z\"\n}",
+							"options": {
+								"raw": {}
+							}
 						},
 						"url": {
-							"raw": "http://10.8.0.1:3001/users/signup?secretKey",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}/users/signup?secretKey",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"users",
 								"signup"
@@ -615,15 +1890,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://10.8.0.1:3001/users/me",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}/users/me",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"users",
 								"me"
@@ -653,15 +1925,12 @@
 							}
 						],
 						"url": {
-							"raw": "http://10.8.0.1:3001/users/my-organizations",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}/users/my-organizations",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"users",
 								"my-organizations"
@@ -686,15 +1955,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://10.8.0.1:3001/users/change-organization/:id",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}:{{port}}/users/change-organization/:id",
+							"protocol": "{{protocol}}",
 							"host": [
-								"10",
-								"8",
-								"0",
-								"1"
+								"{{host}}"
 							],
-							"port": "3001",
+							"port": "{{port}}",
 							"path": [
 								"users",
 								"change-organization",
@@ -703,7 +1969,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
@@ -727,15 +1994,12 @@
 					}
 				],
 				"url": {
-					"raw": "http://10.8.0.1:3001/ping",
-					"protocol": "http",
+					"raw": "{{protocol}}://{{host}}:{{port}}/ping",
+					"protocol": "{{protocol}}",
 					"host": [
-						"10",
-						"8",
-						"0",
-						"1"
+						"{{host}}"
 					],
-					"port": "3001",
+					"port": "{{port}}",
 					"path": [
 						"ping"
 					]
