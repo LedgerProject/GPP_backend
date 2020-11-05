@@ -13,7 +13,7 @@ export class IconController {
     public iconRepository: IconRepository,
   ) { }
 
-  //*** ICON LIST ***/
+  //*** LIST ***/
   @get('/icons', {
     responses: {
       '200': {
@@ -29,14 +29,14 @@ export class IconController {
       },
     },
   })
-  @authenticate('jwt', { required: [PermissionKeys.GeneralIconsManagement] })
+  @authenticate('jwt', { required: [PermissionKeys.OrganizationStructuresManagement, PermissionKeys.GeneralIconsManagement] })
   async find(
     @param.query.object('filter', getFilterSchemaFor(Icon)) filter?: Filter<Icon>,
   ): Promise<Icon[]> {
     return this.iconRepository.find(filter);
   }
 
-  //*** ICON INSERT ***/
+  //*** INSERT ***/
   @post('/icons', {
     responses: {
       '200': {
@@ -62,7 +62,7 @@ export class IconController {
     return this.iconRepository.create(icon);
   }
 
-  //*** ICON DETAIL ***/
+  //*** DETAILS ***/
   @get('/icons/{id}', {
     responses: {
       '200': {
@@ -83,7 +83,7 @@ export class IconController {
     return this.iconRepository.findById(id, filter);
   }
 
-  //*** ICON UPDATE ***/
+  //*** UPDATE ***/
   @patch('/icons/{id}', {
     responses: {
       '204': {
@@ -106,7 +106,7 @@ export class IconController {
     await this.iconRepository.updateById(id, icon);
   }
 
-  //*** ICON DELETE ***/
+  //*** DELETE ***/
   @del('/icons/{id}', {
     responses: {
       '204': {

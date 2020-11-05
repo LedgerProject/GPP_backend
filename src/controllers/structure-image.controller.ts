@@ -1,4 +1,4 @@
-// Loopback importa
+// Loopback imports
 import { authenticate } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { Filter, repository } from '@loopback/repository';
@@ -20,7 +20,7 @@ export class StructureImageController {
     public user: UserProfile
   ) {}
 
-  //*** NEW STRUCTURE IMAGE ***/
+  //*** INSERT ***/
   @post('/structures-images', {
     responses: {
       '200': {
@@ -62,7 +62,7 @@ export class StructureImageController {
     return this.structureImageRepository.create(structureImage);
   }
 
-  //*** UPDATE STRUCTURE IMAGE ***/
+  //*** UPDATE ***/
   @patch('/structures-images/{id}', {
     responses: {
       '204': {
@@ -90,7 +90,7 @@ export class StructureImageController {
     await this.structureImageRepository.updateById(id, structureImage);
   }
 
-  //*** DELETE STRUCTURE IMAGE ***/
+  //*** DELETE ***/
   @del('/structures-images/{id}', {
     responses: {
       '204': {

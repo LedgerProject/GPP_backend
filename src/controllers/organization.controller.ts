@@ -19,7 +19,7 @@ export class OrganizationController {
     public user: UserProfile
   ) { }
 
-  /*** ORGANIZATION CREATION ***/
+  /*** INSERT ***/
   @authenticate('jwt', { required: [PermissionKeys.OrganizationCreation] })
   @post('/organizations', {
     responses: {
