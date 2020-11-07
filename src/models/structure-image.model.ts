@@ -22,9 +22,29 @@ export class StructureImage extends Entity {
   @property({
     type: 'string',
     required: true,
-    postgresql: { columnName: 'image', dataType: 'text', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
+    postgresql: { columnName: 'folder', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
-  image: string;
+  folder: string;
+
+  @property({
+    type: 'string',
+    required: true,
+    postgresql: { columnName: 'filename', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'NO' },
+  })
+  filename: string;
+
+  @property({
+    type: 'string',
+    postgresql: { columnName: 'mimeType', dataType: 'character varying', dataLength: 20, dataPrecision: null, dataScale: null, nullable: 'YES' },
+  })
+  mimeType: string;
+
+  @property({
+    type: 'number',
+    scale: 0,
+    postgresql: { columnName: 'size', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'YES' },
+  })
+  size: number;
 
   @property({
     type: 'number',
@@ -47,6 +67,15 @@ export class StructureImage extends Entity {
 
 export interface StructureImageRelations {
   // describe navigational properties here
+}
+
+export interface StructureImageUploaded {
+  idStructure: string,
+  folder: string,
+  filename: string,
+  mimeType: string,
+  size: number,
+  sorting: number
 }
 
 export type StructureImageWithRelations = StructureImage & StructureImageRelations;

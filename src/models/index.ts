@@ -20,4 +20,3 @@ export * from './structures-view.model';
 export * from './user-invitation.model';
 export * from './user-token.model';
 export * from './user.model';
-

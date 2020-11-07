@@ -85,9 +85,10 @@ export class GPPBackend extends BootMixin(
         destination,
         // Use the original file name as is
         filename: (req, file, cb) => {
-          cb(null, file.originalname);
+          cb(null, file.originalname + '-' + Date.now());
         },
       }),
+      limits: { fileSize: 8000000 }
     };
     // Configure the file upload service with multer options
     this.configure(FILE_UPLOAD_SERVICE).to(multerOptions);
