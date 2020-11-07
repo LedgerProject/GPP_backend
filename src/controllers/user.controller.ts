@@ -2,7 +2,7 @@
 import { authenticate, AuthenticationBindings } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { Filter, repository } from '@loopback/repository';
-import { get, getJsonSchemaRef, getModelSchemaRef, HttpErrors, param, post, requestBody } from '@loopback/rest';
+import { get, getJsonSchemaRef, getModelSchemaRef, HttpErrors, param, post, requestBody, RestBindings } from '@loopback/rest';
 import { securityId, UserProfile } from '@loopback/security';
 import { Base64 } from 'js-base64';
 //Other imports
@@ -21,7 +21,13 @@ import { chunkString } from "../services/string-splitter"
 import { encrypt, decrypt } from "../services/zenroom-service"
 import { CredentialsRequestBody } from './specs/user.controller.spec';
 import fs = require('fs');
-import { v4 as uuid } from 'uuid'
+import { v4 as uuid } from 'uuid';
+import {
+  Request,
+  Response,
+} from '@loopback/rest';
+import { MEMORY_UPLOAD_SERVICE } from '../keys';
+import { MemoryUploadHandler } from '../types';
 
 const MAX_CHAR_SIZE = 700000;
 
@@ -41,6 +47,7 @@ export class UserController {
     public userService: MyUserService,
     @inject(TokenServiceBindings.TOKEN_SERVICE)
     public jwtService: JWTService,
+    @inject(MEMORY_UPLOAD_SERVICE) private handler: MemoryUploadHandler,
   ) { }
 
   //*** USER SIGNUP ***/
@@ -405,6 +412,55 @@ export class UserController {
 
     const text = Base64.decode(textDecrypted);
     return text;
+  }
+
+  @post('/files', {
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+        description: 'Files and fields',
+      },
+    },
+  })
+  async fileUpload(
+    @requestBody.file()
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<object> {
+    return new Promise<object>((resolve, reject) => {
+      this.handler(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          resolve(UserController.getFilesAndFields(request));
+        }
+      });
+    });
+  }
+
+  private static getFilesAndFields(request: Request) {
+    const uploadedFiles = request.files;
+    const mapper = (f: globalThis.Express.Multer.File) => ({
+      fieldname: f.fieldname,
+      originalname: f.originalname,
+      encoding: f.encoding,
+      mimetype: f.mimetype,
+      size: f.size,
+    });
+    let files: object[] = [];
+    if (Array.isArray(uploadedFiles)) {
+      files = uploadedFiles.map(mapper);
+    } else {
+      for (const filename in uploadedFiles) {
+        files.push(...uploadedFiles[filename].map(mapper));
+      }
+    }
+    return {files, fields: request.body};
   }
 
 }
