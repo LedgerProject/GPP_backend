@@ -2,16 +2,32 @@
 import { authenticate } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { Filter, repository } from '@loopback/repository';
-import { post, param, getModelSchemaRef, patch, del, requestBody} from '@loopback/rest';
+import { post, param, Request, getModelSchemaRef, patch, del, requestBody, Response, RestBindings, HttpErrors } from '@loopback/rest';
 import { SecurityBindings, UserProfile } from '@loopback/security';
+// Other imports
+import { v4 as uuid } from 'uuid'
 // GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { StructureImage } from '../models';
 import { StructureImageRepository, StructureRepository } from '../repositories';
 import { checkStructureOwner } from '../services/structure.service';
+import { FILE_UPLOAD_SERVICE } from '../keys';
+import { FileUploadHandler, TempFile, CompressImageStatistic } from '../types';
+
+const compressImages = require("compress-images");
+const fs = require('fs');
+const path = require('path');
+
+// Set the path to the sandbox folder
+const sandboxPath = path.join(__dirname, '..', '..', '.sandbox');
+
+// Set the path to the structures folder
+const galleriesStructuresPath = path.join(__dirname, '..', '..', 'galleries', 'structures');
 
 export class StructureImageController {
   constructor(
+    @inject(FILE_UPLOAD_SERVICE)
+    private fileUploadHandler: FileUploadHandler,
     @repository(StructureImageRepository)
     public structureImageRepository : StructureImageRepository,
     @repository(StructureRepository)
@@ -20,48 +36,145 @@ export class StructureImageController {
     public user: UserProfile
   ) {}
 
-  //*** INSERT ***/
-  @post('/structures-images', {
+  //*** INSERT (UPLOAD) ***/
+  @post('/structures-images/{idStructure}', {
     responses: {
-      '200': {
-        description: 'StructureImage model instance',
-        content: {'application/json': {schema: getModelSchemaRef(StructureImage)}},
+      200: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+        description: 'StructureImage file',
       },
     },
   })
   @authenticate('jwt', { required: [PermissionKeys.StructureCreation, PermissionKeys.GeneralStructuresManagement] })
-  async create(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(StructureImage, {
-            title: 'NewStructureImage',
-            exclude: ['idStructureImage'],
-          }),
-        },
-      },
-    })
-    structureImage: Omit<StructureImage, 'idStructureImage'>,
+  async fileUpload(
+    @param.path.string('idStructure') idStructure: string,
+    @requestBody.file()
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  //): Promise<object> {
   ): Promise<StructureImage> {
     // If operator, check if it is an owned structure
     if (this.user.userType !== 'gppOperator') {
-      await checkStructureOwner(structureImage.idStructure, this.user.idOrganization, this.structureRepository);
+      await checkStructureOwner(idStructure, this.user.idOrganization, this.structureRepository);
     }
 
-    // Get the last sort number
-    const filterSorting: Filter = { where: { "idStructure": structureImage.idStructure }, order: ["sorting DESC"] };
-    const imageDetail = await this.structureImageRepository.findOne(filterSorting);
-    
+    // Get the last sorting number and the structure images folder
+    const filterInfoImageStructure: Filter = { where: { "idStructure": idStructure }, order: ["sorting DESC"] };
+    const imageDetail = await this.structureImageRepository.findOne(filterInfoImageStructure);
+    let sortingNumber = 0;
+    let folder = "";
+
     // Apply the sort number
     if (imageDetail) {
-      structureImage.sorting = imageDetail?.sorting + 1;
+      sortingNumber = imageDetail?.sorting + 1;
+      folder = imageDetail?.folder;
     } else {
-      structureImage.sorting = 1;
+      sortingNumber = 1;
     }
 
-    return this.structureImageRepository.create(structureImage);
-  }
+    // File upload
+    const promiseFiles = new Promise<StructureImage>((resolve, reject) => {
+      this.fileUploadHandler(request, response, (err) => {
+        if (err) {
+          // Multer error
+          resolve(err);
+        } else {
+          // Get all the file informations
+          const filesAndFields = StructureImageController.getFilesAndFields(request);
+          
+          if (filesAndFields.files.length > 0) {
+            // Get the first file informations
+            const fileUploaded = filesAndFields.files[0];
 
+            // Check if the file is jpeg
+            if (fileUploaded.mimetype !== "image/jpeg") {
+              fs.unlinkSync(sandboxPath + "/" + fileUploaded.tempfilename); // Remove the temporary file
+              reject(new HttpErrors.BadRequest('Please select an image/jpeg file'));
+              return;
+            }
+
+            // Set/Generate the destination folder
+            const destFolder = folder === "" ? uuid() : folder;
+
+            // Set the destination path
+            const destPath = galleriesStructuresPath + '/' + destFolder;
+
+            // Check if image exists
+            if (fs.existsSync(destPath + "/" + fileUploaded.originalname)) {
+              fs.unlinkSync(sandboxPath + "/" + fileUploaded.tempfilename); // Remove the temporary file
+              reject(new HttpErrors.BadRequest('File with this name already exists, please select another one file or rename it'));
+              return;
+            }
+
+            // Create the destination path if not exists
+            if (!fs.existsSync(destPath)) {
+              fs.mkdirSync(destPath);
+            }
+            
+            // Copy the file from sandbox folder to the destination folder
+            fs.copyFileSync(sandboxPath + "/" + fileUploaded.tempfilename, destPath + "/" + fileUploaded.originalname, (errCopy: unknown) => {
+              if (errCopy) {
+                reject(new HttpErrors.InternalServerError('Upload error, contact the system administrator: ' + errCopy));
+                return;
+              }
+            });
+
+            // Remove temporary file
+            fs.unlinkSync(sandboxPath + "/" + fileUploaded.tempfilename);
+
+            // Set in a constant StructureImageRepository
+            const currStructureImageRepository:StructureImageRepository = this.structureImageRepository;
+
+            // Compress the image
+            compressImages(destPath + '/' + filesAndFields.files[0].originalname, destPath + 'compressed-', 
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                { compress_force: false, statistic: true, autoupdate: true }, false,
+                { jpg: { engine: "mozjpeg", command: ["-quality", "60"] } },
+                { png: { engine: false, command: false } },
+                { svg: { engine: false, command: false } },
+                { gif: { engine: false, command: false } },
+                async function (error: object, completed: boolean, statistic: CompressImageStatistic) {
+                  if (error) {
+                    reject(new HttpErrors.InternalServerError('Compression error, contact the system administrator: ' + error));
+                    return;
+                  } else if (completed) {
+                    // Delete the uncompressed image and rename the compressed image
+                    if (fs.existsSync(statistic.path_out_new) && fs.existsSync(statistic.input)) {
+                      fs.unlinkSync(statistic.input);
+                      fs.renameSync(statistic.path_out_new, statistic.input);
+
+                      // Save the information in the database
+                      const structureImage:StructureImage = new StructureImage();
+                      structureImage.idStructure = idStructure;
+                      structureImage.folder = destFolder;
+                      structureImage.filename = filesAndFields.files[0].originalname;
+                      structureImage.mimeType = filesAndFields.files[0].mimetype;
+                      structureImage.size = statistic.size_output;
+                      structureImage.sorting = sortingNumber;
+                      const newStructureImage = await currStructureImageRepository.create(structureImage);
+
+                      resolve(newStructureImage); 
+                    } else {
+                      reject(new HttpErrors.InternalServerError('Compression error, contact the system administrator'));
+                      return;
+                    }
+                  }
+                }
+            );
+          }
+        }
+      });
+    });
+    
+    return promiseFiles;
+  }
+    
   //*** UPDATE ***/
   @patch('/structures-images/{id}', {
     responses: {
@@ -120,5 +233,26 @@ export class StructureImageController {
       image.sorting = newSort;
       await this.structureImageRepository.updateById(image.idStructureImage, image);
     }
+  }
+
+  private static getFilesAndFields(request: Request) {
+    const uploadedFiles = request.files;
+    const mapper = (f: globalThis.Express.Multer.File) => ({
+      fieldname: f.fieldname,
+      originalname: f.originalname,
+      tempfilename: f.filename,
+      encoding: f.encoding,
+      mimetype: f.mimetype,
+      size: f.size,
+    });
+    let files: TempFile[] = [];
+    if (Array.isArray(uploadedFiles)) {
+      files = uploadedFiles.map(mapper);
+    } else {
+      for (const filename in uploadedFiles) {
+        files.push(...uploadedFiles[filename].map(mapper));
+      }
+    }
+    return {files, fields: request.body};
   }
 }

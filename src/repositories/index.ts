@@ -14,4 +14,3 @@ export * from './structure-image.repository';
 export * from './structure-language.repository';
 export * from './structures-view.repository';
 export * from './user.repository';
-

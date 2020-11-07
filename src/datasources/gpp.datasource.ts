@@ -17,6 +17,17 @@ const config = {
   "database": process.env.DB_NAME
 }
 
+/*const config = {
+  "name": "GppDataSource",
+  "connector": "postgresql",
+  "url": "",
+  "host": "localhost",
+  "port": 5432,
+  "user": "postgres",
+  "password": "iBdj172EgdCk!ye",
+  "database": "gpp_db"
+}*/
+
 // Observe application's life cycle to disconnect the datasource when
 // application is stopped. This allows the application to be shut down
 // gracefully. The `stop()` method is inherited from `juggler.DataSource`.
