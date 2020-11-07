@@ -28,8 +28,9 @@ import {
 } from '@loopback/rest';
 import { MEMORY_UPLOAD_SERVICE } from '../keys';
 import { MemoryUploadHandler } from '../types';
+var stream = require('stream');
 
-const MAX_CHAR_SIZE = 700000;
+const MAX_CHAR_SIZE = 70000;
 
 export class UserController {
   constructor(
@@ -392,7 +393,8 @@ export class UserController {
   async download(
     @param.path.string('uploadReferenceId') uploadReferenceId: string,
     @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    currentUser: UserProfile,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<any> {
 
     const filter: Filter = { where: { 
@@ -404,14 +406,23 @@ export class UserController {
 
     let encryptedChunks : EncryptedChunk[] = await this.encryptedChunkRepository.find(filter);
     let textDecrypted : string = "";
+    let fileName : string = "";
 
     encryptedChunks.forEach((chunk: any) => {
+      console.log(chunk);
       const result = decrypt(chunk, currentUser.idUser)
       textDecrypted = textDecrypted + result.textDecrypted;
+      fileName = chunk.name;
+      console.log(textDecrypted);
     });
 
-    const text = Base64.decode(textDecrypted);
-    return text;
+    var fileContents = Buffer.from(textDecrypted, 'hex');  
+    response.set('content-disposition', 'attachment; filename=' + fileName);
+    response.writeHead(200, {
+      'Content-Type': 'image/png',
+      'Content-Length': fileContents.length
+    });
+    response.end(fileContents);
   }
 
   @post('/files', {
@@ -428,22 +439,25 @@ export class UserController {
       },
     },
   })
+  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
   async fileUpload(
     @requestBody.file()
     request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
   ): Promise<object> {
     return new Promise<object>((resolve, reject) => {
       this.handler(request, response, (err: unknown) => {
         if (err) reject(err);
         else {
-          resolve(UserController.getFilesAndFields(request));
+          resolve(UserController.getFilesAndFields(request, currentUser, this.encryptedChunkRepository));
         }
       });
     });
   }
 
-  private static getFilesAndFields(request: Request) {
+  private static getFilesAndFields(request: Request, currentUser:any, repo:any) {
     const uploadedFiles = request.files;
     const mapper = (f: globalThis.Express.Multer.File) => ({
       fieldname: f.fieldname,
@@ -451,7 +465,9 @@ export class UserController {
       encoding: f.encoding,
       mimetype: f.mimetype,
       size: f.size,
+      buffer: f.buffer
     });
+
     let files: object[] = [];
     if (Array.isArray(uploadedFiles)) {
       files = uploadedFiles.map(mapper);
@@ -460,7 +476,43 @@ export class UserController {
         files.push(...uploadedFiles[filename].map(mapper));
       }
     }
-    return {files, fields: request.body};
+
+    let contents = '';
+    let fileName = '';
+    files.forEach((file: any) => {
+      contents = contents + file.buffer;
+      fileName = file.originalname;
+    });
+
+    //const encodedString = Base64.encode(contents);    
+    const stringChunks: any = chunkString(contents, MAX_CHAR_SIZE);    
+
+    let indexId :number = 0;
+    let fileUUID = uuid();
+
+    stringChunks.forEach((element: any) => {
+      const objectToSave = encrypt(element, currentUser.idUser);
+      
+      objectToSave.indexId = indexId;
+      indexId++;
+
+      let encryptedChunkToSave:EncryptedChunk = new EncryptedChunk();
+      encryptedChunkToSave.idUser = currentUser.idUser;
+      encryptedChunkToSave.header = objectToSave.secret_message.header;
+      encryptedChunkToSave.text = objectToSave.secret_message.text;
+      encryptedChunkToSave.checksum = objectToSave.secret_message.checksum;
+      encryptedChunkToSave.iv = objectToSave.secret_message.iv;
+      encryptedChunkToSave.name = fileName;
+      encryptedChunkToSave.uploadReferenceId = fileUUID;
+      encryptedChunkToSave.chunkIndexId = objectToSave.indexId;
+
+      repo.create(encryptedChunkToSave);
+    });
+
+    return {"uploadReferenceId":fileUUID};
+
+
+    //return {files};
   }
 
 }
