@@ -37,6 +37,14 @@ export class CountryTopicLanguage extends Entity {
   })
   description: string;
 
+  @property({
+    type: 'string',
+    required: true,
+    length: 2,
+    postgresql: { columnName: 'language', dataType: 'character', dataLength: 2, dataPrecision: null, dataScale: null, nullable: 'NO' },
+  })
+  language: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

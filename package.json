@@ -62,6 +62,7 @@
     "bcryptjs": "^2.4.3",
     "compress-images": "^1.9.5",
     "dotenv": "^8.2.0",
+    "image-size": "^0.9.3",
     "image-to-base64": "^2.1.1",
     "isemail": "^3.2.0",
     "js-base64": "^3.5.2",

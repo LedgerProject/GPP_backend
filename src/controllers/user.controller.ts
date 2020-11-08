@@ -138,14 +138,13 @@ export class UserController {
     switch (user.userType) {
       case UserTypeKeys.gppOperator:
         userProfile.permissions = [
-          PermissionKeys.CountriesManagement,
+          PermissionKeys.GeneralOrganizationManagement,
           PermissionKeys.GeneralUsersManagement,
           PermissionKeys.GeneralStructuresManagement,
           PermissionKeys.GeneralCountriesManagement,
           PermissionKeys.GeneralIconsManagement,
           PermissionKeys.GeneralCategoriesManagement,
           PermissionKeys.CheckTokenDocWallet,
-          PermissionKeys.OrganizationCreation,
           PermissionKeys.MyOrganizationList,
           PermissionKeys.AuthFeatures,
           PermissionKeys.ProfileEdit
@@ -156,6 +155,9 @@ export class UserController {
         userProfile.permissions = [
           PermissionKeys.CheckTokenDocWallet,
           PermissionKeys.OrganizationCreation,
+          PermissionKeys.OrganizationUpdate,
+          PermissionKeys.OrganizationDetail,
+          PermissionKeys.OrganizationDelete,
           PermissionKeys.MyOrganizationList,
           PermissionKeys.AuthFeatures,
           PermissionKeys.ProfileEdit
@@ -250,7 +252,7 @@ export class UserController {
     switch (user!.userType) {
       case UserTypeKeys.gppOperator:
         userProfile.permissions = [
-          PermissionKeys.CountriesManagement,
+          PermissionKeys.GeneralOrganizationManagement,
           PermissionKeys.GeneralUsersManagement,
           PermissionKeys.GeneralStructuresManagement,
           PermissionKeys.GeneralCountriesManagement,
@@ -258,7 +260,6 @@ export class UserController {
           PermissionKeys.GeneralCategoriesManagement,
           PermissionKeys.StructureCreation,
           PermissionKeys.CheckTokenDocWallet,
-          PermissionKeys.OrganizationCreation,
           PermissionKeys.MyOrganizationList,
           PermissionKeys.AuthFeatures,
           PermissionKeys.ProfileEdit
@@ -269,6 +270,9 @@ export class UserController {
         userProfile.permissions = [
           PermissionKeys.CheckTokenDocWallet,
           PermissionKeys.OrganizationCreation,
+          PermissionKeys.OrganizationUpdate,
+          PermissionKeys.OrganizationDetail,
+          PermissionKeys.OrganizationDelete,
           PermissionKeys.MyOrganizationList,
           PermissionKeys.AuthFeatures,
           PermissionKeys.ProfileEdit

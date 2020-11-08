@@ -2,6 +2,7 @@ export * from './category-language.model';
 export * from './category.model';
 export * from './country-language.model';
 export * from './country-topic.model';
+export * from './country-topic-language.model';
 export * from './country.model';
 export * from './document.model';
 export * from './encrypted-chunk.model';

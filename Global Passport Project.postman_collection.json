@@ -29,7 +29,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/categories?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/categories?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -41,7 +41,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ]\n}"
 								}
 							]
 						}
@@ -111,7 +111,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/categories/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/categories/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -124,7 +124,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ]\n}"
 								}
 							],
 							"variable": [
@@ -338,7 +338,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/categories-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategoryLanguage\": true,\n    \"idCategory\": true,\n    \"alias\": true,\n    \"category\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/categories-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategoryLanguage\": true,\n    \"idCategory\": true,\n    \"alias\": true,\n    \"category\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"language\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -351,7 +351,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategoryLanguage\": true,\n    \"idCategory\": true,\n    \"alias\": true,\n    \"category\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategoryLanguage\": true,\n    \"idCategory\": true,\n    \"alias\": true,\n    \"category\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"language\"\n  ]\n}"
 								}
 							],
 							"variable": [
@@ -489,7 +489,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -501,7 +501,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ]\n}"
 								}
 							]
 						}
@@ -751,7 +751,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryLanguage\": true,\n    \"idCountry\": true,\n    \"alias\": true,\n    \"country\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryLanguage\": true,\n    \"idCountry\": true,\n    \"alias\": true,\n    \"country\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"language\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -764,7 +764,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryLanguage\": true,\n    \"idCountry\": true,\n    \"alias\": true,\n    \"country\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryLanguage\": true,\n    \"idCountry\": true,\n    \"alias\": true,\n    \"country\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"language\"\n  ]\n}"
 								}
 							],
 							"variable": [
@@ -832,10 +832,10 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "icons",
+			"name": "countriesTopics",
 			"item": [
 				{
-					"name": "icons",
+					"name": "countries-topics",
 					"protocolProfileBehavior": {
 						"disabledSystemHeaders": {
 							"content-type": true
@@ -862,20 +862,443 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"string\",\n  \"image\": \"string\",\n  \"marker\": \"string\"\n}",
+							"raw": "{\n  \"idCountry\": \"string\",\n  \"identifier\": \"string\"\n}",
 							"options": {
 								"raw": {}
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/icons",
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"icons"
+								"countries-topics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "countries-topics",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\":\n    [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryTopic\": true,\n    \"idCountry\": true,\n    \"identifier\": true\n  }\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries-topics"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\":\n    [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryTopic\": true,\n    \"idCountry\": true,\n    \"identifier\": true\n  }\n}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "countries-topics/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryTopic\": true,\n    \"idCountry\": true,\n    \"identifier\": true\n  }\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries-topics",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryTopic\": true,\n    \"idCountry\": true,\n    \"identifier\": true\n  }\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "countries-topics/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idCountry\": \"string\",\n  \"identifier\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries-topics",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "countries-topics/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries-topics",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "countries-topics/:id/countries-topics-languages",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics/:id/countries-topics-languages",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries-topics",
+								":id",
+								"countries-topics-languages"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "countriesTopicsLanguages",
+			"item": [
+				{
+					"name": "countries-topics-languages",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idCountryTopic\": \"string\",\n  \"topic\": \"string\",\n  \"description\": \"string\",\n  \"language\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics-languages",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries-topics-languages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "countries-topics-languages/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics-languages/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\":\n    [\"topic\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryTopicLanguage\": true,\n    \"idCountryTopic\": true,\n    \"topic\": true,\n    \"description\": true,\n    \"language\": true\n  }\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries-topics-languages",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\":\n    [\"topic\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryTopicLanguage\": true,\n    \"idCountryTopic\": true,\n    \"topic\": true,\n    \"description\": true,\n    \"language\": true\n  }\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "countries-topics-languages/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idCountryTopicLanguage\": \"string\",\n  \"idCountryTopic\": \"string\",\n  \"topic\": \"string\",\n  \"description\": \"string\",\n  \"language\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics-languages/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"countries-topics-languages",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "icons",
+			"item": [
+				{
+					"name": "icons",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fileImage",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "fileMarker",
+									"type": "file",
+									"src": []
+								}
+							],
+							"options": {
+								"formdata": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:name",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"icons",
+								":name"
+							],
+							"variable": [
+								{
+									"key": "name",
+									"value": ""
+								}
 							]
 						}
 					},
@@ -902,7 +1325,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/icons?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/icons?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -914,7 +1337,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}"
 								}
 							]
 						}
@@ -937,7 +1360,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -950,7 +1373,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}"
 								}
 							],
 							"variable": [
@@ -1110,6 +1533,174 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "organizations",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/organizations?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idOrganization\": true,\n    \"name\": true\n  }\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"organizations"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idOrganization\": true,\n    \"name\": true\n  }\n}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "organizations/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/organizations/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idOrganization\": true,\n    \"name\": true\n  }\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"organizations",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idOrganization\": true,\n    \"name\": true\n  }\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "organizations/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idOrganization\": \"string\",\n  \"name\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/organizations/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"organizations",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "organizations/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/organizations/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"organizations",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -1181,7 +1772,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"structurename\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -1193,7 +1784,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"structurename\"\n  ]\n}"
 								}
 							]
 						}
@@ -1216,7 +1807,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -1229,7 +1820,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}"
 								}
 							],
 							"variable": [
@@ -1406,6 +1997,43 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "structures/:id/structures-images",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures/:id/structures-images",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"structures",
+								":id",
+								"structures-images"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -1507,11 +2135,9 @@
 			"name": "structuresImages",
 			"item": [
 				{
-					"name": "structures-images",
+					"name": "structures-images/:idStructure",
 					"protocolProfileBehavior": {
-						"disabledSystemHeaders": {
-							"content-type": true
-						}
+						"disabledSystemHeaders": {}
 					},
 					"request": {
 						"auth": {
@@ -1525,64 +2151,22 @@
 							]
 						},
 						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
+						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"idStructure\": \"string\",\n  \"image\": \"string\",\n  \"sorting\": 0\n}",
-							"options": {
-								"raw": {}
-							}
-						},
-						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures-images",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"structures-images"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "structures-images/:id",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
+							"mode": "formdata",
+							"formdata": [
 								{
-									"key": "token",
-									"value": "",
-									"type": "string"
+									"key": "file",
+									"type": "file",
+									"src": []
 								}
-							]
-						},
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"idStructureImage\": \"string\",\n  \"idStructure\": \"string\",\n  \"image\": \"string\",\n  \"sorting\": 0\n}",
+							],
 							"options": {
-								"raw": {}
+								"formdata": {}
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures-images/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures-images/:idStructure",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -1590,11 +2174,11 @@
 							"port": "{{port}}",
 							"path": [
 								"structures-images",
-								":id"
+								":idStructure"
 							],
 							"variable": [
 								{
-									"key": "id",
+									"key": "idStructure",
 									"value": "",
 									"type": "string"
 								}
@@ -1762,7 +2346,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructureLanguage\": true,\n    \"idStructure\": true,\n    \"description\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/structures-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructureLanguage\": true,\n    \"idStructure\": true,\n    \"description\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"language\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -1775,7 +2359,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructureLanguage\": true,\n    \"idStructure\": true,\n    \"description\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructureLanguage\": true,\n    \"idStructure\": true,\n    \"description\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"language\"\n  ]\n}"
 								}
 							],
 							"variable": [

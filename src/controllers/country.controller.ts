@@ -1,7 +1,7 @@
 //Loopback imports
 import { authenticate } from '@loopback/authentication';
 import { Filter, repository } from '@loopback/repository';
-import { post, param, get, getFilterSchemaFor, getModelSchemaRef, patch, del, requestBody } from '@loopback/rest';
+import { post, param, get, getFilterSchemaFor, getModelSchemaRef, patch, del, requestBody, HttpErrors } from '@loopback/rest';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { Country, CountryLanguage } from '../models';
@@ -38,6 +38,14 @@ export class CountryController {
     })
     country: Omit<Country, 'idCountry'>,
   ): Promise<Country> {
+    // Check if the identifier is already assigned
+    const filter: Filter = { where: { identifier : country.identifier }};
+    const identifierExists = await this.countryRepository.findOne(filter);
+
+    if (identifierExists !== null) {
+      throw new HttpErrors.Conflict("The identifier specified is already assigned, please change it");
+    }
+
     return this.countryRepository.create(country);
   }
 
@@ -105,6 +113,14 @@ export class CountryController {
     })
     country: Country,
   ): Promise<void> {
+    // Check if the identifier is already assigned
+    const filter: Filter = { where: { id : { nlike: id }, identifier : country.identifier }};
+    const identifierExists = await this.countryRepository.findOne(filter);
+
+    if (identifierExists !== null) {
+      throw new HttpErrors.Conflict("The identifier specified is already assigned, please change it");
+    }
+
     await this.countryRepository.updateById(id, country);
   }
 

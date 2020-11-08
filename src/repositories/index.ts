@@ -2,6 +2,8 @@ export * from './category-language.repository';
 export * from './category.repository';
 export * from './country.repository';
 export * from './country-language.repository';
+export * from './country-topic.repository';
+export * from './country-topic-language.repository';
 export * from './encrypted-chunk.repository';
 export * from './icon.repository';
 export * from './organization-user.repository';
