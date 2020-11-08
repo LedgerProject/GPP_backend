@@ -1,7 +1,7 @@
 //Loopback imports
 import { authenticate } from '@loopback/authentication';
 import { Filter, repository } from '@loopback/repository';
-import { del, post, param, get, getFilterSchemaFor, getModelSchemaRef, patch, requestBody } from '@loopback/rest';
+import { del, post, param, get, getFilterSchemaFor, getModelSchemaRef, patch, requestBody, HttpErrors } from '@loopback/rest';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { Category, CategoryLanguage } from '../models';
@@ -61,6 +61,14 @@ export class CategoryController {
     })
     category: Omit<Category, 'idCategory'>,
   ): Promise<Category> {
+    // Check if the identifier is already assigned
+    const filter: Filter = { where: { identifier : category.identifier, type : category.type }};
+    const identifierExists = await this.categoryRepository.findOne(filter);
+
+    if (identifierExists !== null) {
+      throw new HttpErrors.Conflict("The identifier specified is already assigned, please change it");
+    }
+
     return this.categoryRepository.create(category);
   }
 
@@ -105,6 +113,14 @@ export class CategoryController {
     })
     category: Category,
   ): Promise<void> {
+    // Check if the identifier is already assigned
+    const filter: Filter = { where: { idCategory : { nlike: id }, identifier : category.identifier, type : category.type }};
+    const identifierExists = await this.categoryRepository.findOne(filter);
+
+    if (identifierExists !== null) {
+      throw new HttpErrors.Conflict("The identifier specified is already assigned, please change it");
+    }
+
     await this.categoryRepository.updateById(id, category);
   }
 

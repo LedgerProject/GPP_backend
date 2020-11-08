@@ -6,9 +6,15 @@ import { del, get, getFilterSchemaFor, getModelSchemaRef, HttpErrors, param, pat
 import { SecurityBindings, UserProfile } from '@loopback/security';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
-import { Structure, StructuresCategoriesView, StructureLanguage, StructuresView } from '../models';
-import { StructureRepository, StructuresCategoriesViewRepository, StructureLanguageRepository, StructuresViewRepository } from '../repositories';
+import { Structure, StructuresCategoriesView, StructureLanguage, StructuresView, StructureImage } from '../models';
+import { StructureRepository, StructuresCategoriesViewRepository, StructureLanguageRepository, StructuresViewRepository, StructureImageRepository } from '../repositories';
 import { checkStructureOwner } from '../services/structure.service';
+
+const fs = require('fs');
+const path = require('path');
+
+// Set the path to the structures folder
+const galleriesStructuresPath = path.join(__dirname, '..', '..', 'galleries', 'structures');
 
 export class StructureController {
   constructor(
@@ -20,6 +26,8 @@ export class StructureController {
     public structuresViewRepository: StructuresViewRepository,
     @repository(StructuresCategoriesViewRepository)
     public structuresCategoriesViewRepository: StructuresCategoriesViewRepository,
+    @repository(StructureImageRepository)
+    public structureImageRepository: StructureImageRepository,
     @inject(SecurityBindings.USER)
     public user: UserProfile
   ) { }
@@ -29,21 +37,17 @@ export class StructureController {
     responses: {
       '200': {
         description: 'Structure model instance',
-        content: { 'application/json': { schema: getModelSchemaRef(Structure) } },
-      },
-    },
+        content: { 'application/json': { schema: getModelSchemaRef(Structure) } }
+      }
+    }
   })
   @authenticate('jwt', { required: [PermissionKeys.StructureCreation, PermissionKeys.GeneralStructuresManagement] })
   async create(
     @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Structure, {
-            title: 'NewStructure',
-            exclude: ['idStructure'],
-          }),
-        },
-      },
+      content: { 'application/json': { schema: getModelSchemaRef(Structure, {
+        title: 'NewStructure',
+        exclude: ['idStructure'],
+      })}}
     })
     structure: Omit<Structure, 'idStructure'>,
   ): Promise<Structure> {
@@ -56,6 +60,14 @@ export class StructureController {
       }
     }
 
+    // Check if the alias is already assigned
+    const filter: Filter = { where: { alias : structure.alias }};
+    const aliasExists = await this.structureRepository.findOne(filter);
+
+    if (aliasExists !== null) {
+      throw new HttpErrors.Conflict("The alias specified is already assigned, please change it");
+    }
+
     return this.structureRepository.create(structure);
   }
 
@@ -64,24 +76,30 @@ export class StructureController {
     responses: {
       '204': {
         description: 'Structure PATCH success',
-      },
-    },
+      }
+    }
   })
   @authenticate('jwt', { required: [PermissionKeys.StructureUpdate, PermissionKeys.GeneralStructuresManagement] })
   async updateById(
     @param.path.string('id') id: string,
     @requestBody({
       content: {
-        'application/json': {
-          schema: getModelSchemaRef(Structure, { partial: true }),
-        },
-      },
+        'application/json': { schema: getModelSchemaRef(Structure, { partial: true })}
+      }
     })
     structure: Structure,
   ): Promise<void> {
     // If operator, check if it is an owned structure
     if (this.user.userType !== 'gppOperator') {
       await checkStructureOwner(id, this.user.idOrganization, this.structureRepository);
+    }
+
+    // Check if the alias is already assigned
+    const filter: Filter = { where: { idStucture : { nlike: id },  alias : structure.alias }};
+    const aliasExists = await this.structureRepository.findOne(filter);
+
+    if (aliasExists !== null) {
+      throw new HttpErrors.Conflict("The alias specified is already assigned, please change it");
     }
 
     await this.structureRepository.updateById(id, structure);
@@ -93,15 +111,10 @@ export class StructureController {
       '200': {
         description: 'Array of Structure model instances',
         content: {
-          'application/json': {
-            schema: {
-              type: 'array',
-              items: getModelSchemaRef(StructuresView, { includeRelations: true }),
-            },
-          },
-        },
-      },
-    },
+          'application/json': { schema: { type: 'array', items: getModelSchemaRef(StructuresView, { includeRelations: true })}}
+        }
+      }
+    }
   })
   @authenticate('jwt', { required: [PermissionKeys.StructureList, PermissionKeys.GeneralStructuresManagement] })
   async find(
@@ -120,6 +133,7 @@ export class StructureController {
 
       filter.where = where;
     }
+
     return this.structuresViewRepository.find(filter);
   }
 
@@ -129,12 +143,10 @@ export class StructureController {
       '200': {
         description: 'Structure model instance',
         content: {
-          'application/json': {
-            schema: getModelSchemaRef(Structure, { includeRelations: true }),
-          },
-        },
-      },
-    },
+          'application/json': { schema: getModelSchemaRef(Structure, { includeRelations: true })}
+        }
+      }
+    }
   })
   @authenticate('jwt', { required: [PermissionKeys.StructureDetail, PermissionKeys.GeneralStructuresManagement] })
   async findById(
@@ -164,6 +176,26 @@ export class StructureController {
       await checkStructureOwner(id, this.user.idOrganization, this.structureRepository);
     }
 
+    // Delete all the associated images
+    const filter: Filter = { where: { "idStructure": id } };
+    const structureImages = await this.structureImageRepository.find(filter);
+
+    for (const structureImage of structureImages) {
+       // Set the destination path
+       const destPath = galleriesStructuresPath + '/' + structureImage.folder;
+
+       // Check, if the file exists, it will be deleted
+       if (fs.existsSync(destPath + "/" + structureImage.filename)) {
+         fs.unlinkSync(destPath + "/" + structureImage.filename); // Remove the file
+       }
+ 
+       // Check, if there aren't files in the folder, it will be deleted
+       const filesInDir = fs.readdirSync(destPath); 
+       if (filesInDir.length === 0) {
+         fs.rmdirSync(destPath); // Remove the folder
+       }
+    }
+
     await this.structureRepository.deleteById(id);
   }
 
@@ -173,15 +205,10 @@ export class StructureController {
       '200': {
         description: 'Array of StructureLanguage model instances',
         content: {
-          'application/json': {
-            schema: {
-              type: 'array',
-              items: getModelSchemaRef(StructureLanguage, {includeRelations: true}),
-            },
-          },
-        },
-      },
-    },
+          'application/json': { schema: { type: 'array', items: getModelSchemaRef(StructureLanguage, {includeRelations: true})}}
+        }
+      }
+    }
   })
   @authenticate('jwt', { required: [PermissionKeys.StructureDetail, PermissionKeys.GeneralStructuresManagement] })
   async findLanguages(
@@ -192,7 +219,7 @@ export class StructureController {
       await checkStructureOwner(id, this.user.idOrganization, this.structureRepository);
     }
 
-    const filter: Filter = { where: { "idStructure": id } };
+    const filter: Filter = { where: { "idStructure": id }, order: ["language"] };
     return this.structureLanguageRepository.find(filter);
   }
 
@@ -202,15 +229,10 @@ export class StructureController {
       '200': {
         description: 'Array of StructureCategory model instances',
         content: {
-          'application/json': {
-            schema: {
-              type: 'array',
-              items: getModelSchemaRef(StructuresCategoriesView, {includeRelations: true}),
-            },
-          },
-        },
-      },
-    },
+          'application/json': { schema: { type: 'array', items: getModelSchemaRef(StructuresCategoriesView, {includeRelations: true})}}
+        }
+      }
+    }
   })
   @authenticate('jwt', { required: [PermissionKeys.StructureDetail, PermissionKeys.GeneralStructuresManagement] })
   async findCategories(
@@ -223,5 +245,29 @@ export class StructureController {
 
     const filter: Filter = { where: { "idStructure": id } };
     return this.structuresCategoriesViewRepository.find(filter);
+  }
+
+  //*** IMAGES LIST ***/
+  @get('/structures/{id}/structures-images', {
+    responses: {
+      '200': {
+        description: 'Array of StructureImage model instances',
+        content: {
+          'application/json': { schema: { type: 'array', items: getModelSchemaRef(StructureImage, {includeRelations: true})}}
+        }
+      }
+    }
+  })
+  @authenticate('jwt', { required: [PermissionKeys.StructureDetail, PermissionKeys.GeneralStructuresManagement] })
+  async findImages(
+    @param.path.string('id') id: string,
+  ): Promise<StructureImage[]> {
+    // If operator, check if it is an owned structure
+    if (this.user.userType !== 'gppOperator') {
+      await checkStructureOwner(id, this.user.idOrganization, this.structureRepository);
+    }
+
+    const filter: Filter = { where: { "idStructure": id } };
+    return this.structureImageRepository.find(filter);
   }
 }

@@ -2,7 +2,7 @@
 import { authenticate } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { Filter, repository } from '@loopback/repository';
-import { post, param, Request, getModelSchemaRef, patch, del, requestBody, Response, RestBindings, HttpErrors } from '@loopback/rest';
+import { post, param, Request, del, requestBody, Response, RestBindings, HttpErrors } from '@loopback/rest';
 import { SecurityBindings, UserProfile } from '@loopback/security';
 // Other imports
 import { v4 as uuid } from 'uuid'
@@ -11,8 +11,9 @@ import { PermissionKeys } from '../authorization/permission-keys';
 import { StructureImage } from '../models';
 import { StructureImageRepository, StructureRepository } from '../repositories';
 import { checkStructureOwner } from '../services/structure.service';
+import { getFilesAndFields } from '../services/file-upload.service';
 import { FILE_UPLOAD_SERVICE } from '../keys';
-import { FileUploadHandler, TempFile, CompressImageStatistic } from '../types';
+import { FileUploadHandler, CompressImageStatistic } from '../types';
 
 const compressImages = require("compress-images");
 const fs = require('fs');
@@ -40,13 +41,7 @@ export class StructureImageController {
   @post('/structures-images/{idStructure}', {
     responses: {
       200: {
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-            },
-          },
-        },
+        content: { 'application/json': { schema: { type: 'object' } } },
         description: 'StructureImage file',
       },
     },
@@ -57,7 +52,6 @@ export class StructureImageController {
     @requestBody.file()
     request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
-  //): Promise<object> {
   ): Promise<StructureImage> {
     // If operator, check if it is an owned structure
     if (this.user.userType !== 'gppOperator') {
@@ -71,9 +65,9 @@ export class StructureImageController {
     let folder = "";
 
     // Apply the sort number
-    if (imageDetail) {
-      sortingNumber = imageDetail?.sorting + 1;
-      folder = imageDetail?.folder;
+    if (imageDetail !== null) {
+      sortingNumber = imageDetail.sorting + 1;
+      folder = imageDetail.folder;
     } else {
       sortingNumber = 1;
     }
@@ -86,7 +80,7 @@ export class StructureImageController {
           resolve(err);
         } else {
           // Get all the file informations
-          const filesAndFields = StructureImageController.getFilesAndFields(request);
+          const filesAndFields = getFilesAndFields(request);
           
           if (filesAndFields.files.length > 0) {
             // Get the first file informations
@@ -174,34 +168,6 @@ export class StructureImageController {
     
     return promiseFiles;
   }
-    
-  //*** UPDATE ***/
-  @patch('/structures-images/{id}', {
-    responses: {
-      '204': {
-        description: 'StructureImage PATCH success',
-      },
-    },
-  })
-  @authenticate('jwt', { required: [PermissionKeys.StructureCreation, PermissionKeys.GeneralStructuresManagement] })
-  async updateById(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(StructureImage, {partial: true}),
-        },
-      },
-    })
-    structureImage: StructureImage,
-  ): Promise<void> {
-    // If operator, check if it is an owned structure
-    if (this.user.userType !== 'gppOperator') {
-      await checkStructureOwner(structureImage.idStructure, this.user.idOrganization, this.structureRepository);
-    }
-
-    await this.structureImageRepository.updateById(id, structureImage);
-  }
 
   //*** DELETE ***/
   @del('/structures-images/{id}', {
@@ -216,43 +182,38 @@ export class StructureImageController {
     const filterImg: Filter = { where: { "idStructureImage": id } };
     const imageDetail = await this.structureImageRepository.findOne(filterImg);
 
-    // If operator, check if it is an owned structure
-    if (this.user.userType !== 'gppOperator') {
-      await checkStructureOwner(imageDetail!.idStructure, this.user.idOrganization, this.structureRepository);
-    }
+    if (imageDetail !== null) {
+      // If operator, check if it is an owned structure
+      if (this.user.userType !== 'gppOperator') {
+        await checkStructureOwner(imageDetail!.idStructure, this.user.idOrganization, this.structureRepository);
+      }
 
-    await this.structureImageRepository.deleteById(id);
+      // Set the destination path
+      const destPath = galleriesStructuresPath + '/' + imageDetail.folder;
 
-    // Recalculate the structure sorting
-    const filterSorting: Filter = { where: { "idStructure": imageDetail!.idStructure }, order: ["sorting ASC"] };
-    const images: StructureImage[] = await this.structureImageRepository.find(filterSorting);
+      // Check, if the file exists, it will be deleted
+      if (fs.existsSync(destPath + "/" + imageDetail.filename)) {
+        fs.unlinkSync(destPath + "/" + imageDetail.filename); // Remove the file
+      }
 
-    let newSort = 0;
-    for (const image of images) {
-      newSort++;
-      image.sorting = newSort;
-      await this.structureImageRepository.updateById(image.idStructureImage, image);
-    }
-  }
+      // Check, if there aren't files in the folder, it will be deleted
+      const filesInDir = fs.readdirSync(destPath); 
+      if (filesInDir.length === 0) {
+        fs.rmdirSync(destPath); // Remove the folder
+      }
+      
+      await this.structureImageRepository.deleteById(id);
 
-  private static getFilesAndFields(request: Request) {
-    const uploadedFiles = request.files;
-    const mapper = (f: globalThis.Express.Multer.File) => ({
-      fieldname: f.fieldname,
-      originalname: f.originalname,
-      tempfilename: f.filename,
-      encoding: f.encoding,
-      mimetype: f.mimetype,
-      size: f.size,
-    });
-    let files: TempFile[] = [];
-    if (Array.isArray(uploadedFiles)) {
-      files = uploadedFiles.map(mapper);
-    } else {
-      for (const filename in uploadedFiles) {
-        files.push(...uploadedFiles[filename].map(mapper));
+      // Recalculate the structure images sorting
+      const filterSorting: Filter = { where: { "idStructure": imageDetail!.idStructure }, order: ["sorting ASC"] };
+      const images: StructureImage[] = await this.structureImageRepository.find(filterSorting);
+
+      let newSort = 0;
+      for (const image of images) {
+        newSort++;
+        image.sorting = newSort;
+        await this.structureImageRepository.updateById(image.idStructureImage, image);
       }
     }
-    return {files, fields: request.body};
   }
 }

@@ -4,8 +4,8 @@ import { Filter, repository } from '@loopback/repository';
 import { post, param, get, getFilterSchemaFor, getModelSchemaRef, patch, requestBody, HttpErrors } from '@loopback/rest';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
-import {CountryLanguage} from '../models';
-import {CountryLanguageRepository} from '../repositories';
+import { CountryLanguage } from '../models';
+import { CountryLanguageRepository } from '../repositories';
 
 export class CountryLanguageController {
   constructor(
