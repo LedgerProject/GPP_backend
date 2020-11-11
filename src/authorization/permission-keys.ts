@@ -27,7 +27,7 @@ export const enum PermissionKeys {
     MyOrganizationList = 'MyOrganizationList', //Managed: permette di visualizzare le proprie organizzazioni
 
     // User permissions
-    DocWalletManagement = 'DocWalletManagement',
+    DocWalletManagement = 'DocWalletManagement', //Managed: permette di gestire il proprio DocWallet
     StructuresList = 'StructuresList',
 
     // GPP operator + operator + user permissions

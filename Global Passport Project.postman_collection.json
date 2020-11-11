@@ -1095,6 +1095,246 @@
 			"protocolProfileBehavior": {}
 		},
 		{
+			"name": "icons",
+			"item": [
+				{
+					"name": "icons",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/icons?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"icons"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "icons/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"icons",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "icons/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idIcon\": \"string\",\n  \"name\": \"string\",\n  \"image\": \"string\",\n  \"marker\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"icons",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "icons/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"icons",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "icons",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fileImage",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "fileMarker",
+									"type": "file",
+									"src": []
+								}
+							],
+							"options": {
+								"formdata": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:name",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"icons",
+								":name"
+							],
+							"variable": [
+								{
+									"key": "name",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
 			"name": "nationalities",
 			"item": [
 				{
@@ -1448,246 +1688,6 @@
 									"key": "id",
 									"value": "",
 									"type": "string"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "icons",
-			"item": [
-				{
-					"name": "icons",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/icons?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"icons"
-							],
-							"query": [
-								{
-									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "icons/:id",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"icons",
-								":id"
-							],
-							"query": [
-								{
-									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}"
-								}
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "",
-									"type": "string"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "icons/:id",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"idIcon\": \"string\",\n  \"name\": \"string\",\n  \"image\": \"string\",\n  \"marker\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
-						},
-						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:id",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"icons",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "",
-									"type": "string"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "icons/:id",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {}
-							}
-						},
-						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:id",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"icons",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "",
-									"type": "string"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "icons",
-					"protocolProfileBehavior": {
-						"disabledSystemHeaders": {}
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "fileImage",
-									"type": "file",
-									"src": []
-								},
-								{
-									"key": "fileMarker",
-									"type": "file",
-									"src": []
-								}
-							],
-							"options": {
-								"formdata": {}
-							}
-						},
-						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:name",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"icons",
-								":name"
-							],
-							"variable": [
-								{
-									"key": "name",
-									"value": ""
 								}
 							]
 						}
@@ -2753,6 +2753,28 @@
 				}
 			},
 			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "21b30bab-f416-41ef-9859-90f637f8193a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "82efeccc-7c4b-43b2-bc0b-8a603ccdcf7e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	],
 	"protocolProfileBehavior": {}

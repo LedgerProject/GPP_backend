@@ -28,12 +28,34 @@ export class Document extends Entity {
   title: string;
 
   @property({
-    type: 'number',
+    type: 'string',
     required: true,
-    scale: 0,
-    postgresql: { columnName: 'bytes', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'NO' },
+    length: 100,
+    postgresql: { columnName: 'folder', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
-  bytes: number;
+  folder: string;
+
+  @property({
+    type: 'string',
+    required: true,
+    length: 100,
+    postgresql: { columnName: 'filename', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'NO' },
+  })
+  filename: string;
+
+  @property({
+    type: 'string',
+    length: 20,
+    postgresql: { columnName: 'mimeType', dataType: 'character varying', dataLength: 20, dataPrecision: null, dataScale: null, nullable: 'YES' },
+  })
+  mimeType: string;
+
+  @property({
+    type: 'number',
+    scale: 0,
+    postgresql: { columnName: 'size', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'NO' },
+  })
+  size: number;
 
   @property({
     type: 'number',
@@ -48,30 +70,6 @@ export class Document extends Entity {
     postgresql: { columnName: 'heightPixel', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'YES' },
   })
   heightPixel?: number;
-
-  @property({
-    type: 'string',
-    required: true,
-    length: 50,
-    postgresql: { columnName: 'fileFolder', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
-  })
-  fileFolder: string;
-
-  @property({
-    type: 'string',
-    required: true,
-    length: 50,
-    postgresql: { columnName: 'imageFolder', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
-  })
-  imageFolder: string;
-
-  @property({
-    type: 'string',
-    required: true,
-    length: 5,
-    postgresql: { columnName: 'extension', dataType: 'character varying', dataLength: 5, dataPrecision: null, dataScale: null, nullable: 'NO' },
-  })
-  extension: string;
 
   // Define well-known properties here
 
