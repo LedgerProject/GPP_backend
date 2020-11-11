@@ -102,12 +102,11 @@ export class UserController {
 
     // User creation
     const newUser = await this.userRepository.create(userData);
-    delete newUser.idUser;
-    delete newUser.userType;
-    delete newUser.emailConfirmed;
-    delete newUser.password;
 
-    return newUser;
+    // Select the new user and omit some data
+    const userCreated = await this.userRepository.findById(newUser.idUser, { fields: {idUser: true, userType: true, firstName: true, lastName: true, email: true} });
+
+    return userCreated;
   }
 
   //*** USER LOGIN ***/
@@ -339,7 +338,6 @@ export class UserController {
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile
   ): Promise<UserProfile> {
-    delete currentUser[securityId];
     return Promise.resolve(currentUser);
   }
 

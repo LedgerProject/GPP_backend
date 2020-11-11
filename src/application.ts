@@ -1,7 +1,6 @@
 // Loopback imports
 import { AuthenticationComponent, registerAuthenticationStrategy } from "@loopback/authentication";
 import { BootMixin } from '@loopback/boot';
-import { Context } from "@loopback/context";
 import { ApplicationConfig } from '@loopback/core';
 import { RepositoryMixin } from '@loopback/repository';
 import { RestApplication } from '@loopback/rest';

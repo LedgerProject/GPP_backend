@@ -4,6 +4,8 @@ export * from './country.repository';
 export * from './country-language.repository';
 export * from './country-topic.repository';
 export * from './country-topic-language.repository';
+export * from './document.repository';
+export * from './document-encrypted-chunk.repository';
 export * from './encrypted-chunk.repository';
 export * from './icon.repository';
 export * from './nationality.repository';
