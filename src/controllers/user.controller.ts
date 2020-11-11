@@ -28,9 +28,8 @@ import {
 } from '@loopback/rest';
 import { MEMORY_UPLOAD_SERVICE } from '../keys';
 import { MemoryUploadHandler } from '../types';
-var stream = require('stream');
 
-const MAX_CHAR_SIZE = 70000;
+const MAX_CHAR_SIZE = 700000;
 
 export class UserController {
   constructor(
@@ -357,14 +356,14 @@ export class UserController {
     currentUser: UserProfile
   ): Promise<any> {
 
-    const fileName = 'files/2mbfile.txt';
-    var contents = fs.readFileSync(fileName, 'utf8');
+    const fileName = 'files/2mb.jpg';
+    var contents = fs.readFileSync(fileName, 'base64');
 
-    const encodedString = Base64.encode(contents);
-    const stringChunks: any = chunkString(encodedString, MAX_CHAR_SIZE);
+    const stringChunks: any = chunkString(contents, MAX_CHAR_SIZE);
 
     let indexId :number = 0;
     let fileUUID = uuid();
+    let stringoneDiviso = '';
 
     stringChunks.forEach((element: any) => {
       const objectToSave = encrypt(element, currentUser.idUser);
@@ -383,6 +382,7 @@ export class UserController {
       encryptedChunkToSave.chunkIndexId = objectToSave.indexId;
 
       this.encryptedChunkRepository.create(encryptedChunkToSave);
+      stringoneDiviso = stringoneDiviso + element;
     });
 
     return {"uploadReferenceId":fileUUID};
@@ -403,23 +403,23 @@ export class UserController {
       },
       order: ['chunkIndexId ASC']
     };
-
+ 
     let encryptedChunks : EncryptedChunk[] = await this.encryptedChunkRepository.find(filter);
     let textDecrypted : string = "";
     let fileName : string = "";
+    let contentType : string = "";
 
     encryptedChunks.forEach((chunk: any) => {
-      console.log(chunk);
-      const result = decrypt(chunk, currentUser.idUser)
+      const result = decrypt(chunk, currentUser.idUser);
       textDecrypted = textDecrypted + result.textDecrypted;
       fileName = chunk.name;
-      console.log(textDecrypted);
-    });
-
-    var fileContents = Buffer.from(textDecrypted, 'hex');  
+      contentType = chunk.contentType;
+    }); 
+ 
+    var fileContents = Buffer.from(textDecrypted, 'base64');  
     response.set('content-disposition', 'attachment; filename=' + fileName);
     response.writeHead(200, {
-      'Content-Type': 'image/png',
+      'Content-Type': contentType,
       'Content-Length': fileContents.length
     });
     response.end(fileContents);
@@ -479,12 +479,12 @@ export class UserController {
 
     let contents = '';
     let fileName = '';
+    let contentType = '';
     files.forEach((file: any) => {
-      contents = contents + file.buffer;
+      contents = contents + file.buffer.toString('base64');
       fileName = file.originalname;
+      contentType = file.mimetype;
     });
-
-    //const encodedString = Base64.encode(contents);    
     const stringChunks: any = chunkString(contents, MAX_CHAR_SIZE);    
 
     let indexId :number = 0;
@@ -505,14 +505,13 @@ export class UserController {
       encryptedChunkToSave.name = fileName;
       encryptedChunkToSave.uploadReferenceId = fileUUID;
       encryptedChunkToSave.chunkIndexId = objectToSave.indexId;
+      encryptedChunkToSave.contentType = contentType;
 
       repo.create(encryptedChunkToSave);
     });
 
     return {"uploadReferenceId":fileUUID};
 
-
-    //return {files};
   }
 
 }
