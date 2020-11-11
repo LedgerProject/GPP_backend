@@ -364,56 +364,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "categories-languages/:id",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"idCategoryLanguage\": \"string\",\n  \"idCategory\": \"string\",\n  \"alias\": \"string\",\n  \"category\": \"string\",\n  \"language\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
-						},
-						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/categories-languages/:id",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"categories-languages",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "",
-									"type": "string"
-								}
-							]
-						}
-					},
-					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -766,56 +716,6 @@
 									"key": "filter",
 									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryLanguage\": true,\n    \"idCountry\": true,\n    \"alias\": true,\n    \"country\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"language\"\n  ]\n}"
 								}
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "",
-									"type": "string"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "countries-languages/:id",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"idCountryLanguage\": \"string\",\n  \"idCountry\": \"string\",\n  \"alias\": \"string\",\n  \"country\": \"string\",\n  \"language\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
-						},
-						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries-languages/:id",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"countries-languages",
-								":id"
 							],
 							"variable": [
 								{
@@ -1190,9 +1090,145 @@
 						}
 					},
 					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "nationalities",
+			"item": [
+				{
+					"name": "nationalities",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"identifier\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"nationalities"
+							]
+						}
+					},
+					"response": []
 				},
 				{
-					"name": "countries-topics-languages/:id",
+					"name": "nationalities",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idNationality\": true,\n    \"identifier\": true\n  }\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"nationalities"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idNationality\": true,\n    \"identifier\": true\n  }\n}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "nationalities/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idNationality\": true,\n    \"identifier\": true\n  }\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"nationalities",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idNationality\": true,\n    \"identifier\": true\n  }\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "nationalities/:id",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1214,21 +1250,198 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idCountryTopicLanguage\": \"string\",\n  \"idCountryTopic\": \"string\",\n  \"topic\": \"string\",\n  \"description\": \"string\",\n  \"language\": \"string\"\n}",
+							"raw": "{\n  \"idNationality\": \"string\",\n  \"identifier\": \"string\"\n}",
 							"options": {
 								"raw": {}
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics-languages/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries-topics-languages",
+								"nationalities",
 								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "nationalities/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"nationalities",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "nationalities/:id/nationalities-languages",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities/:id/nationalities-languages",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"nationalities",
+								":id",
+								"nationalities-languages"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "nationalitiesLanguages",
+			"item": [
+				{
+					"name": "nationalities-languages",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idNationality\": \"string\",\n  \"alias\": \"string\",\n  \"nationality\": \"string\",\n  \"language\": \"string\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities-languages",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"nationalities-languages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "nationalities-languages/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities-languages/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"language\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idNationalityLanguage\": true,\n    \"idNationality\": true,\n    \"alias\": true,\n    \"nationality\": true,\n    \"language\": true\n  }\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"nationalities-languages",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"language\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idNationalityLanguage\": true,\n    \"idNationality\": true,\n    \"alias\": true,\n    \"nationality\": true,\n    \"language\": true\n  }\n}"
+								}
 							],
 							"variable": [
 								{
@@ -1247,63 +1460,6 @@
 		{
 			"name": "icons",
 			"item": [
-				{
-					"name": "icons",
-					"protocolProfileBehavior": {
-						"disabledSystemHeaders": {}
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "fileImage",
-									"type": "file",
-									"src": []
-								},
-								{
-									"key": "fileMarker",
-									"type": "file",
-									"src": []
-								}
-							],
-							"options": {
-								"formdata": {}
-							}
-						},
-						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:name",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"icons",
-								":name"
-							],
-							"variable": [
-								{
-									"key": "name",
-									"value": ""
-								}
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "icons",
 					"request": {
@@ -1475,6 +1631,63 @@
 									"key": "id",
 									"value": "",
 									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "icons",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fileImage",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "fileMarker",
+									"type": "file",
+									"src": []
+								}
+							],
+							"options": {
+								"formdata": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:name",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"icons",
+								":name"
+							],
+							"variable": [
+								{
+									"key": "name",
+									"value": ""
 								}
 							]
 						}
@@ -2275,56 +2488,6 @@
 							"port": "{{port}}",
 							"path": [
 								"structures-languages"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "structures-languages/:id",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"idStructureLanguage\": \"string\",\n  \"idStructure\": \"string\",\n  \"description\": \"string\",\n  \"language\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
-						},
-						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures-languages/:id",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"structures-languages",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "",
-									"type": "string"
-								}
 							]
 						}
 					},

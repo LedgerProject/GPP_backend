@@ -6,6 +6,7 @@ export const enum PermissionKeys {
     GeneralCountriesManagement = 'GeneralCountriesManagement', //Managed: permette di gestire le informazioni delle nazioni
     GeneralIconsManagement = 'GeneralIconsManagement', //Managed: permette di gestire le icone
     GeneralCategoriesManagement = 'GeneralCategoriesManagement', //Managed: permette di gestire le categorie
+    GeneralNationalitiesManagement = 'GeneralNationalitiesManagement', //Managed: permette di gestire le nazionalità
 
     // Operator permissions
     OrganizationAdministrator = 'OrganizationAdministrator', 
