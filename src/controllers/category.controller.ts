@@ -114,7 +114,7 @@ export class CategoryController {
     category: Category,
   ): Promise<void> {
     // Check if the identifier is already assigned
-    const filter: Filter = { where: { idCategory : { nlike: id }, identifier : category.identifier, type : category.type }};
+    const filter: Filter = { where: { idCategory : { neq: id }, identifier : category.identifier, type : category.type }};
     const identifierExists = await this.categoryRepository.findOne(filter);
 
     if (identifierExists !== null) {

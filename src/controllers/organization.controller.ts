@@ -124,7 +124,7 @@ export class OrganizationController {
     }
 
     // Check if the name is already assigned
-    const filter: Filter = { where: { idOrganization : { nlike : id}, name : organization.name }};
+    const filter: Filter = { where: { idOrganization : { neq : id}, name : organization.name }};
     const nameExists = await this.organizationRepository.findOne(filter);
 
     if (nameExists !== null) {
