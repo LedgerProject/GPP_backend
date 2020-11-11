@@ -198,7 +198,7 @@ export class IconController {
     icon: Icon,
   ): Promise<void> {
     // Check if the alias is already assigned
-    const filter: Filter = { where: { idIcon : { nlike: id },  name : icon.name }};
+    const filter: Filter = { where: { idIcon : { neq: id },  name : icon.name }};
     const nameExists = await this.iconRepository.findOne(filter);
 
     if (nameExists !== null) {

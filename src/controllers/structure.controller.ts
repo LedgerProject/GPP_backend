@@ -95,7 +95,7 @@ export class StructureController {
     }
 
     // Check if the alias is already assigned
-    const filter: Filter = { where: { idStucture : { nlike: id },  alias : structure.alias }};
+    const filter: Filter = { where: { idStructure : { neq: id },  alias : structure.alias }};
     const aliasExists = await this.structureRepository.findOne(filter);
 
     if (aliasExists !== null) {
