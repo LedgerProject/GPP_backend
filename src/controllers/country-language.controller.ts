@@ -1,7 +1,7 @@
 //Loopback imports
 import { authenticate } from '@loopback/authentication';
 import { Filter, repository } from '@loopback/repository';
-import { post, param, get, getFilterSchemaFor, getModelSchemaRef, patch, requestBody, HttpErrors } from '@loopback/rest';
+import { post, param, get, getFilterSchemaFor, getModelSchemaRef, requestBody } from '@loopback/rest';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { CountryLanguage } from '../models';
@@ -13,7 +13,7 @@ export class CountryLanguageController {
     public countryLanguageRepository : CountryLanguageRepository,
   ) {}
 
-  //*** INSERT ***/
+  //*** INSERT/UPDATE ***/
   @post('/countries-languages', {
     responses: {
       '200': {
@@ -37,41 +37,18 @@ export class CountryLanguageController {
     countryLanguage: Omit<CountryLanguage, 'idCountryLanguage'>,
   ): Promise<CountryLanguage> {
     // Check if the language exists
-    const languageExists = await this.checkLanguageExists(countryLanguage.idCountry, countryLanguage.language);
-    if (languageExists) {
-      throw new HttpErrors.Conflict('The language exists, please patch');
+    const filterLang: Filter = { where: { "idCountry": countryLanguage.idCountry, "language": countryLanguage.language } };
+    const languageExists = await this.countryLanguageRepository.findOne(filterLang);
+
+    if (languageExists !== null) {
+      // The language exists, update it
+      await this.countryLanguageRepository.updateById(languageExists.idCountryLanguage, countryLanguage);
+      const updatedLang = await this.countryLanguageRepository.findById(languageExists.idCountryLanguage);
+      return updatedLang;
+    } else {
+      // The language not exists, insert it
+      return this.countryLanguageRepository.create(countryLanguage);
     }
-
-    return this.countryLanguageRepository.create(countryLanguage);
-  }
-
-  //*** UPDATE ***/
-  @patch('/countries-languages/{id}', {
-    responses: {
-      '204': {
-        description: 'CountryLanguage PATCH success',
-      },
-    },
-  })
-  @authenticate('jwt', { "required": [PermissionKeys.GeneralCountriesManagement] })
-  async updateById(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(CountryLanguage, {partial: true}),
-        },
-      },
-    })
-    countryLanguage: CountryLanguage,
-  ): Promise<void> {
-    // Check if the language exists
-    const languageExists = await this.checkLanguageExists(countryLanguage.idCountry, countryLanguage.language);
-    if (languageExists === false) {
-      throw new HttpErrors.Conflict('The language not exists, please post');
-    }
-
-    await this.countryLanguageRepository.updateById(id, countryLanguage);
   }
 
   //*** DETAILS ***/
@@ -93,16 +70,5 @@ export class CountryLanguageController {
     @param.query.object('filter', getFilterSchemaFor(CountryLanguage)) filter?: Filter<CountryLanguage>
   ): Promise<CountryLanguage> {
     return this.countryLanguageRepository.findById(id, filter);
-  }
-
-  async checkLanguageExists(idCountry: string, language: string): Promise<boolean> {
-    const filterLang: Filter = { where: { "idCountry": idCountry, "language": language } };
-    const languageExists = await this.countryLanguageRepository.findOne(filterLang);
-
-    if (languageExists) {
-      return true;
-    } else {
-      return false;
-    }
   }
 }

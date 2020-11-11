@@ -2,7 +2,7 @@
 import { authenticate } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { Filter, repository } from '@loopback/repository';
-import { post, param, get, getFilterSchemaFor, getModelSchemaRef, patch, requestBody, HttpErrors } from '@loopback/rest';
+import { post, param, get, getFilterSchemaFor, getModelSchemaRef, requestBody } from '@loopback/rest';
 import { SecurityBindings, UserProfile } from '@loopback/security';
 // GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
@@ -20,7 +20,7 @@ export class StructureLanguageController {
     public user: UserProfile
   ) {}
 
-  //*** INSERT ***/
+  //*** INSERT/UPDATE ***/
   @post('/structures-languages', {
     responses: {
       '200': {
@@ -49,46 +49,18 @@ export class StructureLanguageController {
     }
 
     // Check if the language exists
-    const languageExists = await this.checkLanguageExists(structureLanguage.idStructure, structureLanguage.language);
-    if (languageExists) {
-      throw new HttpErrors.Conflict('The language exists, please patch');
+    const filterLang: Filter = { where: { "idStructure": structureLanguage.idStructure, "language": structureLanguage.language } };
+    const languageExists = await this.structureLanguageRepository.findOne(filterLang);
+
+    if (languageExists !== null) {
+      // The language exists, update it
+      await this.structureLanguageRepository.updateById(languageExists.idStructureLanguage, structureLanguage);
+      const updatedLang = await this.structureLanguageRepository.findById(languageExists.idStructureLanguage);
+      return updatedLang;
+    } else {
+      // The language not exists, insert it
+      return this.structureLanguageRepository.create(structureLanguage);
     }
-
-    return this.structureLanguageRepository.create(structureLanguage);
-  }
-
-  //*** UPDATE ***/
-  @patch('/structures-languages/{id}', {
-    responses: {
-      '204': {
-        description: 'StructureLanguage PATCH success',
-      },
-    },
-  })
-  @authenticate('jwt', { required: [PermissionKeys.StructureUpdate, PermissionKeys.GeneralStructuresManagement] })
-  async updateById(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(StructureLanguage, {partial: true}),
-        },
-      },
-    })
-    structureLanguage: StructureLanguage,
-  ): Promise<void> {
-    // If operator, check if it is an owned structure
-    if (this.user.userType !== 'gppOperator') {
-      await checkStructureOwner(structureLanguage.idStructure, this.user.idOrganization, this.structureRepository);
-    }
-
-    // Check if the language exists
-    const languageExists = await this.checkLanguageExists(structureLanguage.idStructure, structureLanguage.language);
-    if (languageExists === false) {
-      throw new HttpErrors.Conflict('The language not exists, please post');
-    }
-
-    await this.structureLanguageRepository.updateById(id, structureLanguage);
   }
 
   //*** DETAILS ***/
@@ -118,16 +90,5 @@ export class StructureLanguageController {
     }
 
     return this.structureLanguageRepository.findById(id, filter);
-  }
-
-  async checkLanguageExists(idStructure: string, language: string): Promise<boolean> {
-    const filterLang: Filter = { where: { "idStructure": idStructure, "language": language } };
-    const languageExists = await this.structureLanguageRepository.findOne(filterLang);
-
-    if (languageExists) {
-      return true;
-    } else {
-      return false;
-    }
   }
 }

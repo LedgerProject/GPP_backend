@@ -60,7 +60,6 @@ export class GPPBackend extends BootMixin(
       },
     };
   }
-
   
   setupBinding(): void {
     this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher);

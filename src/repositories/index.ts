@@ -6,6 +6,8 @@ export * from './country-topic.repository';
 export * from './country-topic-language.repository';
 export * from './encrypted-chunk.repository';
 export * from './icon.repository';
+export * from './nationality.repository';
+export * from './nationality-language.repository';
 export * from './organization-user.repository';
 export * from './organization.repository';
 export * from './organizations-users-view.repository';
