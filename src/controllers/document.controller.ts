@@ -55,7 +55,6 @@ export class DocumentController {
             const newDocument:Document = new Document();
             newDocument.idUser = this.user.idUser;
             newDocument.title = title;
-            newDocument.folder = "";
             newDocument.filename = fileUploaded.originalname;
             newDocument.mimeType = fileUploaded.mimetype;
             newDocument.size = fileUploaded.size;

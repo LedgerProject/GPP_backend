@@ -31,14 +31,6 @@ export class Document extends Entity {
     type: 'string',
     required: true,
     length: 100,
-    postgresql: { columnName: 'folder', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'NO' },
-  })
-  folder: string;
-
-  @property({
-    type: 'string',
-    required: true,
-    length: 100,
     postgresql: { columnName: 'filename', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   filename: string;
