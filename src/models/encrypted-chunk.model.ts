@@ -36,9 +36,9 @@ export class EncryptedChunk extends Entity {
   uploadReferenceId?: string;
 
   @property({
-    type: 'string',
+    type: 'number',
     length: 32,
-    postgresql: { columnName: 'chunkIndexId', dataType: 'character varying', dataLength: 32, dataPrecision: null, dataScale: null, nullable: 'YES' },
+    postgresql: { columnName: 'chunkIndexId', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: 0, nullable: 'YES'  },
   })
   chunkIndexId?: string;
 
@@ -68,6 +68,12 @@ export class EncryptedChunk extends Entity {
     postgresql: { columnName: 'text', dataType: 'text', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   text?: string;
+
+  @property({
+    type: 'string',
+    postgresql: { columnName: 'contentType', dataType: 'text', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
+  })
+  contentType?: string;
 
   // Define well-known properties here
 

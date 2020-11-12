@@ -360,11 +360,136 @@ export class UserController {
     currentUser: UserProfile
   ): Promise<any> {
 
-    const fileName = 'files/2mbfile.txt';
-    var contents = fs.readFileSync(fileName, 'utf8');
+    const fileName = 'files/2mb.jpg';
+    var contents = fs.readFileSync(fileName, 'base64');
 
-    const encodedString = Base64.encode(contents);
-    const stringChunks: any = chunkString(encodedString, MAX_CHAR_SIZE);
+    const stringChunks: any = chunkString(contents, MAX_CHAR_SIZE);
+
+    let indexId :number = 0;
+    let fileUUID = uuid();
+    let stringoneDiviso = '';
+
+    stringChunks.forEach((element: any) => {
+      const objectToSave = encrypt(element, currentUser.idUser);
+      
+      objectToSave.indexId = indexId;
+      indexId++;
+
+      let encryptedChunkToSave:EncryptedChunk = new EncryptedChunk();
+      encryptedChunkToSave.idUser = currentUser.idUser;
+      encryptedChunkToSave.header = objectToSave.secret_message.header;
+      encryptedChunkToSave.text = objectToSave.secret_message.text;
+      encryptedChunkToSave.checksum = objectToSave.secret_message.checksum;
+      encryptedChunkToSave.iv = objectToSave.secret_message.iv;
+      encryptedChunkToSave.name = fileName;
+      encryptedChunkToSave.uploadReferenceId = fileUUID;
+      encryptedChunkToSave.chunkIndexId = objectToSave.indexId;
+
+      this.encryptedChunkRepository.create(encryptedChunkToSave);
+      stringoneDiviso = stringoneDiviso + element;
+    });
+
+    return {"uploadReferenceId":fileUUID};
+  }
+
+  @get('/users/download/{uploadReferenceId}')
+  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
+  async download(
+    @param.path.string('uploadReferenceId') uploadReferenceId: string,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<any> {
+
+    const filter: Filter = { where: { 
+        "uploadReferenceId": uploadReferenceId,
+        "idUser": currentUser.idUser
+      },
+      order: ['chunkIndexId ASC']
+    };
+ 
+    let encryptedChunks : EncryptedChunk[] = await this.encryptedChunkRepository.find(filter);
+    let textDecrypted : string = "";
+    let fileName : string = "";
+    let contentType : string = "";
+
+    encryptedChunks.forEach((chunk: any) => {
+      const result = decrypt(chunk, currentUser.idUser);
+      textDecrypted = textDecrypted + result.textDecrypted;
+      fileName = chunk.name;
+      contentType = chunk.contentType;
+    }); 
+ 
+    var fileContents = Buffer.from(textDecrypted, 'base64');  
+    response.set('content-disposition', 'attachment; filename=' + fileName);
+    response.writeHead(200, {
+      'Content-Type': contentType,
+      'Content-Length': fileContents.length
+    });
+    response.end(fileContents);
+  }
+
+  @post('/files', {
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+        description: 'Files and fields',
+      },
+    },
+  })
+  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
+  async fileUpload(
+    @requestBody.file()
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
+  ): Promise<object> {
+    return new Promise<object>((resolve, reject) => {
+      this.handler(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          resolve(UserController.getFilesAndFields(request, currentUser, this.encryptedChunkRepository));
+        }
+      });
+    });
+  }
+
+  private static getFilesAndFields(request: Request, currentUser:any, repo:any) {
+    const uploadedFiles = request.files;
+    const mapper = (f: globalThis.Express.Multer.File) => ({
+      fieldname: f.fieldname,
+      originalname: f.originalname,
+      encoding: f.encoding,
+      mimetype: f.mimetype,
+      size: f.size,
+      buffer: f.buffer
+    });
+
+    let files: object[] = [];
+    if (Array.isArray(uploadedFiles)) {
+      files = uploadedFiles.map(mapper);
+    } else {
+      for (const filename in uploadedFiles) {
+        files.push(...uploadedFiles[filename].map(mapper));
+      }
+    }
+
+    let contents = '';
+    let fileName = '';
+    let contentType = '';
+    files.forEach((file: any) => {
+      contents = contents + file.buffer.toString('base64');
+      fileName = file.originalname;
+      contentType = file.mimetype;
+    });
+    const stringChunks: any = chunkString(contents, MAX_CHAR_SIZE);    
 
     let indexId :number = 0;
     let fileUUID = uuid();
@@ -384,87 +509,13 @@ export class UserController {
       encryptedChunkToSave.name = fileName;
       encryptedChunkToSave.uploadReferenceId = fileUUID;
       encryptedChunkToSave.chunkIndexId = objectToSave.indexId;
+      encryptedChunkToSave.contentType = contentType;
 
-      this.encryptedChunkRepository.create(encryptedChunkToSave);
+      repo.create(encryptedChunkToSave);
     });
 
     return {"uploadReferenceId":fileUUID};
-  }
 
-  @get('/users/download/{uploadReferenceId}')
-  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
-  async download(
-    @param.path.string('uploadReferenceId') uploadReferenceId: string,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
-  ): Promise<any> {
-
-    const filter: Filter = { where: { 
-        "uploadReferenceId": uploadReferenceId,
-        "idUser": currentUser.idUser
-      },
-      order: ['chunkIndexId ASC']
-    };
-
-    let encryptedChunks : EncryptedChunk[] = await this.encryptedChunkRepository.find(filter);
-    let textDecrypted : string = "";
-
-    encryptedChunks.forEach((chunk: any) => {
-      const result = decrypt(chunk, currentUser.idUser)
-      textDecrypted = textDecrypted + result.textDecrypted;
-    });
-
-    const text = Base64.decode(textDecrypted);
-    return text;
-  }
-
-  @post('/files', {
-    responses: {
-      200: {
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-            },
-          },
-        },
-        description: 'Files and fields',
-      },
-    },
-  })
-  async fileUpload(
-    @requestBody.file()
-    request: Request,
-    @inject(RestBindings.Http.RESPONSE) response: Response,
-  ): Promise<object> {
-    return new Promise<object>((resolve, reject) => {
-      this.handler(request, response, (err: unknown) => {
-        if (err) reject(err);
-        else {
-          resolve(UserController.getFilesAndFields(request));
-        }
-      });
-    });
-  }
-
-  private static getFilesAndFields(request: Request) {
-    const uploadedFiles = request.files;
-    const mapper = (f: globalThis.Express.Multer.File) => ({
-      fieldname: f.fieldname,
-      originalname: f.originalname,
-      encoding: f.encoding,
-      mimetype: f.mimetype,
-      size: f.size,
-    });
-    let files: object[] = [];
-    if (Array.isArray(uploadedFiles)) {
-      files = uploadedFiles.map(mapper);
-    } else {
-      for (const filename in uploadedFiles) {
-        files.push(...uploadedFiles[filename].map(mapper));
-      }
-    }
-    return {files, fields: request.body};
   }
 
 }
