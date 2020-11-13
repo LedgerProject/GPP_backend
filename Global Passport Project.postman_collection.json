@@ -29,14 +29,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/categories?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}categories?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"categories"
+								"{{path}}categories"
 							],
 							"query": [
 								{
@@ -82,14 +82,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/categories",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}categories",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"categories"
+								"{{path}}categories"
 							]
 						}
 					},
@@ -111,14 +111,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/categories/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}categories/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"type\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"categories",
+								"{{path}}categories",
 								":id"
 							],
 							"query": [
@@ -167,14 +167,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/categories/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}categories/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"categories",
+								"{{path}}categories",
 								":id"
 							],
 							"variable": [
@@ -211,14 +211,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/categories/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}categories/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"categories",
+								"{{path}}categories",
 								":id"
 							],
 							"variable": [
@@ -248,14 +248,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/categories/:id/categories-languages",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}categories/:id/categories-languages",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"categories",
+								"{{path}}categories",
 								":id",
 								"categories-languages"
 							],
@@ -309,14 +309,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/categories-languages",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}categories-languages",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"categories-languages"
+								"{{path}}categories-languages"
 							]
 						}
 					},
@@ -338,14 +338,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/categories-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategoryLanguage\": true,\n    \"idCategory\": true,\n    \"alias\": true,\n    \"category\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"language\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}categories-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCategoryLanguage\": true,\n    \"idCategory\": true,\n    \"alias\": true,\n    \"category\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"language\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"categories-languages",
+								"{{path}}categories-languages",
 								":id"
 							],
 							"query": [
@@ -405,14 +405,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries"
+								"{{path}}countries"
 							]
 						}
 					},
@@ -439,14 +439,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries"
+								"{{path}}countries"
 							],
 							"query": [
 								{
@@ -474,14 +474,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries",
+								"{{path}}countries",
 								":id"
 							],
 							"query": [
@@ -530,14 +530,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries",
+								"{{path}}countries",
 								":id"
 							],
 							"variable": [
@@ -574,14 +574,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries",
+								"{{path}}countries",
 								":id"
 							],
 							"variable": [
@@ -611,14 +611,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries/:id/countries-languages",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries/:id/countries-languages",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries",
+								"{{path}}countries",
 								":id",
 								"countries-languages"
 							],
@@ -672,14 +672,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries-languages",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-languages",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries-languages"
+								"{{path}}countries-languages"
 							]
 						}
 					},
@@ -701,14 +701,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryLanguage\": true,\n    \"idCountry\": true,\n    \"alias\": true,\n    \"country\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"language\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryLanguage\": true,\n    \"idCountry\": true,\n    \"alias\": true,\n    \"country\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"language\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries-languages",
+								"{{path}}countries-languages",
 								":id"
 							],
 							"query": [
@@ -768,14 +768,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-topics",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries-topics"
+								"{{path}}countries-topics"
 							]
 						}
 					},
@@ -802,14 +802,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\":\n    [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryTopic\": true,\n    \"idCountry\": true,\n    \"identifier\": true\n  }\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-topics?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\":\n    [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryTopic\": true,\n    \"idCountry\": true,\n    \"identifier\": true\n  }\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries-topics"
+								"{{path}}countries-topics"
 							],
 							"query": [
 								{
@@ -837,14 +837,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryTopic\": true,\n    \"idCountry\": true,\n    \"identifier\": true\n  }\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-topics/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"identifier\"\n  ],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryTopic\": true,\n    \"idCountry\": true,\n    \"identifier\": true\n  }\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries-topics",
+								"{{path}}countries-topics",
 								":id"
 							],
 							"query": [
@@ -893,14 +893,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-topics/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries-topics",
+								"{{path}}countries-topics",
 								":id"
 							],
 							"variable": [
@@ -937,14 +937,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-topics/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries-topics",
+								"{{path}}countries-topics",
 								":id"
 							],
 							"variable": [
@@ -974,14 +974,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics/:id/countries-topics-languages",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-topics/:id/countries-topics-languages",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries-topics",
+								"{{path}}countries-topics",
 								":id",
 								"countries-topics-languages"
 							],
@@ -1035,14 +1035,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics-languages",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-topics-languages",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries-topics-languages"
+								"{{path}}countries-topics-languages"
 							]
 						}
 					},
@@ -1064,14 +1064,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/countries-topics-languages/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\":\n    [\"topic\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryTopicLanguage\": true,\n    \"idCountryTopic\": true,\n    \"topic\": true,\n    \"description\": true,\n    \"language\": true\n  }\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-topics-languages/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\":\n    [\"topic\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountryTopicLanguage\": true,\n    \"idCountryTopic\": true,\n    \"topic\": true,\n    \"description\": true,\n    \"language\": true\n  }\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"countries-topics-languages",
+								"{{path}}countries-topics-languages",
 								":id"
 							],
 							"query": [
@@ -1118,14 +1118,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/icons?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}icons?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"icons"
+								"{{path}}icons"
 							],
 							"query": [
 								{
@@ -1153,14 +1153,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}icons/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idIcon\": true,\n    \"name\": true,\n    \"image\": true,\n    \"marker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"icons",
+								"{{path}}icons",
 								":id"
 							],
 							"query": [
@@ -1209,14 +1209,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}icons/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"icons",
+								"{{path}}icons",
 								":id"
 							],
 							"variable": [
@@ -1253,14 +1253,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}icons/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"icons",
+								"{{path}}icons",
 								":id"
 							],
 							"variable": [
@@ -1311,14 +1311,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/icons/:name",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}icons/:name",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"icons",
+								"{{path}}icons",
 								":name"
 							],
 							"variable": [
@@ -1371,14 +1371,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}nationalities",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"nationalities"
+								"{{path}}nationalities"
 							]
 						}
 					},
@@ -1405,14 +1405,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idNationality\": true,\n    \"identifier\": true\n  }\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}nationalities?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idNationality\": true,\n    \"identifier\": true\n  }\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"nationalities"
+								"{{path}}nationalities"
 							],
 							"query": [
 								{
@@ -1440,14 +1440,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idNationality\": true,\n    \"identifier\": true\n  }\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}nationalities/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idNationality\": true,\n    \"identifier\": true\n  }\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"nationalities",
+								"{{path}}nationalities",
 								":id"
 							],
 							"query": [
@@ -1496,14 +1496,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}nationalities/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"nationalities",
+								"{{path}}nationalities",
 								":id"
 							],
 							"variable": [
@@ -1540,14 +1540,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}nationalities/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"nationalities",
+								"{{path}}nationalities",
 								":id"
 							],
 							"variable": [
@@ -1577,14 +1577,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities/:id/nationalities-languages",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}nationalities/:id/nationalities-languages",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"nationalities",
+								"{{path}}nationalities",
 								":id",
 								"nationalities-languages"
 							],
@@ -1638,14 +1638,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities-languages",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}nationalities-languages",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"nationalities-languages"
+								"{{path}}nationalities-languages"
 							]
 						}
 					},
@@ -1667,14 +1667,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/nationalities-languages/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"language\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idNationalityLanguage\": true,\n    \"idNationality\": true,\n    \"alias\": true,\n    \"nationality\": true,\n    \"language\": true\n  }\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}nationalities-languages/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"language\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idNationalityLanguage\": true,\n    \"idNationality\": true,\n    \"alias\": true,\n    \"nationality\": true,\n    \"language\": true\n  }\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"nationalities-languages",
+								"{{path}}nationalities-languages",
 								":id"
 							],
 							"query": [
@@ -1734,14 +1734,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/organizations",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}organizations",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"organizations"
+								"{{path}}organizations"
 							]
 						}
 					},
@@ -1763,14 +1763,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/organizations?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idOrganization\": true,\n    \"name\": true\n  }\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}organizations?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idOrganization\": true,\n    \"name\": true\n  }\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"organizations"
+								"{{path}}organizations"
 							],
 							"query": [
 								{
@@ -1798,14 +1798,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/organizations/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idOrganization\": true,\n    \"name\": true\n  }\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}organizations/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idOrganization\": true,\n    \"name\": true\n  }\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"organizations",
+								"{{path}}organizations",
 								":id"
 							],
 							"query": [
@@ -1854,14 +1854,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/organizations/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}organizations/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"organizations",
+								"{{path}}organizations",
 								":id"
 							],
 							"variable": [
@@ -1895,14 +1895,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/organizations/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}organizations/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"organizations",
+								"{{path}}organizations",
 								":id"
 							],
 							"variable": [
@@ -1955,15 +1955,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}//structures",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"",
-								"structures"
+								"{{path}}structures"
 							]
 						}
 					},
@@ -1985,14 +1984,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"structurename\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"structurename\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"structures"
+								"{{path}}structures"
 							],
 							"query": [
 								{
@@ -2020,14 +2019,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"structures",
+								"{{path}}structures",
 								":id"
 							],
 							"query": [
@@ -2076,14 +2075,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"structures",
+								"{{path}}structures",
 								":id"
 							],
 							"variable": [
@@ -2117,14 +2116,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"structures",
+								"{{path}}structures",
 								":id"
 							],
 							"variable": [
@@ -2153,14 +2152,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures/:id/structures-languages",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/:id/structures-languages",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"structures",
+								"{{path}}structures",
 								":id",
 								"structures-languages"
 							],
@@ -2190,14 +2189,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures/:id/structures-categories",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/:id/structures-categories",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"structures",
+								"{{path}}structures",
 								":id",
 								"structures-categories"
 							],
@@ -2227,14 +2226,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures/:id/structures-images",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/:id/structures-images",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"structures",
+								"{{path}}structures",
 								":id",
 								"structures-images"
 							],
@@ -2288,14 +2287,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures-categories",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures-categories",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"structures-categories"
+								"{{path}}structures-categories"
 							]
 						}
 					},
@@ -2321,14 +2320,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures-categories/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures-categories/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"structures-categories",
+								"{{path}}structures-categories",
 								":id"
 							],
 							"variable": [
@@ -2379,14 +2378,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures-images/:idStructure",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures-images/:idStructure",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"structures-images",
+								"{{path}}structures-images",
 								":idStructure"
 							],
 							"variable": [
@@ -2420,14 +2419,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures-images/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures-images/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"structures-images",
+								"{{path}}structures-images",
 								":id"
 							],
 							"variable": [
@@ -2480,14 +2479,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures-languages",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures-languages",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"structures-languages"
+								"{{path}}structures-languages"
 							]
 						}
 					},
@@ -2509,14 +2508,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/structures-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructureLanguage\": true,\n    \"idStructure\": true,\n    \"description\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"language\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures-languages/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructureLanguage\": true,\n    \"idStructure\": true,\n    \"description\": true,\n    \"language\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"language\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"structures-languages",
+								"{{path}}structures-languages",
 								":id"
 							],
 							"query": [
@@ -2563,14 +2562,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/users/login",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users/login",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"users",
+								"{{path}}users",
 								"login"
 							]
 						}
@@ -2601,14 +2600,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/users/signup?secretKey",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users/signup?secretKey",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"users",
+								"{{path}}users",
 								"signup"
 							],
 							"query": [
@@ -2637,14 +2636,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/users/me",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users/me",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"users",
+								"{{path}}users",
 								"me"
 							]
 						}
@@ -2672,14 +2671,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/users/my-organizations",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users/my-organizations",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"users",
+								"{{path}}users",
 								"my-organizations"
 							]
 						}
@@ -2702,14 +2701,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/users/change-organization/:id",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users/change-organization/:id",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"users",
+								"{{path}}users",
 								"change-organization",
 								":id"
 							],
@@ -2741,14 +2740,14 @@
 					}
 				],
 				"url": {
-					"raw": "{{protocol}}://{{host}}:{{port}}/ping",
+					"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}ping",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{host}}"
 					],
 					"port": "{{port}}",
 					"path": [
-						"ping"
+						"{{path}}ping"
 					]
 				}
 			},
