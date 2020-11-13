@@ -23,7 +23,7 @@ const path = require('path');
 const sandboxPath = path.join(__dirname, '..', '..', '.sandbox');
 
 // Set the path to the structures folder
-const galleriesStructuresPath = path.join(__dirname, '..', '..', 'galleries', 'structures');
+const galleriesStructuresPath = path.join(__dirname, '..', '..', 'public', 'galleries', 'structures');
 
 export class StructureImageController {
   constructor(
@@ -102,7 +102,7 @@ export class StructureImageController {
             // Check if image exists
             if (fs.existsSync(destPath + "/" + fileUploaded.originalname)) {
               fs.unlinkSync(sandboxPath + "/" + fileUploaded.tempfilename); // Remove the temporary file
-              reject(new HttpErrors.BadRequest('File with this name already exists, please select another one file or rename it'));
+              reject(new HttpErrors.Conflict('File with this name already exists, please select another one file or rename it'));
               return;
             }
 
