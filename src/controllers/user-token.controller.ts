@@ -16,6 +16,8 @@ import { JWTService } from '../services/jwt-service';
 import { MyUserService } from '../services/user.service';
 import { generateFixedLengthRandomString } from '../services/string-util';
 import { ALPHABET_CHARS, MINUTES_IN_MILLISECONDS, USER_TOKEN_DEFAULT_VALIDITY_IN_MINS, USER_TOKEN_LENGTH } from '../constants';
+import { requestBody } from '@loopback/openapi-v3/dist/decorators/request-body.decorator';
+import { getModelSchemaRef } from '@loopback/openapi-v3/dist/controller-spec';
 
 export class UserTokenController {
   constructor(
@@ -70,24 +72,26 @@ export class UserTokenController {
   @post('/users/token')
   @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
   async postUserToken(
-    userToken: UserToken,
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile
   ): Promise<UserToken>  {
+    const userToken: UserToken = new UserToken();
     userToken.idUser = currentUser.idUser;
     let token = generateFixedLengthRandomString(ALPHABET_CHARS, USER_TOKEN_LENGTH);
-    let existingToken : boolean = false;
+    let notExistingToken : boolean = true;
 
     //Try generating token until you find a free token
-    while(!existingToken){
+    while(notExistingToken){
       const filter: Filter = { where: { "token": token } };
       let foundTokens = await this.userTokenRepository.find(filter);
       if (foundTokens.length > 0){
-        existingToken = true;
         token = generateFixedLengthRandomString(ALPHABET_CHARS, USER_TOKEN_LENGTH);
+      } else {
+        notExistingToken = false;
       }
     }
 
+    userToken.token = token;
     if (!userToken.validUntil){
       userToken.validUntil = new Date(new Date().getTime() + USER_TOKEN_DEFAULT_VALIDITY_IN_MINS * MINUTES_IN_MILLISECONDS).toUTCString();
     }

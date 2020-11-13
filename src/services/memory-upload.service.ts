@@ -49,5 +49,5 @@ import {
         files.push(...uploadedFiles[filename].map(mapper));
       }
     }
-    return files;
+    return {files, fields: request.body};
   }

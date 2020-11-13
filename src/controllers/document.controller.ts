@@ -47,7 +47,6 @@ export class DocumentController {
   })
   @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
   async fileUpload(
-    @param.path.string('title') title: string,
     @requestBody.file()
     request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
@@ -58,8 +57,9 @@ export class DocumentController {
       this.memoryUploadHandler(request, response, (err: unknown) => {
         if (err) reject(err);
         else {
-          const files = getFilesAndFields(request);
-          const fileUploaded = files[0];
+          const filesAndFields = getFilesAndFields(request);
+          const fileUploaded = filesAndFields.files[0];
+          const title = filesAndFields.fields.title;
 
           const contents : string = fileUploaded.buffer.toString(BASE64_ENCODING);
           const documentUUIDReference = uuid();
