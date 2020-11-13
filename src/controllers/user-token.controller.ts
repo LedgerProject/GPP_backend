@@ -14,6 +14,8 @@ import { UserTokenRepository, OrganizationsUsersViewRepository, OrganizationUser
 import { BcryptHasher } from '../services/hash.password.bcrypt';
 import { JWTService } from '../services/jwt-service';
 import { MyUserService } from '../services/user.service';
+import { generateFixedLengthRandomString } from '../services/string-util';
+import { ALPHABET_CHARS, MINUTES_IN_MILLISECONDS, USER_TOKEN_DEFAULT_VALIDITY_IN_MINS, USER_TOKEN_LENGTH } from '../constants';
 
 export class UserTokenController {
   constructor(
@@ -73,7 +75,7 @@ export class UserTokenController {
     currentUser: UserProfile
   ): Promise<UserToken>  {
     userToken.idUser = currentUser.idUser;
-    let token = UserTokenController.getRandomString(6);
+    let token = generateFixedLengthRandomString(ALPHABET_CHARS, USER_TOKEN_LENGTH);
     let existingToken : boolean = false;
 
     //Try generating token until you find a free token
@@ -82,23 +84,14 @@ export class UserTokenController {
       let foundTokens = await this.userTokenRepository.find(filter);
       if (foundTokens.length > 0){
         existingToken = true;
-        token = UserTokenController.getRandomString(6);
+        token = generateFixedLengthRandomString(ALPHABET_CHARS, USER_TOKEN_LENGTH);
       }
     }
 
     if (!userToken.validUntil){
-      userToken.validUntil = new Date(new Date().getTime() + 5*60000).toUTCString();
+      userToken.validUntil = new Date(new Date().getTime() + USER_TOKEN_DEFAULT_VALIDITY_IN_MINS * MINUTES_IN_MILLISECONDS).toUTCString();
     }
     await this.userTokenRepository.save(userToken);
     return userToken;
-  }
-  
-  private static getRandomString(length:number) {
-    var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var result = '';
-    for ( var i = 0; i < length; i++ ) {
-        result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
-    }
-    return result;
   }
 }

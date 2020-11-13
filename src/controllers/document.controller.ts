@@ -2,7 +2,7 @@
 import { authenticate, AuthenticationBindings } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { Count, CountSchema, Filter, repository, Where } from '@loopback/repository';
-import { post, param, Request, Response, get, getFilterSchemaFor, getModelSchemaRef, getWhereSchemaFor, del, requestBody, RestBindings } from '@loopback/rest';
+import { post, param, Request, Response, get, getFilterSchemaFor, getModelSchemaRef, getWhereSchemaFor, del, requestBody, RestBindings, HttpErrors } from '@loopback/rest';
 import { SecurityBindings, UserProfile } from '@loopback/security';
 // GPP imports
 import { DocumentRepository, DocumentEncryptedChunksRepository } from '../repositories';
@@ -11,7 +11,7 @@ import { Document, DocumentEncryptedChunk} from '../models';
 import { getFilesAndFields } from '../services/memory-upload.service';
 import { MEMORY_UPLOAD_SERVICE } from '../keys';
 import { MemoryUploadHandler } from '../types';
-import { chunkString } from '../services/string-splitter';
+import { chunkString } from '../services/string-util';
 import { decrypt, encrypt } from '../services/zenroom-service';
 import { TokenServiceBindings } from '../authorization/keys';
 import { JWTService } from '../services/jwt-service';
@@ -62,40 +62,49 @@ export class DocumentController {
           const fileUploaded = files[0];
 
           const contents : string = fileUploaded.buffer.toString(BASE64_ENCODING);
-          const fileUUID = uuid();
+          const documentUUIDReference = uuid();
           let indexId : number = 0;
           
-          const newDocument : Document = new Document();
-          newDocument.idUser = currentUser.idUser;
-          newDocument.title = title;
-          newDocument.filename = fileUploaded.originalname;
-          newDocument.mimeType = fileUploaded.mimetype;
-          newDocument.size = fileUploaded.size;
-          newDocument.mimeType = fileUploaded.mimetype;
-          newDocument.idDocument = fileUUID;
-          this.documentRepository.save(newDocument);
+          this.saveDocument(currentUser.idUser, title, fileUploaded, documentUUIDReference);
 
           const stringChunks : any = chunkString(contents, CHUNK_MAX_CHAR_SIZE);    
           stringChunks.forEach((element: any) => {
-            const chunkUUID = uuid();
-            const objectToSave = encrypt(element, currentUser.idUser);     
-            objectToSave.indexId = indexId;
+            
+            const encryptedObject = encrypt(element, currentUser.idUser);     
+            encryptedObject.indexId = indexId;
             indexId++;
 
-            let documentsEncryptedChunk: DocumentEncryptedChunk = new DocumentEncryptedChunk();
-            documentsEncryptedChunk.idDocumentEncryptedChunk = chunkUUID;
-            documentsEncryptedChunk.idUser = currentUser.idUser;
-            documentsEncryptedChunk.header = objectToSave.secret_message.header;
-            documentsEncryptedChunk.text = objectToSave.secret_message.text;
-            documentsEncryptedChunk.checksum = objectToSave.secret_message.checksum;
-            documentsEncryptedChunk.iv = objectToSave.secret_message.iv;
-            documentsEncryptedChunk.idDocument = fileUUID;
-            documentsEncryptedChunk.chunkIndexId = objectToSave.indexId;
-            this.documentEncryptedChunkRepository.save(documentsEncryptedChunk);
+            this.saveDocumentChunk(currentUser.idUser, encryptedObject, documentUUIDReference);
           });
         }
       });
     });
+  }
+
+  private saveDocumentChunk(idUser: string, objectToSave: any, documentUUIDReference: string) {
+    const chunkUUID = uuid();
+    let documentsEncryptedChunk: DocumentEncryptedChunk = new DocumentEncryptedChunk();
+    documentsEncryptedChunk.idDocumentEncryptedChunk = chunkUUID;
+    documentsEncryptedChunk.idUser = idUser;
+    documentsEncryptedChunk.header = objectToSave.secret_message.header;
+    documentsEncryptedChunk.text = objectToSave.secret_message.text;
+    documentsEncryptedChunk.checksum = objectToSave.secret_message.checksum;
+    documentsEncryptedChunk.iv = objectToSave.secret_message.iv;
+    documentsEncryptedChunk.idDocument = documentUUIDReference;
+    documentsEncryptedChunk.chunkIndexId = objectToSave.indexId;
+    this.documentEncryptedChunkRepository.save(documentsEncryptedChunk);
+  }
+
+  private saveDocument(idUser: string, title: string, fileUploaded: any, documentUUIDReference: string) {
+    const newDocument: Document = new Document();
+    newDocument.idUser = idUser;
+    newDocument.title = title;
+    newDocument.filename = fileUploaded.originalname;
+    newDocument.mimeType = fileUploaded.mimetype;
+    newDocument.size = fileUploaded.size;
+    newDocument.mimeType = fileUploaded.mimetype;
+    newDocument.idDocument = documentUUIDReference;
+    this.documentRepository.save(newDocument);
   }
 
   @get('/documents/count', {
@@ -142,15 +151,17 @@ export class DocumentController {
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<any> {
  
-    let documents = await this.documentEncryptedChunkRepository.find({ where: { "idDocument": id }});
+    let documents = await this.documentEncryptedChunkRepository.find({ where: { "idDocument": id, "idUser": currentUser.idUser }});
+    if(documents.length != 1){
+      throw new HttpErrors.NotFound("No documents found for that id and idUser");
+    }
     let document = documents[0];
 
     let fileName : string = document.filename;
     let contentType : string = document.mimeType;
 
     const filter: Filter = { where: { 
-        "idDocument": id,
-        "idUser": currentUser.idUser
+        "idDocument": id
       },
       order: ['chunkIndexId ASC']
     };
