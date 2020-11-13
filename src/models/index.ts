@@ -6,7 +6,6 @@ export * from './country-topic-language.model';
 export * from './country.model';
 export * from './document.model';
 export * from './document-encrypted-chunk.model';
-export * from './encrypted-chunk.model';
 export * from './icon.model';
 export * from './nationality-language.model';
 export * from './nationality.model';

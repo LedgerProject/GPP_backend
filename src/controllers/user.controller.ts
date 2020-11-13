@@ -2,41 +2,26 @@
 import { authenticate, AuthenticationBindings } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { Filter, repository } from '@loopback/repository';
-import { get, getJsonSchemaRef, getModelSchemaRef, HttpErrors, param, post, requestBody, RestBindings } from '@loopback/rest';
-import { securityId, UserProfile } from '@loopback/security';
-import { Base64 } from 'js-base64';
+import { get, getJsonSchemaRef, getModelSchemaRef, HttpErrors, param, post, requestBody} from '@loopback/rest';
+import { UserProfile } from '@loopback/security';
 //Other imports
 import _ from 'lodash';
 import { PasswordHasherBindings, TokenServiceBindings, UserServiceBindings } from '../authorization/keys';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { UserTypeKeys } from '../authorization/user-type-keys';
-import { OrganizationsUsersView, User, EncryptedChunk } from '../models';
-import { Credentials, EncryptedChunkRepository, OrganizationsUsersViewRepository, OrganizationUserRepository, UserRepository } from '../repositories';
+import { OrganizationsUsersView, User } from '../models';
+import { Credentials, OrganizationsUsersViewRepository, OrganizationUserRepository, UserRepository } from '../repositories';
 import { BcryptHasher } from '../services/hash.password.bcrypt';
 import { JWTService } from '../services/jwt-service';
 import { MyUserService } from '../services/user.service';
 import { validateCredentials } from '../services/validator';
-import { chunkString } from "../services/string-splitter"
-import { encrypt, decrypt } from "../services/zenroom-service"
 import { CredentialsRequestBody } from './specs/user.controller.spec';
-import fs = require('fs');
-import { v4 as uuid } from 'uuid';
-import {
-  Request,
-  Response,
-} from '@loopback/rest';
-import { MEMORY_UPLOAD_SERVICE } from '../keys';
-import { MemoryUploadHandler } from '../types';
-
-const MAX_CHAR_SIZE = 700000;
 
 export class UserController {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
-    @repository(EncryptedChunkRepository)
-    public encryptedChunkRepository: EncryptedChunkRepository,
     @repository(OrganizationsUsersViewRepository)
     public organizationsUsersViewRepository: OrganizationsUsersViewRepository,
     @repository(OrganizationUserRepository)
@@ -47,7 +32,6 @@ export class UserController {
     public userService: MyUserService,
     @inject(TokenServiceBindings.TOKEN_SERVICE)
     public jwtService: JWTService,
-    @inject(MEMORY_UPLOAD_SERVICE) private handler: MemoryUploadHandler,
   ) { }
 
   //*** USER SIGNUP ***/
@@ -353,118 +337,16 @@ export class UserController {
     return myOrganizations;
   }
 
-  @get('/users/upload')
+  //*** USER PROFILE ***/
+  @get('/users/token/{id}')
   @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
-  async upload(
+  async giveMeToken(
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile
-  ): Promise<any> {
-
-    const fileName = 'files/2mbfile.txt';
-    var contents = fs.readFileSync(fileName, 'utf8');
-
-    const encodedString = Base64.encode(contents);
-    const stringChunks: any = chunkString(encodedString, MAX_CHAR_SIZE);
-
-    let indexId :number = 0;
-    let fileUUID = uuid();
-
-    stringChunks.forEach((element: any) => {
-      const objectToSave = encrypt(element, currentUser.idUser);
-      
-      objectToSave.indexId = indexId;
-      indexId++;
-
-      let encryptedChunkToSave:EncryptedChunk = new EncryptedChunk();
-      encryptedChunkToSave.idUser = currentUser.idUser;
-      encryptedChunkToSave.header = objectToSave.secret_message.header;
-      encryptedChunkToSave.text = objectToSave.secret_message.text;
-      encryptedChunkToSave.checksum = objectToSave.secret_message.checksum;
-      encryptedChunkToSave.iv = objectToSave.secret_message.iv;
-      encryptedChunkToSave.name = fileName;
-      encryptedChunkToSave.uploadReferenceId = fileUUID;
-      encryptedChunkToSave.chunkIndexId = objectToSave.indexId;
-
-      this.encryptedChunkRepository.create(encryptedChunkToSave);
-    });
-
-    return {"uploadReferenceId":fileUUID};
+  ): Promise<any>  {
+    const filter: Filter = { where: { "idUser": currentUser.idUser, "confirmed": true } };
+    const myOrganizations = await this.organizationsUsersViewRepository.find(filter);
+    return myOrganizations;
   }
-
-  @get('/users/download/{uploadReferenceId}')
-  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
-  async download(
-    @param.path.string('uploadReferenceId') uploadReferenceId: string,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
-  ): Promise<any> {
-
-    const filter: Filter = { where: { 
-        "uploadReferenceId": uploadReferenceId,
-        "idUser": currentUser.idUser
-      },
-      order: ['chunkIndexId ASC']
-    };
-
-    let encryptedChunks : EncryptedChunk[] = await this.encryptedChunkRepository.find(filter);
-    let textDecrypted : string = "";
-
-    encryptedChunks.forEach((chunk: any) => {
-      const result = decrypt(chunk, currentUser.idUser)
-      textDecrypted = textDecrypted + result.textDecrypted;
-    });
-
-    const text = Base64.decode(textDecrypted);
-    return text;
-  }
-
-  @post('/files', {
-    responses: {
-      200: {
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-            },
-          },
-        },
-        description: 'Files and fields',
-      },
-    },
-  })
-  async fileUpload(
-    @requestBody.file()
-    request: Request,
-    @inject(RestBindings.Http.RESPONSE) response: Response,
-  ): Promise<object> {
-    return new Promise<object>((resolve, reject) => {
-      this.handler(request, response, (err: unknown) => {
-        if (err) reject(err);
-        else {
-          resolve(UserController.getFilesAndFields(request));
-        }
-      });
-    });
-  }
-
-  private static getFilesAndFields(request: Request) {
-    const uploadedFiles = request.files;
-    const mapper = (f: globalThis.Express.Multer.File) => ({
-      fieldname: f.fieldname,
-      originalname: f.originalname,
-      encoding: f.encoding,
-      mimetype: f.mimetype,
-      size: f.size,
-    });
-    let files: object[] = [];
-    if (Array.isArray(uploadedFiles)) {
-      files = uploadedFiles.map(mapper);
-    } else {
-      for (const filename in uploadedFiles) {
-        files.push(...uploadedFiles[filename].map(mapper));
-      }
-    }
-    return {files, fields: request.body};
-  }
-
+  
 }

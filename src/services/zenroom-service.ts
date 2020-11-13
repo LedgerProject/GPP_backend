@@ -1,4 +1,4 @@
-import { EncryptedChunk } from '../models';
+import { DocumentEncryptedChunk } from '../models';
 import { ENCRYPT, DECRYPT } from '../scenarios/zenroom-scenarios'
 const zenroom = require('zenroom');
 /* 
@@ -31,7 +31,7 @@ export function encrypt(stringToEncrypt: string, password:string) {
 /* 
   This function is using zenroom to decrypt a specific chunk
 */
-export function decrypt(chunk: EncryptedChunk, password:string) {
+export function decrypt(chunk: DocumentEncryptedChunk, password:string) {
   const savedLines: any = []
   const printFunction = (text: any) => {
     savedLines.push(text)
