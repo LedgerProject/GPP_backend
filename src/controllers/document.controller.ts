@@ -52,40 +52,50 @@ export class DocumentController {
     @inject(RestBindings.Http.RESPONSE) response: Response,
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile
-  ): Promise<object> {
-    return new Promise<object>((resolve, reject) => {
-      this.memoryUploadHandler(request, response, (err: unknown) => {
-        if (err) reject(err);
-        else {
-          const filesAndFields = getFilesAndFields(request);
-          const fileUploaded = filesAndFields.files[0];
-          const title = filesAndFields.fields.title;
+  ): Promise<Document> {
+    const filesAndFields = getFilesAndFields(request);
+    console.log(filesAndFields);
+    const fileUploaded = filesAndFields.files[0];
 
-          const contents : string = fileUploaded.buffer.toString(BASE64_ENCODING);
-          const documentUUIDReference = uuid();
-          let indexId : number = 0;
-          
-          this.saveDocument(currentUser.idUser, title, fileUploaded, documentUUIDReference);
+    const title = filesAndFields.fields.title;
 
-          const stringChunks : any = chunkString(contents, CHUNK_MAX_CHAR_SIZE);    
-          stringChunks.forEach((element: any) => {
-            
-            const encryptedObject = encrypt(element, currentUser.idUser);     
-            encryptedObject.indexId = indexId;
-            indexId++;
+    const newDocument: Document = new Document();
+    newDocument.idUser = currentUser.idUser;
+    newDocument.title = title;
+    newDocument.filename = fileUploaded.originalname;
+    newDocument.mimeType = fileUploaded.mimetype;
+    newDocument.size = fileUploaded.size;
+    newDocument.mimeType = fileUploaded.mimetype;
+    const createdDocument : Document = await this.documentRepository.create(newDocument);
 
-            this.saveDocumentChunk(currentUser.idUser, encryptedObject, documentUUIDReference);
-          });
+    const contents : string = fileUploaded.buffer.toString(BASE64_ENCODING);
+    let indexId = 0;
+
+    const stringChunks : any = chunkString(contents, CHUNK_MAX_CHAR_SIZE);    
+    stringChunks.forEach((element: any) => {
+      const encryptedObject = encrypt(element, currentUser.idUser);     
+      encryptedObject.indexId = indexId;
+      indexId++;
+
+      this.saveDocumentChunk(encryptedObject, createdDocument.idDocument);
+    });
+
+    return new Promise<Document>((resolve, reject) => {
+      this.memoryUploadHandler(request, response, (err) => {
+        if (err) {
+          // Multer error
+          resolve(err);
+       } else {
+          const filesAndFields2 = getFilesAndFields(request);
+          console.log(filesAndFields2);
+          resolve(createdDocument);
         }
       });
     });
   }
 
-  private saveDocumentChunk(idUser: string, objectToSave: any, documentUUIDReference: string) {
-    const chunkUUID = uuid();
-    let documentsEncryptedChunk: DocumentEncryptedChunk = new DocumentEncryptedChunk();
-    documentsEncryptedChunk.idDocumentEncryptedChunk = chunkUUID;
-    documentsEncryptedChunk.idUser = idUser;
+  private saveDocumentChunk(objectToSave: any, documentUUIDReference: string) {
+    const documentsEncryptedChunk: DocumentEncryptedChunk = new DocumentEncryptedChunk();
     documentsEncryptedChunk.header = objectToSave.secret_message.header;
     documentsEncryptedChunk.text = objectToSave.secret_message.text;
     documentsEncryptedChunk.checksum = objectToSave.secret_message.checksum;
@@ -95,17 +105,9 @@ export class DocumentController {
     this.documentEncryptedChunkRepository.save(documentsEncryptedChunk);
   }
 
-  private saveDocument(idUser: string, title: string, fileUploaded: any, documentUUIDReference: string) {
-    const newDocument: Document = new Document();
-    newDocument.idUser = idUser;
-    newDocument.title = title;
-    newDocument.filename = fileUploaded.originalname;
-    newDocument.mimeType = fileUploaded.mimetype;
-    newDocument.size = fileUploaded.size;
-    newDocument.mimeType = fileUploaded.mimetype;
-    newDocument.idDocument = documentUUIDReference;
-    this.documentRepository.save(newDocument);
-  }
+  /*private async saveDocument(idUser: string, title: string, fileUploaded: any) : Promise<Document> {
+    
+  }*/
 
   @get('/documents/count', {
     responses: {
