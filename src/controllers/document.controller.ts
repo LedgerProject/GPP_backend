@@ -53,6 +53,7 @@ export class DocumentController {
     @inject(RestBindings.Http.RESPONSE) response: Response,
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile
+<<<<<<< HEAD
   ): Promise<object> {
     return new Promise<object>((resolve, reject) => {
       this.memoryUploadHandler(request, response, (err) => {
@@ -77,13 +78,57 @@ export class DocumentController {
             resolve(createdDocument);
           });
           
+=======
+  ): Promise<Document> {
+    const filesAndFields = getFilesAndFields(request);
+    console.log(filesAndFields);
+    const fileUploaded = filesAndFields.files[0];
+
+    const title = filesAndFields.fields.title;
+
+    const newDocument: Document = new Document();
+    newDocument.idUser = currentUser.idUser;
+    newDocument.title = title;
+    newDocument.filename = fileUploaded.originalname;
+    newDocument.mimeType = fileUploaded.mimetype;
+    newDocument.size = fileUploaded.size;
+    newDocument.mimeType = fileUploaded.mimetype;
+    const createdDocument : Document = await this.documentRepository.create(newDocument);
+
+    const contents : string = fileUploaded.buffer.toString(BASE64_ENCODING);
+    let indexId = 0;
+
+    const stringChunks : any = chunkString(contents, CHUNK_MAX_CHAR_SIZE);    
+    stringChunks.forEach((element: any) => {
+      const encryptedObject = encrypt(element, currentUser.idUser);     
+      encryptedObject.indexId = indexId;
+      indexId++;
+
+      this.saveDocumentChunk(encryptedObject, createdDocument.idDocument);
+    });
+
+    return new Promise<Document>((resolve, reject) => {
+      this.memoryUploadHandler(request, response, (err) => {
+        if (err) {
+          // Multer error
+          resolve(err);
+       } else {
+          const filesAndFields2 = getFilesAndFields(request);
+          console.log(filesAndFields2);
+          resolve(createdDocument);
+>>>>>>> 8a5e5c4ef313228970f1d9c6ae44e12fe5df05ee
         }
       });
     });
   }
 
+<<<<<<< HEAD
   private async saveDocumentChunk(objectToSave: any, documentUUIDReference: string) : Promise<any> {
     let documentsEncryptedChunk: DocumentEncryptedChunk = new DocumentEncryptedChunk();
+=======
+  private saveDocumentChunk(objectToSave: any, documentUUIDReference: string) {
+    const documentsEncryptedChunk: DocumentEncryptedChunk = new DocumentEncryptedChunk();
+>>>>>>> 8a5e5c4ef313228970f1d9c6ae44e12fe5df05ee
     documentsEncryptedChunk.header = objectToSave.secret_message.header;
     documentsEncryptedChunk.text = objectToSave.secret_message.text;
     documentsEncryptedChunk.checksum = objectToSave.secret_message.checksum;
@@ -93,6 +138,7 @@ export class DocumentController {
     return await this.documentEncryptedChunkRepository.save(documentsEncryptedChunk);
   }
 
+<<<<<<< HEAD
   private async saveDocument(idUser: string, title: string, fileUploaded: any) : Promise<any>{
     const newDocument: Document = new Document();
     newDocument.idUser = idUser;
@@ -103,6 +149,11 @@ export class DocumentController {
     newDocument.mimeType = fileUploaded.mimetype;
     return await this.documentRepository.save(newDocument);
   }
+=======
+  /*private async saveDocument(idUser: string, title: string, fileUploaded: any) : Promise<Document> {
+    
+  }*/
+>>>>>>> 8a5e5c4ef313228970f1d9c6ae44e12fe5df05ee
 
   @get('/documents/count', {
     responses: {
