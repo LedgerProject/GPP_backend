@@ -3,7 +3,7 @@ import {DocumentEncryptedChunk, DocumentEncryptedChunkRelations} from '../models
 import {GppDataSource} from '../datasources';
 import {inject} from '@loopback/core';
 
-export class DocumentsEncryptedChunksRepository extends DefaultCrudRepository<
+export class DocumentEncryptedChunksRepository extends DefaultCrudRepository<
 DocumentEncryptedChunk,
   typeof DocumentEncryptedChunk.prototype.idDocumentEncryptedChunk,
   DocumentEncryptedChunkRelations
