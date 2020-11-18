@@ -16,8 +16,6 @@ import { JWTService } from '../services/jwt-service';
 import { MyUserService } from '../services/user.service';
 import { generateFixedLengthRandomString } from '../services/string-util';
 import { ALPHABET_CHARS, MINUTES_IN_MILLISECONDS, USER_TOKEN_DEFAULT_VALIDITY_IN_MINS, USER_TOKEN_LENGTH } from '../constants';
-import { requestBody } from '@loopback/openapi-v3/dist/decorators/request-body.decorator';
-import { getModelSchemaRef } from '@loopback/openapi-v3/dist/controller-spec';
 
 export class UserTokenController {
   constructor(
@@ -36,37 +34,6 @@ export class UserTokenController {
     @inject(TokenServiceBindings.TOKEN_SERVICE)
     public jwtService: JWTService,
   ) { }
-
-  //*** GET USER TOKEN ***/
-  @get('/users/token/{token}')
-  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
-  async getUserToken(
-    @param.path.string('token') token: string,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
-  ): Promise<any>  {
-    let currentDate = new Date();
-
-    //Check that user is a valid operator
-
-    //Check that user token is still valid
-    const filter: Filter = { where: { "token": token } };
-    const foundTokenList = await this.userTokenRepository.find(filter);
-    if(foundTokenList.length != 1){
-      throw new HttpErrors.NotFound("Invalid token");
-    }
-
-    if(!foundTokenList[0].validUntil){
-      throw new HttpErrors.NotFound("Invalid token");
-    }
-
-    let validUntilDate = new Date(foundTokenList[0].validUntil);
-    if(currentDate > validUntilDate){
-      throw new HttpErrors.NotFound("Token is expired");
-    }
-
-    return foundTokenList[0];
-  }
 
   //*** USER PROFILE ***/
   @post('/users/token')
