@@ -106,21 +106,6 @@ export class DocumentController {
     return await this.documentRepository.save(newDocument);
   }
 
-  @get('/documents/count', {
-    responses: {
-      '200': {
-        description: 'Document model count',
-        content: {'application/json': {schema: CountSchema}},
-      },
-    },
-  })
-  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
-  async count(
-    @param.query.object('where', getWhereSchemaFor(Document)) where?: Where<Document>,
-  ): Promise<Count> {
-    return this.documentRepository.count(where);
-  }
-
   @get('/documents', {
     responses: {
       '200': {
@@ -138,9 +123,10 @@ export class DocumentController {
   })
   @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Document)) filter?: Filter<Document>,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile,
   ): Promise<Document[]> {
-    return this.documentRepository.find(filter);
+    return this.documentRepository.find({ where: { "idUser": currentUser.idUser }});
   }
 
   @get('/documents/operator/{token}', {
@@ -183,21 +169,21 @@ export class DocumentController {
     return this.documentRepository.find({ where: { "idUser": userToken.idUser }});
   }
 
-  @get('/documents/operator/{id}')
+  @get('/documents/operator')
   @authenticate('jwt', { required: [PermissionKeys.CheckTokenDocWallet] })
   async downloadOperator(
     @param.header.string('token') token: string,
-    @param.path.string('id') id: string,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile,
+    @param.header.string('id') id: string,
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<any> {
- 
+    console.log("sono chiamato");
     let currentDate = new Date();
 
     //Check that user token is still valid
     const userTokenFilter: Filter = { where: { "token": token } };
+    console.log(userTokenFilter);
     const foundTokenList = await this.userTokenRepository.find(userTokenFilter);
+    console.log(foundTokenList);
     if(foundTokenList.length != 1){
       throw new HttpErrors.NotFound("Invalid token");
     }
@@ -208,7 +194,7 @@ export class DocumentController {
     }
 
     let validUntilDate = new Date(userToken.validUntil);
-    console.log(validUntilDate);
+
     if(currentDate > validUntilDate){
       throw new HttpErrors.NotFound("Token is expired");
     }
@@ -232,7 +218,7 @@ export class DocumentController {
     let textDecrypted : string = "";
 
     encryptedChunks.forEach((chunk: any) => {
-      const result = decrypt(chunk, currentUser.idUser);
+      const result = decrypt(chunk, userToken.idUser);
       textDecrypted = textDecrypted + result.textDecrypted;
     }); 
  
@@ -258,7 +244,6 @@ export class DocumentController {
     if(documents.length != 1){
       throw new HttpErrors.NotFound("No documents found for that id and idUser");
     }
-    console.log(documents)
     let document = documents[0];
 
     let fileName : string = document.filename;

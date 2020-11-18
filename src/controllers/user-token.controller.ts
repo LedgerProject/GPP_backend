@@ -60,7 +60,7 @@ export class UserTokenController {
 
     userToken.token = token;
     if (!userToken.validUntil){
-      userToken.validUntil = new Date(new Date().getTime() + USER_TOKEN_DEFAULT_VALIDITY_IN_MINS * MINUTES_IN_MILLISECONDS).toUTCString();
+      userToken.validUntil = new Date(new Date().getTime() + USER_TOKEN_DEFAULT_VALIDITY_IN_MINS * MINUTES_IN_MILLISECONDS).getTime();
     }
     await this.userTokenRepository.save(userToken);
     return userToken;

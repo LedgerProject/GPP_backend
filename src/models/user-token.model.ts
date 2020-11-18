@@ -29,9 +29,9 @@ export class UserToken extends Entity {
   @property({
     type: 'date',
     required: true,
-    postgresql: { columnName: 'validUntil', dataType: 'time without time zone', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
+    postgresql: { columnName: 'validUntil', dataType: 'timestamp without time zone', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
-  validUntil: string;
+  validUntil: number;
 
   // Define well-known properties here
 
