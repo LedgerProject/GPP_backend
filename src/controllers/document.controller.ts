@@ -5,9 +5,9 @@ import { Count, CountSchema, Filter, repository, Where } from '@loopback/reposit
 import { post, param, Request, Response, get, getFilterSchemaFor, getModelSchemaRef, getWhereSchemaFor, del, requestBody, RestBindings, HttpErrors } from '@loopback/rest';
 import { SecurityBindings, UserProfile } from '@loopback/security';
 // GPP imports
-import { DocumentRepository, DocumentEncryptedChunksRepository } from '../repositories';
+import { DocumentRepository, DocumentEncryptedChunksRepository, UserTokenRepository } from '../repositories';
 import { PermissionKeys } from '../authorization/permission-keys';
-import { DocumentEncryptedChunk} from '../models';
+import { DocumentEncryptedChunk, UserToken} from '../models';
 import { Document } from '../models'
 import { getFilesAndFields } from '../services/memory-upload.service';
 import { MEMORY_UPLOAD_SERVICE } from '../keys';
@@ -24,6 +24,8 @@ export class DocumentController {
     public documentRepository : DocumentRepository,
     @repository(DocumentEncryptedChunksRepository)
     public documentEncryptedChunkRepository : DocumentEncryptedChunksRepository,
+    @repository(UserTokenRepository)
+    public userTokenRepository : UserTokenRepository,
     @inject(SecurityBindings.USER)
     public user: UserProfile,
     @inject(TokenServiceBindings.TOKEN_SERVICE)
@@ -104,20 +106,6 @@ export class DocumentController {
     return await this.documentRepository.save(newDocument);
   }
 
-  @get('/documents/count', {
-    responses: {
-      '200': {
-        description: 'Document model count',
-        content: {'application/json': {schema: CountSchema}},
-      },
-    },
-  })
-  async count(
-    @param.query.object('where', getWhereSchemaFor(Document)) where?: Where<Document>,
-  ): Promise<Count> {
-    return this.documentRepository.count(where);
-  }
-
   @get('/documents', {
     responses: {
       '200': {
@@ -133,10 +121,114 @@ export class DocumentController {
       },
     },
   })
+  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Document)) filter?: Filter<Document>,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile,
   ): Promise<Document[]> {
-    return this.documentRepository.find(filter);
+    return this.documentRepository.find({ where: { "idUser": currentUser.idUser }});
+  }
+
+  @get('/documents/operator/{token}', {
+    responses: {
+      '200': {
+        description: 'Array of Document model instances',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              items: getModelSchemaRef(Document, {includeRelations: true}),
+            },
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt', { required: [PermissionKeys.CheckTokenDocWallet] })
+  async findByToken(    
+    @param.path.string('token') token: string,
+  ): Promise<Document[]> {
+    let currentDate = new Date();
+
+    //Check that user token is still valid
+    const userTokenFilter: Filter = { where: { "token": token } };
+    const foundTokenList = await this.userTokenRepository.find(userTokenFilter);
+    if(foundTokenList.length != 1){
+      throw new HttpErrors.NotFound("Invalid token");
+    }
+
+    let userToken : UserToken = foundTokenList[0];
+    if(!userToken.validUntil){
+      throw new HttpErrors.NotFound("Invalid token");
+    }
+
+    let validUntilDate = new Date(userToken.validUntil);
+    if(currentDate > validUntilDate){
+      throw new HttpErrors.NotFound("Token is expired");
+    }
+    return this.documentRepository.find({ where: { "idUser": userToken.idUser }});
+  }
+
+  @get('/documents/operator')
+  @authenticate('jwt', { required: [PermissionKeys.CheckTokenDocWallet] })
+  async downloadOperator(
+    @param.header.string('token') token: string,
+    @param.header.string('id') id: string,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<any> {
+    console.log("sono chiamato");
+    let currentDate = new Date();
+
+    //Check that user token is still valid
+    const userTokenFilter: Filter = { where: { "token": token } };
+    console.log(userTokenFilter);
+    const foundTokenList = await this.userTokenRepository.find(userTokenFilter);
+    console.log(foundTokenList);
+    if(foundTokenList.length != 1){
+      throw new HttpErrors.NotFound("Invalid token");
+    }
+
+    let userToken : UserToken = foundTokenList[0];
+    if(!userToken.validUntil){
+      throw new HttpErrors.NotFound("Invalid token");
+    }
+
+    let validUntilDate = new Date(userToken.validUntil);
+
+    if(currentDate > validUntilDate){
+      throw new HttpErrors.NotFound("Token is expired");
+    }
+
+    let documents = await this.documentRepository.find({ where: { "idDocument": id, "idUser": userToken.idUser }});
+    if(documents.length != 1){
+      throw new HttpErrors.NotFound("No documents found for that id and idUser");
+    }
+    console.log(documents)
+    let document = documents[0];
+
+    let fileName : string = document.filename;
+    let contentType : string = document.mimeType;
+
+    const filter: Filter = { where: { 
+        "idDocument": id
+      },
+      order: ['chunkIndexId ASC']
+    };
+    let encryptedChunks : DocumentEncryptedChunk[] = await this.documentEncryptedChunkRepository.find(filter);
+    let textDecrypted : string = "";
+
+    encryptedChunks.forEach((chunk: any) => {
+      const result = decrypt(chunk, userToken.idUser);
+      textDecrypted = textDecrypted + result.textDecrypted;
+    }); 
+ 
+    var fileContents = Buffer.from(textDecrypted, BASE64_ENCODING);
+    response.writeHead(200, {
+      'Content-disposition': 'attachment; filename=' + fileName,
+      'Content-Type': contentType,
+      'Content-Length': fileContents.length
+    });
+    response.end(fileContents);
   }
 
   @get('/documents/{id}')
@@ -152,7 +244,6 @@ export class DocumentController {
     if(documents.length != 1){
       throw new HttpErrors.NotFound("No documents found for that id and idUser");
     }
-    console.log(documents)
     let document = documents[0];
 
     let fileName : string = document.filename;
@@ -187,6 +278,7 @@ export class DocumentController {
       },
     },
   })
+  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.documentEncryptedChunkRepository.deleteAll({ where: { "idDocument": id }});
     await this.documentRepository.deleteById(id);
