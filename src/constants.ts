@@ -32,3 +32,8 @@ export const MINUTES_IN_MILLISECONDS : number = 60000;
  * Default value for user token validity
  */
 export const USER_TOKEN_DEFAULT_VALIDITY_IN_MINS = 5;
+
+/**
+ * Attachment filename
+ */
+export const ATTACHMENT_FILENAME = 'attachment; filename=';

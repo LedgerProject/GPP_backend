@@ -1,7 +1,7 @@
 // Loopback imports
 import { authenticate, AuthenticationBindings } from '@loopback/authentication';
 import { inject } from '@loopback/core';
-import { Count, CountSchema, Filter, repository, Where } from '@loopback/repository';
+import { AnyObject, Count, CountSchema, Filter, repository, Where, WhereBuilder } from '@loopback/repository';
 import { post, param, Request, Response, get, getFilterSchemaFor, getModelSchemaRef, getWhereSchemaFor, del, requestBody, RestBindings, HttpErrors } from '@loopback/rest';
 import { SecurityBindings, UserProfile } from '@loopback/security';
 // GPP imports
@@ -16,7 +16,7 @@ import { chunkString } from '../services/string-util';
 import { decrypt, encrypt } from '../services/zenroom-service';
 import { TokenServiceBindings } from '../authorization/keys';
 import { JWTService } from '../services/jwt-service';
-import { BASE64_ENCODING, CHUNK_MAX_CHAR_SIZE } from '../constants';
+import { ATTACHMENT_FILENAME, BASE64_ENCODING, CHUNK_MAX_CHAR_SIZE, CONTENT_DISPOSITION_HEADER } from '../constants';
 
 export class DocumentController {
   constructor(
@@ -125,8 +125,18 @@ export class DocumentController {
   async find(
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile,
+    @param.query.object('filter', getFilterSchemaFor(Document)) filter?: Filter<Document>,
   ): Promise<Document[]> {
-    return this.documentRepository.find({ where: { "idUser": currentUser.idUser }});
+    if (filter === undefined) {
+      filter = {};
+    }
+    if (filter.where === undefined) {
+      filter.where = {};
+    }
+    const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
+    const where = queryFilters.impose({ idUser: currentUser.idUser }).build();
+    filter.where = where;
+    return this.documentRepository.find(filter);
   }
 
   @get('/documents/operator/{token}', {
@@ -148,24 +158,9 @@ export class DocumentController {
   async findByToken(    
     @param.path.string('token') token: string,
   ): Promise<Document[]> {
-    let currentDate = new Date();
-
-    //Check that user token is still valid
     const userTokenFilter: Filter = { where: { "token": token } };
     const foundTokenList = await this.userTokenRepository.find(userTokenFilter);
-    if(foundTokenList.length != 1){
-      throw new HttpErrors.NotFound("Invalid token");
-    }
-
-    let userToken : UserToken = foundTokenList[0];
-    if(!userToken.validUntil){
-      throw new HttpErrors.NotFound("Invalid token");
-    }
-
-    let validUntilDate = new Date(userToken.validUntil);
-    if(currentDate > validUntilDate){
-      throw new HttpErrors.NotFound("Token is expired");
-    }
+    let userToken: UserToken = this.checkAndExtractUserToken(foundTokenList);
     return this.documentRepository.find({ where: { "idUser": userToken.idUser }});
   }
 
@@ -175,46 +170,37 @@ export class DocumentController {
     @param.header.string('token') token: string,
     @param.header.string('id') id: string,
     @inject(RestBindings.Http.RESPONSE) response: Response,
+    @param.query.object('filter', getFilterSchemaFor(Document)) filter?: Filter<Document>,
   ): Promise<any> {
-    console.log("sono chiamato");
-    let currentDate = new Date();
 
-    //Check that user token is still valid
     const userTokenFilter: Filter = { where: { "token": token } };
-    console.log(userTokenFilter);
     const foundTokenList = await this.userTokenRepository.find(userTokenFilter);
-    console.log(foundTokenList);
-    if(foundTokenList.length != 1){
-      throw new HttpErrors.NotFound("Invalid token");
+
+    let userToken: UserToken = this.checkAndExtractUserToken(foundTokenList);
+    if (filter === undefined) {
+      filter = {};
     }
-
-    let userToken : UserToken = foundTokenList[0];
-    if(!userToken.validUntil){
-      throw new HttpErrors.NotFound("Invalid token");
+    if (filter.where === undefined) {
+      filter.where = {};
     }
+    const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
+    const where = queryFilters.impose({ idDocument: id, idUser: userToken.idUser }).build();
+    filter.where = where;
 
-    let validUntilDate = new Date(userToken.validUntil);
-
-    if(currentDate > validUntilDate){
-      throw new HttpErrors.NotFound("Token is expired");
-    }
-
-    let documents = await this.documentRepository.find({ where: { "idDocument": id, "idUser": userToken.idUser }});
+    let documents = await this.documentRepository.find(filter);
     if(documents.length != 1){
       throw new HttpErrors.NotFound("No documents found for that id and idUser");
     }
-    console.log(documents)
     let document = documents[0];
 
     let fileName : string = document.filename;
     let contentType : string = document.mimeType;
 
-    const filter: Filter = { where: { 
-        "idDocument": id
-      },
+    const chunksFilter: Filter = { 
+      where: { "idDocument": id },
       order: ['chunkIndexId ASC']
     };
-    let encryptedChunks : DocumentEncryptedChunk[] = await this.documentEncryptedChunkRepository.find(filter);
+    let encryptedChunks : DocumentEncryptedChunk[] = await this.documentEncryptedChunkRepository.find(chunksFilter);
     let textDecrypted : string = "";
 
     encryptedChunks.forEach((chunk: any) => {
@@ -224,11 +210,30 @@ export class DocumentController {
  
     var fileContents = Buffer.from(textDecrypted, BASE64_ENCODING);
     response.writeHead(200, {
-      'Content-disposition': 'attachment; filename=' + fileName,
+      'Content-disposition': ATTACHMENT_FILENAME + fileName,
       'Content-Type': contentType,
       'Content-Length': fileContents.length
     });
     response.end(fileContents);
+  }
+
+  private checkAndExtractUserToken(foundTokenList: UserToken[]) {
+    let currentDate = new Date();
+    if (foundTokenList.length != 1) {
+      throw new HttpErrors.NotFound("Invalid token");
+    }
+
+    let userToken: UserToken = foundTokenList[0];
+    if (!userToken.validUntil) {
+      throw new HttpErrors.NotFound("Invalid token");
+    }
+
+    let validUntilDate = new Date(userToken.validUntil);
+
+    if (currentDate > validUntilDate) {
+      throw new HttpErrors.NotFound("Token is expired");
+    }
+    return userToken;
   }
 
   @get('/documents/{id}')
@@ -238,9 +243,19 @@ export class DocumentController {
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile,
     @inject(RestBindings.Http.RESPONSE) response: Response,
+    @param.query.object('filter', getFilterSchemaFor(Document)) filter?: Filter<Document>,
   ): Promise<any> {
- 
-    let documents = await this.documentRepository.find({ where: { "idDocument": id, "idUser": currentUser.idUser }});
+    if (filter === undefined) {
+      filter = {};
+    }
+    if (filter.where === undefined) {
+      filter.where = {};
+    }
+    const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
+    const where = queryFilters.impose({ idDocument: id, idUser: currentUser.idUser }).build();
+    filter.where = where;
+
+    let documents = await this.documentRepository.find(filter);
     if(documents.length != 1){
       throw new HttpErrors.NotFound("No documents found for that id and idUser");
     }
@@ -249,12 +264,12 @@ export class DocumentController {
     let fileName : string = document.filename;
     let contentType : string = document.mimeType;
 
-    const filter: Filter = { where: { 
+    const chunksFilter: Filter = { where: { 
         "idDocument": id
       },
       order: ['chunkIndexId ASC']
     };
-    let encryptedChunks : DocumentEncryptedChunk[] = await this.documentEncryptedChunkRepository.find(filter);
+    let encryptedChunks : DocumentEncryptedChunk[] = await this.documentEncryptedChunkRepository.find(chunksFilter);
     let textDecrypted : string = "";
 
     encryptedChunks.forEach((chunk: any) => {
