@@ -16,7 +16,7 @@ import { chunkString } from '../services/string-util';
 import { decrypt, encrypt } from '../services/zenroom-service';
 import { TokenServiceBindings } from '../authorization/keys';
 import { JWTService } from '../services/jwt-service';
-import { ATTACHMENT_FILENAME, BASE64_ENCODING, CHUNK_MAX_CHAR_SIZE, CONTENT_DISPOSITION_HEADER } from '../constants';
+import { ATTACHMENT_FILENAME, BASE64_ENCODING, CHUNK_MAX_CHAR_SIZE } from '../constants';
 
 export class DocumentController {
   constructor(
