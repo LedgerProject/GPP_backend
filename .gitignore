@@ -69,3 +69,6 @@ typings/
 
 # Galleries folder
 galleries
+
+# Mac shit files
+.DS_Store
