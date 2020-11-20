@@ -114,7 +114,7 @@ export class CountryController {
     country: Country,
   ): Promise<void> {
     // Check if the identifier is already assigned
-    const filter: Filter = { where: { id : { neq: id }, identifier : country.identifier }};
+    const filter: Filter = { where: { idCountry : { neq: id }, identifier : country.identifier }};
     const identifierExists = await this.countryRepository.findOne(filter);
 
     if (identifierExists !== null) {

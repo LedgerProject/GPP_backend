@@ -6,17 +6,17 @@ import { RepositoryMixin } from '@loopback/repository';
 import { RestApplication } from '@loopback/rest';
 import { RestExplorerBindings, RestExplorerComponent } from '@loopback/rest-explorer';
 import { ServiceMixin } from '@loopback/service-proxy';
+import multer from "multer";
 // Other imports
 import path from 'path';
 // GPP imports
 import { JWTStrategy } from "./authentication-stategies/jwt-strategy";
 import { PasswordHasherBindings, TokenServiceBindings, TokenServiceConstants, UserServiceBindings } from './authorization/keys';
+import { FILE_UPLOAD_SERVICE, MEMORY_UPLOAD_SERVICE, STORAGE_DIRECTORY } from './keys';
 import { MySequence } from './sequence';
 import { BcryptHasher } from './services/hash.password.bcrypt';
 import { JWTService } from './services/jwt-service';
 import { MyUserService } from './services/user.service';
-import {FILE_UPLOAD_SERVICE, MEMORY_UPLOAD_SERVICE, STORAGE_DIRECTORY} from './keys';
-import multer from "multer";
 
 export class GPPBackend extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
@@ -59,7 +59,7 @@ export class GPPBackend extends BootMixin(
       },
     };
   }
-  
+
   setupBinding(): void {
     this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher);
     this.bind(PasswordHasherBindings.ROUNDS).to(10);

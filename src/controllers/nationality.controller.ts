@@ -114,7 +114,7 @@ export class NationalityController {
     nationality: Nationality,
   ): Promise<void> {
     // Check if the identifier is already assigned
-    const filter: Filter = { where: { id : { neq: id }, identifier : nationality.identifier }};
+    const filter: Filter = { where: { idNationality : { neq: id }, identifier : nationality.identifier }};
     const identifierExists = await this.nationalityRepository.findOne(filter);
 
     if (identifierExists !== null) {
