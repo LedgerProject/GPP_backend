@@ -11,6 +11,7 @@ import {
     Provider,
   } from '@loopback/core';
   import multer from 'multer';
+  import { Request } from '@loopback/rest';
   import {MEMORY_UPLOAD_SERVICE} from '../keys';
   import {MemoryUploadHandler} from '../types';
   
@@ -27,4 +28,26 @@ import {
     value(): MemoryUploadHandler {
       return multer(this.options).any();
     }
+  }
+  
+  export function getFilesAndFields(request: Request) {
+    const uploadedFiles = request.files;
+    const mapper = (f: globalThis.Express.Multer.File) => ({
+      fieldname: f.fieldname,
+      originalname: f.originalname,
+      encoding: f.encoding,
+      mimetype: f.mimetype,
+      size: f.size,
+      buffer: f.buffer
+    });
+
+    let files: any[] = [];
+    if (Array.isArray(uploadedFiles)) {
+      files = uploadedFiles.map(mapper);
+    } else {
+      for (const filename in uploadedFiles) {
+        files.push(...uploadedFiles[filename].map(mapper));
+      }
+    }
+    return {files, fields: request.body};
   }
