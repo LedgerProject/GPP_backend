@@ -9,3 +9,12 @@ DB_PORT=<database port>
 DB_USER=<database user>
 DB_PWD=<database password>
 DB_NAME=<database name>
+
+# ICONS DIMENSIONS
+ICON_HEIGHT=48
+ICON_WIDTH=48
+MARKER_HEIGHT=37
+MARKER_WIDTH=32
+
+# ENCRYPT MAGIC SALT
+SALT=<encrypt salt>

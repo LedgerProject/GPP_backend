@@ -2,12 +2,11 @@
 // Node module: @loopback/example-file-transfer
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
-
 import { BindingScope, config, ContextTags, injectable, Provider } from '@loopback/core';
 import { Request } from '@loopback/rest';
 import multer from 'multer';
-import { FILE_UPLOAD_SERVICE } from '../keys';
-import { FileUploadHandler, TempFile } from '../types';
+import { FILE_UPLOAD_SERVICE, MEMORY_UPLOAD_SERVICE } from '../keys';
+import { FileUploadHandler, MemoryUploadHandler, TempFile } from '../types';
 
 /**
  * A provider to return an `Express` request handler from `multer` middleware
@@ -29,6 +28,18 @@ export class FileUploadProvider implements Provider<FileUploadHandler> {
   }
 }
 
+@injectable({
+  scope: BindingScope.TRANSIENT,
+  tags: {[ContextTags.KEY]: MEMORY_UPLOAD_SERVICE},
+})
+export class MemoryUploadProvider implements Provider<MemoryUploadHandler> {
+  constructor(@config() private options: multer.Options = {}) {}
+
+  value(): MemoryUploadHandler {
+    return multer(this.options).any();
+  }
+}
+
 export function getFilesAndFields(request: Request) {
   const uploadedFiles = request.files;
   const mapper = (f: globalThis.Express.Multer.File) => ({
@@ -38,6 +49,7 @@ export function getFilesAndFields(request: Request) {
     encoding: f.encoding,
     mimetype: f.mimetype,
     size: f.size,
+    buffer: f.buffer
   });
   let files: TempFile[] = [];
   if (Array.isArray(uploadedFiles)) {

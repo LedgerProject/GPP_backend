@@ -21,7 +21,8 @@ export interface TempFile {
     tempfilename: string,
     encoding: string,
     mimetype: string,
-    size: number
+    size: number,
+    buffer: Buffer
 }
 
 export interface CompressImageStatistic {
