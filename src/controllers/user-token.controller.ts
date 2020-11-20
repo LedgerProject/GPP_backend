@@ -2,12 +2,10 @@
 import { authenticate, AuthenticationBindings } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { Filter, repository } from '@loopback/repository';
-import { get, HttpErrors, param, post} from '@loopback/rest';
+import { post} from '@loopback/rest';
 import { UserProfile } from '@loopback/security';
-//Other imports
-import _ from 'lodash';
-import { PasswordHasherBindings, TokenServiceBindings, UserServiceBindings } from '../authorization/keys';
 //GPP imports
+import { PasswordHasherBindings, TokenServiceBindings, UserServiceBindings } from '../authorization/keys';
 import { PermissionKeys } from '../authorization/permission-keys';
 import { UserToken } from '../models/user-token.model';
 import { UserTokenRepository, OrganizationsUsersViewRepository, OrganizationUserRepository, UserRepository } from '../repositories';
@@ -35,9 +33,9 @@ export class UserTokenController {
     public jwtService: JWTService,
   ) { }
 
-  //*** USER PROFILE ***/
-  @post('/users/token')
-  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
+  //*** USER TOKEN GENERATION ***/
+  @post('/users-token')
+  @authenticate('jwt', { required: [PermissionKeys.DocWalletManagement] })
   async postUserToken(
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile
@@ -45,12 +43,12 @@ export class UserTokenController {
     const userToken: UserToken = new UserToken();
     userToken.idUser = currentUser.idUser;
     let token = generateFixedLengthRandomString(ALPHABET_CHARS, USER_TOKEN_LENGTH);
-    let notExistingToken : boolean = true;
+    let notExistingToken  = true;
 
     //Try generating token until you find a free token
     while(notExistingToken){
       const filter: Filter = { where: { "token": token } };
-      let foundTokens = await this.userTokenRepository.find(filter);
+      const foundTokens = await this.userTokenRepository.find(filter);
       if (foundTokens.length > 0){
         token = generateFixedLengthRandomString(ALPHABET_CHARS, USER_TOKEN_LENGTH);
       } else {
