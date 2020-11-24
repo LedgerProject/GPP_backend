@@ -84,7 +84,7 @@ export class IconController {
           // Get all the file informations
           const filesAndFields = getFilesAndFields(request);
           
-          if (filesAndFields.files.length > 1) {
+          if (filesAndFields.files.length === 2) {
             // Get the first file informations
             const fileUploaded1 = filesAndFields.files[0];
             const fileUploaded2 = filesAndFields.files[1];
@@ -148,6 +148,9 @@ export class IconController {
                 reject(new HttpErrors.BadRequest('Error converting image to base64 ' + errorBase64));
                 return;
               })
+          } else {
+            reject(new HttpErrors.BadRequest('Needed 2 image files (icon and marker)'));
+            return;
           }
         }
       });
@@ -206,6 +209,85 @@ export class IconController {
     }
 
     await this.iconRepository.updateById(id, icon);
+  }
+
+  //*** UPDATE IMAGE ***/
+  @patch('/icons/{id}/image/{type}', {
+    responses: {
+      '200': {
+        description: 'Icon Image PATCH success',
+        content: { 'application/json': { schema: { type: 'object' } } },
+      },
+    },
+  })
+  @authenticate('jwt', { "required": [PermissionKeys.GeneralIconsManagement] })
+  async updateImageIconById(
+    @param.path.string('id') id: string,
+    @param.path.string('type') type: string,
+    @requestBody.file()
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<void> {
+    // File upload
+    return new  Promise<void>((resolve, reject) => {
+      this.fileUploadHandler(request, response, (err) => {
+        if (err) {
+          // Multer error
+          resolve(err);
+        } else {
+          // Get all the file informations
+          const filesAndFields = getFilesAndFields(request);
+
+          if (filesAndFields.files.length === 1) {
+            let imageWidth = 0;
+            let imageHeight = 0;
+            if (type === "image") {
+              imageWidth = parseInt(process.env.ICON_WIDTH + "");
+              imageHeight = parseInt(process.env.ICON_WIDTH + "");
+            } else {
+              imageWidth = parseInt(process.env.MARKER_WIDTH + "");
+              imageHeight = parseInt(process.env.MARKER_HEIGHT + "");
+            }
+            // Get the first file informations
+            const fileUploaded = filesAndFields.files[0];
+
+            // Check if the file is jpeg or png
+            if (fileUploaded.mimetype !== "image/jpeg" && fileUploaded.mimetype !== "image/png") {
+              fs.unlinkSync(sandboxPath + "/" + fileUploaded.tempfilename); // Remove the temporary file
+              reject(new HttpErrors.BadRequest('Please select an image/jpeg or image/png file'));
+              return;
+            }
+
+            // Check the eight and width of image
+            const dimensions = sizeOf(sandboxPath + "/" + fileUploaded.tempfilename);
+            if (dimensions.width !== imageWidth || dimensions.height !== imageHeight) {
+              fs.unlinkSync(sandboxPath + "/" + fileUploaded.tempfilename); // Remove the temporary file
+              reject(new HttpErrors.BadRequest('Please select an image ' + imageWidth + 'x' + imageHeight + ' pixels'));
+              return;
+            }
+
+            imageToBase64(sandboxPath + "/" + fileUploaded.tempfilename)
+              .then( async (responseBase64: string) => {
+                const icon:Icon = new Icon();
+                if (type === "image") {
+                  icon.image = responseBase64;
+                } else {
+                  icon.marker = responseBase64;
+                }
+                await this.iconRepository.updateById(id, icon);
+                resolve();
+              })
+              .catch((errorBase64: object) => {
+                reject(new HttpErrors.BadRequest('Error converting image to base64 ' + errorBase64));
+                return;
+              })
+          } else {
+            reject(new HttpErrors.BadRequest('Needed 1 image file'));
+            return;
+          }
+        }
+      });
+    });
   }
 
   //*** DELETE ***/

@@ -14,7 +14,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Set the path to the structures folder
-const galleriesStructuresPath = path.join(__dirname, '..', '..', 'galleries', 'structures');
+const galleriesStructuresPath = path.join(__dirname, '..', '..', 'public', 'galleries', 'structures');
 
 export class StructureController {
   constructor(

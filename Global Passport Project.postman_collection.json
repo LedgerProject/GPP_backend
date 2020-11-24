@@ -1509,6 +1509,62 @@
 					"response": []
 				},
 				{
+					"name": "icons/:id/image/:type",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							],
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}icons/:id/image/:type",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}icons",
+								":id",
+								"image",
+								":type"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "type",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "icons/:id",
 					"request": {
 						"auth": {
@@ -2375,7 +2431,7 @@
 					"response": []
 				},
 				{
-					"name": "icons/:id",
+					"name": "structures/:id",
 					"request": {
 						"auth": {
 							"type": "bearer",
