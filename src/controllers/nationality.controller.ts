@@ -157,7 +157,7 @@ export class NationalityController {
   async findLanguages(
     @param.path.string('id') id: string,
   ): Promise<NationalityLanguage[]> {
-    const filter: Filter = { where: { "idCountry": id } };
+    const filter: Filter = { where: { "idNationality": id } };
     return this.nationalityLanguageRepository.find(filter);
   }
 }
