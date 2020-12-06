@@ -332,7 +332,7 @@ export class UserController {
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile
   ): Promise<OrganizationsUsersView[]> {
-    const filter: Filter = { where: { "idUser": currentUser.idUser, "confirmed": true } };
+    const filter: Filter = { where: { "idUser": currentUser.idUser, "confirmed": true }, order: ["name"] };
     const myOrganizations = await this.organizationsUsersViewRepository.find(filter);
     return myOrganizations;
   }
@@ -348,5 +348,4 @@ export class UserController {
     const myOrganizations = await this.organizationsUsersViewRepository.find(filter);
     return myOrganizations;
   }
-  
 }
