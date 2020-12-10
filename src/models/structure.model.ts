@@ -37,8 +37,8 @@ export class Structure extends Entity {
   @property({
     type: 'string',
     required: true,
-    length: 50,
-    postgresql: { columnName: 'address', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
+    length: 250,
+    postgresql: { columnName: 'address', dataType: 'character varying', dataLength: 250, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   address: string;
 
