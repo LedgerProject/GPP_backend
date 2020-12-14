@@ -63,7 +63,7 @@ export class UserController {
     validateCredentials(_.pick(userData, ['userType', 'email', 'password']));
 
     // Check: if it is a GPP operator, if secretKey is correct
-    if (userData.userType === UserTypeKeys.gppOperator && secretKey !== 'initGPP2020!') {
+    if (userData.userType === UserTypeKeys.gppOperator && secretKey !== process.env.GPP_REGISTRATION_KEY) {
       throw new HttpErrors.Forbidden('Wrong secret key');
     }
 
