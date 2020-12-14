@@ -9,13 +9,13 @@
 ## Table of contents
 
 * [Global Passport Project](#global-passport-project)
-* [Build with](#build-with)
+* [Build with](#built-with)
 * [Software Used](#software-used)
-* [Side technologies](#directory-structure)
+* [Side technologies](#side-technologies)
 * [Directory structure](#directory-structure)
 * [Starting a development environment](#starting-a-development-environment)
 * [Available scripts](#available-scripts)
-* [How the backend works](#available-scripts)
+* [How the backend works](#how-the-backend-works)
 
 ## Global Passport Project
 
@@ -113,7 +113,17 @@ streamlined use of the resources.
 
 ## Directory structure
 
-* src: JavaScript source code, having the following structure: 
+* public: public directory, contains index to reach Swagger and the structures images
+* src: TypeScript source code, having the following structure:
+  * authentication-strategies: definition of JSON web token (JWT) authentication strategy.
+  * authorization: definition of users permissions, and token.
+  * controllers: implements operations defined by the application’s API. It implements the application’s business logic and acts as a bridge between the HTTP/REST API and domain/database models.
+  * datasources: configuration for a Connector instance that represents data in an external system.
+  * interceptors: reusable functions to provide aspect-oriented logic around method invocations.
+  * model: describes objects, for example, users, categories, structures. Defines a list of properties with name, type, and other constraints.
+  * repositories: specialized Service interface that provides strong-typed data access (for example, CRUD) operations of a domain model against the underlying database or service.
+  * scenarios: various zenroom scenarious.
+  * services: various services functions.
 
 ## Starting a development environment
 
@@ -208,8 +218,36 @@ Try http://127.0.0.1:3001/ping
 
 ## Available scripts
 
-todo
+To compile the project run:
+
+```sh
+npm run build
+```
+
+To compile the project in watch mode run:
+
+```sh
+npm run build:watch
+```
+
+To clean the project run:
+
+```sh
+npm run clean
+```
+
+To clean and compile the project run:
+
+```sh
+npm run pretest
+```
+
+To run the project run:
+
+```sh
+npm start
+```
 
 ## How the backend works
 
-todo
+TODO

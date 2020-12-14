@@ -67,8 +67,5 @@ typings/
 # Sandbox folder for uploaded images
 .sandbox
 
-# Galleries folder
-galleries
-
 # Mac shit files
 .DS_Store
