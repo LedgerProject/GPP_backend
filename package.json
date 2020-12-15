@@ -1,6 +1,6 @@
 {
   "name": "gpp-backend",
-  "version": "0.0.1",
+  "version": "0.7.4",
   "description": "Global Passport Project Backend",
   "keywords": [
     "loopback-application",
