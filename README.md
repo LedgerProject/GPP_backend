@@ -138,7 +138,7 @@ streamlined use of the resources.
 Open a terminal and make a clone of this repository on your machine:
 
 ```sh
-git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
+git clone https://github.com/LedgerProject/GPP_backend
 ```
 
 Install the npm packages. Go to the project directory and run:
