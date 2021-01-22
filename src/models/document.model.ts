@@ -37,8 +37,8 @@ export class Document extends Entity {
 
   @property({
     type: 'string',
-    length: 20,
-    postgresql: { columnName: 'mimeType', dataType: 'character varying', dataLength: 20, dataPrecision: null, dataScale: null, nullable: 'YES' },
+    length: 200,
+    postgresql: { columnName: 'mimeType', dataType: 'character varying', dataLength: 200, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   mimeType: string;
 
