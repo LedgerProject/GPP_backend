@@ -41,8 +41,8 @@ export function decrypt(chunk: DocumentEncryptedChunk, password:string) {
   if(chunk.ipfsPath){
     retrieveStringFromIPFS(chunk.ipfsPath).then((result:any)=>{
       if(result){
-        console.log("Reading result from IPFS");
-        console.log(result);
+        // console.log("Reading result from IPFS");
+        // console.log(result);
         text = result;
       }
     });

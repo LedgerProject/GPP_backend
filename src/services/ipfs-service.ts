@@ -21,7 +21,5 @@ export async function retrieveStringFromIPFS(path:string) {
     data += chunk.toString()
   }
 
-  return data;  
-  
+  return data; 
 }
-
