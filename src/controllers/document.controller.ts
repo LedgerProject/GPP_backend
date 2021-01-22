@@ -14,6 +14,7 @@ import { MEMORY_UPLOAD_SERVICE } from '../keys';
 import { MemoryUploadHandler, TempFile } from '../types';
 import { chunkString } from '../services/string-util';
 import { decrypt, encrypt } from '../services/zenroom-service';
+import { uploadStringToIPFS, retrieveStringFromIPFS } from '../services/ipfs-service';
 import { TokenServiceBindings } from '../authorization/keys';
 import { JWTService } from '../services/jwt-service';
 import { ATTACHMENT_FILENAME, BASE64_ENCODING, CHUNK_MAX_CHAR_SIZE } from '../constants';
@@ -274,6 +275,7 @@ export class DocumentController {
     documentsEncryptedChunk.iv = objectToSave.secret_message.iv;
     documentsEncryptedChunk.idDocument = documentUUIDReference;
     documentsEncryptedChunk.chunkIndexId = objectToSave.indexId;
+    documentsEncryptedChunk.ipfsPath = await uploadStringToIPFS(documentsEncryptedChunk.text!);
     return this.documentEncryptedChunkRepository.save(documentsEncryptedChunk);
   }
 

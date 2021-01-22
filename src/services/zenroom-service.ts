@@ -1,5 +1,6 @@
 import { DocumentEncryptedChunk } from '../models';
 import { ENCRYPT, DECRYPT } from '../scenarios/zenroom-scenarios'
+import { retrieveStringFromIPFS } from '../services/ipfs-service';
 const zenroom = require('zenroom');
 const saltedMd5 = require('salted-md5');
 /* 
@@ -35,6 +36,18 @@ export function encrypt(stringToEncrypt: string, password:string) {
   This function is using zenroom to decrypt a specific chunk
 */
 export function decrypt(chunk: DocumentEncryptedChunk, password:string) {
+
+  let text = chunk.text;
+  if(chunk.ipfsPath){
+    retrieveStringFromIPFS(chunk.ipfsPath).then((result:any)=>{
+      if(result){
+        console.log("Reading result from IPFS");
+        console.log(result);
+        text = result;
+      }
+    });
+  }
+
   const savedLines: any = []
   const printFunction = (text: any) => {
     savedLines.push(text)
@@ -51,7 +64,7 @@ export function decrypt(chunk: DocumentEncryptedChunk, password:string) {
       "checksum": chunk.checksum,
       "header": chunk.header,
       "iv": chunk.iv,
-      "text": chunk.text
+      "text": text
     }
   }
 
