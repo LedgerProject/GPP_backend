@@ -134,6 +134,21 @@ export class StructureController {
       filter.where = where;
     }
 
+    // Check if specified the bounded coordinates
+    if (filter !== undefined) {
+      if (filter.where !== undefined) {
+        const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
+        if (filter.where.latitudeNorthWest && filter.where.longitudeNorthWest && filter.where.latitudeSouthEast && filter.where.longitudeSouthEast) {
+          const where = queryFilters.impose({ 
+            latitude: {lt: filter.where.latitudeNorthWest, gt: filter.where.latitudeSouthEast}, 
+            longitude : {gt: filter.where.longitudeNorthWest, lt: filter.where.longitudeSouthEast},
+          }).build();
+
+          filter.where = where;
+        }
+      }
+    }
+
     return this.structuresViewRepository.find(filter);
   }
 

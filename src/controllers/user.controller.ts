@@ -151,7 +151,7 @@ export class UserController {
       default:
         userProfile.permissions = [
           PermissionKeys.DocWalletManagement,
-          PermissionKeys.StructuresList,
+          PermissionKeys.StructureList,
           PermissionKeys.AuthFeatures,
           PermissionKeys.ProfileEdit
         ]
