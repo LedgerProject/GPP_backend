@@ -176,10 +176,10 @@ export class DocumentController {
     const encryptedChunks : DocumentEncryptedChunk[] = await this.documentEncryptedChunkRepository.find(chunksFilter);
     let textDecrypted = "";
 
-    encryptedChunks.forEach((chunk: DocumentEncryptedChunk) => {
-      const result = decrypt(chunk, userToken.idUser);
+    for await (const chunk of encryptedChunks) {
+      const result = await decrypt(chunk, userToken.idUser);
       textDecrypted = textDecrypted + result.textDecrypted;
-    }); 
+    }
  
     const fileContents = Buffer.from(textDecrypted, BASE64_ENCODING);
     response.writeHead(200, {
@@ -228,10 +228,10 @@ export class DocumentController {
     const encryptedChunks : DocumentEncryptedChunk[] = await this.documentEncryptedChunkRepository.find(chunksFilter);
     let textDecrypted = "";
 
-    encryptedChunks.forEach((chunk: DocumentEncryptedChunk) => {
-      const result = decrypt(chunk, currentUser.idUser);
+    for await (const chunk of encryptedChunks) {
+      const result = await decrypt(chunk, currentUser.idUser);
       textDecrypted = textDecrypted + result.textDecrypted;
-    }); 
+    }
  
     const fileContents = Buffer.from(textDecrypted, BASE64_ENCODING);
     response.writeHead(200, {

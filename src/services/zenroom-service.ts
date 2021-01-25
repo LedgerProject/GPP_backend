@@ -35,17 +35,11 @@ export function encrypt(stringToEncrypt: string, password:string) {
 /* 
   This function is using zenroom to decrypt a specific chunk
 */
-export function decrypt(chunk: DocumentEncryptedChunk, password:string) {
+export async function decrypt(chunk: DocumentEncryptedChunk, password:string) {
 
   let text = chunk.text;
   if(chunk.ipfsPath){
-    retrieveStringFromIPFS(chunk.ipfsPath).then((result:any)=>{
-      if(result){
-        // console.log("Reading result from IPFS");
-        // console.log(result);
-        text = result;
-      }
-    });
+    text = await retrieveStringFromIPFS(chunk.ipfsPath);
   }
 
   const savedLines: any = []
