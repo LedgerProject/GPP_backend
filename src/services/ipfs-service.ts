@@ -1,3 +1,5 @@
+import { compressString, uncompressString } from '../services/compress-service';
+
 const createClient = require('ipfs-http-client');
 const client = createClient(process.env.IPFS_GATEWAY);
 
@@ -5,7 +7,7 @@ const client = createClient(process.env.IPFS_GATEWAY);
   This function is using ipfs to upload a specific string
 */
 export async function uploadStringToIPFS(stringToUpload:string) {
-  const results = await client.add(stringToUpload);
+  const results = await client.add(compressString(stringToUpload));
   return results.path;
 }
 
@@ -21,5 +23,5 @@ export async function retrieveStringFromIPFS(path:string) {
     data += chunk.toString()
   }
 
-  return data; 
+  return uncompressString(data); 
 }
