@@ -270,12 +270,12 @@ export class DocumentController {
   private async saveDocumentChunk(objectToSave: any, documentUUIDReference: string) : Promise<DocumentEncryptedChunk> {
     const documentsEncryptedChunk: DocumentEncryptedChunk = new DocumentEncryptedChunk();
     documentsEncryptedChunk.header = objectToSave.secret_message.header;
-    documentsEncryptedChunk.text = objectToSave.secret_message.text;
+    //documentsEncryptedChunk.text = objectToSave.secret_message.text;
     documentsEncryptedChunk.checksum = objectToSave.secret_message.checksum;
     documentsEncryptedChunk.iv = objectToSave.secret_message.iv;
     documentsEncryptedChunk.idDocument = documentUUIDReference;
     documentsEncryptedChunk.chunkIndexId = objectToSave.indexId;
-    documentsEncryptedChunk.ipfsPath = await uploadStringToIPFS(documentsEncryptedChunk.text!);
+    documentsEncryptedChunk.ipfsPath = await uploadStringToIPFS(objectToSave.secret_message.text!);
     return this.documentEncryptedChunkRepository.save(documentsEncryptedChunk);
   }
 

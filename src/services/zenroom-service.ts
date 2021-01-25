@@ -37,7 +37,7 @@ export function encrypt(stringToEncrypt: string, password:string) {
 */
 export async function decrypt(chunk: DocumentEncryptedChunk, password:string) {
 
-  let text = chunk.text;
+  let text :any = chunk.text;
   if(chunk.ipfsPath){
     text = await retrieveStringFromIPFS(chunk.ipfsPath);
   }

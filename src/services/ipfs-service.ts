@@ -7,7 +7,10 @@ const client = createClient(process.env.IPFS_GATEWAY);
   This function is using ipfs to upload a specific string
 */
 export async function uploadStringToIPFS(stringToUpload:string) {
-  const results = await client.add(compressString(stringToUpload));
+
+  let compressedString = compressString(stringToUpload)
+  console.log("compressed" + compressedString);
+  const results = await client.add(compressedString);
   return results.path;
 }
 
@@ -15,7 +18,7 @@ export async function uploadStringToIPFS(stringToUpload:string) {
   This function is using ipfs to retrieve a specific string given a path
 */
 export async function retrieveStringFromIPFS(path:string) {
-  const stream = client.cat(path)
+  const stream = client.cat(path);
   let data = ''
 
   for await (const chunk of stream) {
@@ -23,5 +26,8 @@ export async function retrieveStringFromIPFS(path:string) {
     data += chunk.toString()
   }
 
-  return uncompressString(data); 
+  let result = uncompressString(data);
+  console.log(result);
+
+  return result; 
 }
