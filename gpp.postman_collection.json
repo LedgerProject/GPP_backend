@@ -76,10 +76,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"identifier\": \"string\",\n  \"type\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"identifier\": \"string\",\n  \"type\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}categories",
@@ -161,10 +158,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idCategory\": \"string\",\n  \"identifier\": \"string\",\n  \"type\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idCategory\": \"string\",\n  \"identifier\": \"string\",\n  \"type\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}categories/:id",
@@ -205,10 +199,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {}
-							}
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}categories/:id",
@@ -262,15 +253,15 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "categoriesLanguages",
@@ -303,10 +294,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idCategory\": \"string\",\n  \"alias\": \"string\",\n  \"category\": \"string\",\n  \"language\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idCategory\": \"string\",\n  \"alias\": \"string\",\n  \"category\": \"string\",\n  \"language\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}categories-languages",
@@ -365,8 +353,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "countries",
@@ -399,10 +386,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"identifier\": \"string\",\n  \"completed\": true\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"identifier\": \"string\",\n  \"completed\": true\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries",
@@ -524,10 +508,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idCountry\": \"string\",\n  \"identifier\": \"string\",\n  \"completed\": true\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idCountry\": \"string\",\n  \"identifier\": \"string\",\n  \"completed\": true\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries/:id",
@@ -568,10 +549,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {}
-							}
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries/:id",
@@ -625,15 +603,15 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "countriesLanguages",
@@ -666,10 +644,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idCountry\": \"string\",\n  \"alias\": \"string\",\n  \"country\": \"string\",\n  \"language\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idCountry\": \"string\",\n  \"alias\": \"string\",\n  \"country\": \"string\",\n  \"language\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-languages",
@@ -728,8 +703,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "countriesTopics",
@@ -762,10 +736,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idCountry\": \"string\",\n  \"identifier\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idCountry\": \"string\",\n  \"identifier\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-topics",
@@ -887,10 +858,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idCountry\": \"string\",\n  \"identifier\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idCountry\": \"string\",\n  \"identifier\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-topics/:id",
@@ -931,10 +899,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {}
-							}
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-topics/:id",
@@ -988,15 +953,15 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "countriesTopicsLanguages",
@@ -1029,10 +994,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idCountryTopic\": \"string\",\n  \"topic\": \"string\",\n  \"description\": \"string\",\n  \"language\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idCountryTopic\": \"string\",\n  \"topic\": \"string\",\n  \"description\": \"string\",\n  \"language\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries-topics-languages",
@@ -1091,8 +1053,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "documents",
@@ -1123,10 +1084,7 @@
 									"type": "file",
 									"src": []
 								}
-							],
-							"options": {
-								"formdata": {}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}documents/:title",
@@ -1142,7 +1100,8 @@
 							"variable": [
 								{
 									"key": "title",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
@@ -1249,10 +1208,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {}
-							}
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}documents/:id",
@@ -1313,7 +1269,8 @@
 							"variable": [
 								{
 									"key": "token",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
@@ -1358,19 +1315,20 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								},
 								{
 									"key": "token",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "icons",
@@ -1481,10 +1439,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idIcon\": \"string\",\n  \"name\": \"string\",\n  \"image\": \"string\",\n  \"marker\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idIcon\": \"string\",\n  \"name\": \"string\",\n  \"image\": \"string\",\n  \"marker\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}icons/:id",
@@ -1531,10 +1486,7 @@
 									"type": "file",
 									"src": []
 								}
-							],
-							"options": {
-								"raw": {}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}icons/:id/image/:type",
@@ -1557,7 +1509,8 @@
 								},
 								{
 									"key": "type",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
@@ -1581,10 +1534,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {}
-							}
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}icons/:id",
@@ -1639,10 +1589,7 @@
 									"type": "file",
 									"src": []
 								}
-							],
-							"options": {
-								"formdata": {}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}icons/:name",
@@ -1658,15 +1605,15 @@
 							"variable": [
 								{
 									"key": "name",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "nationalities",
@@ -1699,10 +1646,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"identifier\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"identifier\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}nationalities",
@@ -1824,10 +1768,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idNationality\": \"string\",\n  \"identifier\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idNationality\": \"string\",\n  \"identifier\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}nationalities/:id",
@@ -1868,10 +1809,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {}
-							}
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}nationalities/:id",
@@ -1925,15 +1863,15 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "nationalitiesLanguages",
@@ -1966,10 +1904,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idNationality\": \"string\",\n  \"alias\": \"string\",\n  \"nationality\": \"string\",\n  \"language\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idNationality\": \"string\",\n  \"alias\": \"string\",\n  \"nationality\": \"string\",\n  \"language\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}nationalities-languages",
@@ -2028,8 +1963,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "organizations",
@@ -2062,10 +1996,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"name\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}organizations",
@@ -2182,10 +2113,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idOrganization\": \"string\",\n  \"name\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idOrganization\": \"string\",\n  \"name\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}organizations/:id",
@@ -2242,15 +2170,15 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "structures",
@@ -2283,10 +2211,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idOrganization\": \"string\",\n  \"alias\": \"string\",\n  \"name\": \"string\",\n  \"address\": \"string\",\n  \"city\": \"string\",\n  \"latitude\": 0,\n  \"longitude\": 0,\n  \"email\": \"string\",\n  \"phoneNumberPrefix\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"website\": \"string\",\n  \"idIcon\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idOrganization\": \"string\",\n  \"alias\": \"string\",\n  \"name\": \"string\",\n  \"address\": \"string\",\n  \"city\": \"string\",\n  \"latitude\": 0,\n  \"longitude\": 0,\n  \"email\": \"string\",\n  \"phoneNumberPrefix\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"website\": \"string\",\n  \"idIcon\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures",
@@ -2318,7 +2243,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"structurename\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures?filter={\n  \"where\": {\n    \"latitudeNorthWest\": null,\"longitudeNorthWest\": null,\"latitudeSouthEast\":null,\"longitudeSouthEast\":null\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"structurename\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -2330,7 +2255,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"structurename\"\n  ]\n}"
+									"value": "{\n  \"where\": {\n    \"latitudeNorthWest\": null,\"longitudeNorthWest\": null,\"latitudeSouthEast\":null,\"longitudeSouthEast\":null\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"structurename\"\n  ]\n}"
 								}
 							]
 						}
@@ -2403,10 +2328,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idStructure\": \"string\",\n  \"idOrganization\": \"string\",\n  \"alias\": \"string\",\n  \"name\": \"string\",\n  \"address\": \"string\",\n  \"city\": \"string\",\n  \"latitude\": 0,\n  \"longitude\": 0,\n  \"email\": \"string\",\n  \"phoneNumberPrefix\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"website\": \"string\",\n  \"idIcon\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idStructure\": \"string\",\n  \"idOrganization\": \"string\",\n  \"alias\": \"string\",\n  \"name\": \"string\",\n  \"address\": \"string\",\n  \"city\": \"string\",\n  \"latitude\": 0,\n  \"longitude\": 0,\n  \"email\": \"string\",\n  \"phoneNumberPrefix\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"website\": \"string\",\n  \"idIcon\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/:id",
@@ -2463,7 +2385,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
@@ -2500,7 +2423,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
@@ -2537,7 +2461,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
@@ -2574,15 +2499,15 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "structuresCategories",
@@ -2615,10 +2540,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idStructure\": \"string\",\n  \"idCategory\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idStructure\": \"string\",\n  \"idCategory\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures-categories",
@@ -2667,15 +2589,15 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "structuresImages",
@@ -2706,10 +2628,7 @@
 									"type": "file",
 									"src": []
 								}
-							],
-							"options": {
-								"formdata": {}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures-images/:idStructure",
@@ -2766,15 +2685,15 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"type": "string"
 								}
 							]
 						}
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "structuresLanguages",
@@ -2807,10 +2726,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"idStructure\": \"string\",\n  \"description\": \"string\",\n  \"language\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"idStructure\": \"string\",\n  \"description\": \"string\",\n  \"language\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures-languages",
@@ -2869,8 +2785,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "users",
@@ -2890,10 +2805,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"userType\": \"string\",\n  \"email\": \"user@example.com\",\n  \"password\": \"string\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"userType\": \"string\",\n  \"email\": \"user@example.com\",\n  \"password\": \"string\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users/login",
@@ -2928,10 +2840,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"userType\": \"string\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"email\": \"string\",\n  \"emailConfirmed\": true,\n  \"password\": \"string\",\n  \"passwordRecoveryToken\": \"string\",\n  \"passwordRecoveryDate\": \"2020-11-03T12:03:58.201Z\",\n  \"idNationality\": \"string\",\n  \"gender\": \"string\",\n  \"birthday\": \"2020-11-03T12:03:58.201Z\"\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\n  \"userType\": \"string\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"email\": \"string\",\n  \"emailConfirmed\": true,\n  \"password\": \"string\",\n  \"passwordRecoveryToken\": \"string\",\n  \"passwordRecoveryDate\": \"2020-11-03T12:03:58.201Z\",\n  \"idNationality\": \"string\",\n  \"gender\": \"string\",\n  \"birthday\": \"2020-11-03T12:03:58.201Z\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users/signup?secretKey",
@@ -3057,8 +2966,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "usersToken",
@@ -3085,10 +2993,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {}
-							}
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users-token",
@@ -3104,8 +3009,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "ping",
@@ -3139,7 +3043,6 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "21b30bab-f416-41ef-9859-90f637f8193a",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -3149,13 +3052,11 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "82efeccc-7c4b-43b2-bc0b-8a603ccdcf7e",
 				"type": "text/javascript",
 				"exec": [
 					""
 				]
 			}
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
