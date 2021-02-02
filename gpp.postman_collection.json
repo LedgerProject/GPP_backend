@@ -2263,6 +2263,42 @@
 					"response": []
 				},
 				{
+					"name": "structures/map-search",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/map-search?filter={\n  \"where\": {\n    \"latitudeNorthWest\": null,\"longitudeNorthWest\": null,\"latitudeSouthEast\":null,\"longitudeSouthEast\":null\n  },\n  \"fields\": {\n    \"idStructureCategory\": true,\n    \"idStructure\": true,\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"structureAlias\": true,\n    \"structureName\": true,\n    \"structureAddress\": true,\n    \"structureLatitude\": true,\n    \"structureLongitude\": true,\n    \"structureIdIcon\": true,\n    \"structureImage\": true,\n    \"structureMarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"structureName\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}structures",
+								"map-search"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"latitudeNorthWest\": null,\"longitudeNorthWest\": null,\"latitudeSouthEast\":null,\"longitudeSouthEast\":null\n  },\n  \"fields\": {\n    \"idStructureCategory\": true,\n    \"idStructure\": true,\n    \"idCategory\": true,\n    \"identifier\": true,\n    \"structureAlias\": true,\n    \"structureName\": true,\n    \"structureAddress\": true,\n    \"structureLatitude\": true,\n    \"structureLongitude\": true,\n    \"structureIdIcon\": true,\n    \"structureImage\": true,\n    \"structureMarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"structureName\"\n  ]\n}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "structures/:id",
 					"request": {
 						"auth": {

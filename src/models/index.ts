@@ -13,6 +13,7 @@ export * from './organization-user.model';
 export * from './organization.model';
 export * from './organizations-users-view.model';
 export * from './structure-category.model';
+export * from './structures-map-search-view.model';
 export * from './structures-categories-view.model';
 export * from './structure-image.model';
 export * from './structure-language.model';

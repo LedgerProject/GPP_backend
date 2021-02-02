@@ -6,8 +6,8 @@ import { del, get, getFilterSchemaFor, getModelSchemaRef, HttpErrors, param, pat
 import { SecurityBindings, UserProfile } from '@loopback/security';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
-import { Structure, StructuresCategoriesView, StructureLanguage, StructuresView, StructureImage } from '../models';
-import { StructureRepository, StructuresCategoriesViewRepository, StructureLanguageRepository, StructuresViewRepository, StructureImageRepository } from '../repositories';
+import { Structure, StructuresMapSearchView, StructuresCategoriesView, StructureLanguage, StructuresView, StructureImage } from '../models';
+import { StructureRepository, StructuresMapSearchViewRepository, StructuresCategoriesViewRepository, StructureLanguageRepository, StructuresViewRepository, StructureImageRepository } from '../repositories';
 import { checkStructureOwner } from '../services/structure.service';
 
 const fs = require('fs');
@@ -24,6 +24,8 @@ export class StructureController {
     public structureLanguageRepository: StructureLanguageRepository,
     @repository(StructuresViewRepository)
     public structuresViewRepository: StructuresViewRepository,
+    @repository(StructuresMapSearchViewRepository)
+    public structuresMapSearchViewRepository: StructuresMapSearchViewRepository,
     @repository(StructuresCategoriesViewRepository)
     public structuresCategoriesViewRepository: StructuresCategoriesViewRepository,
     @repository(StructureImageRepository)
@@ -150,6 +152,39 @@ export class StructureController {
     }
 
     return this.structuresViewRepository.find(filter);
+  }
+
+  //*** LIST STRUCTURES-CATEGORIES ***/
+  @get('/structures/map-search', {
+    responses: {
+      '200': {
+        description: 'Array of StructureMapSearchView model instances',
+        content: {
+          'application/json': { schema: { type: 'array', items: getModelSchemaRef(StructuresMapSearchView, {includeRelations: true})}}
+        }
+      }
+    }
+  })
+  @authenticate('jwt', { required: [PermissionKeys.StructureList] })
+  async findStructuresMapSearch(
+    @param.query.object('filter', getFilterSchemaFor(StructuresMapSearchView)) filter?: Filter<StructuresMapSearchView>,
+  ): Promise<StructuresMapSearchView[]> {
+    // Check if specified the bounded coordinates
+    if (filter !== undefined) {
+      if (filter.where !== undefined) {
+        const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
+        if (filter.where.latitudeNorthWest && filter.where.longitudeNorthWest && filter.where.latitudeSouthEast && filter.where.longitudeSouthEast) {
+          const where = queryFilters.impose({ 
+            latitude: {lt: filter.where.latitudeNorthWest, gt: filter.where.latitudeSouthEast}, 
+            longitude : {gt: filter.where.longitudeNorthWest, lt: filter.where.longitudeSouthEast},
+          }).build();
+
+          filter.where = where;
+        }
+      }
+    }
+
+    return this.structuresMapSearchViewRepository.find(filter);
   }
 
   //*** DETAILS ***/
