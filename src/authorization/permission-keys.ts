@@ -27,6 +27,7 @@ export const enum PermissionKeys {
 
     // User permissions
     DocWalletManagement = 'DocWalletManagement',
+    CategoriesList = 'CategoriesList',
 
     // GPP operator + operator + user permissions
     StructureList = 'StructureList',

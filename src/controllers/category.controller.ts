@@ -31,7 +31,7 @@ export class CategoryController {
       },
     },
   })
-  @authenticate('jwt', { "required": [PermissionKeys.OrganizationStructuresManagement, PermissionKeys.GeneralCategoriesManagement] })
+  @authenticate('jwt', { "required": [PermissionKeys.OrganizationStructuresManagement, PermissionKeys.GeneralCategoriesManagement, PermissionKeys.CategoriesList] })
   async find(
     @param.query.object('filter', getFilterSchemaFor(Category)) filter?: Filter<Category>,
   ): Promise<Category[]> {
