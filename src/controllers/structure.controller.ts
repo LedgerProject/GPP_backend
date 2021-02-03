@@ -154,7 +154,7 @@ export class StructureController {
     return this.structuresViewRepository.find(filter);
   }
 
-  //*** LIST STRUCTURES-CATEGORIES ***/
+  //*** LIST MAP-SEARCH ***/
   @get('/structures/map-search', {
     responses: {
       '200': {

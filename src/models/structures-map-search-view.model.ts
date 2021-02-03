@@ -55,6 +55,13 @@ export class StructuresMapSearchView extends Entity {
   structureAddress?: string;
 
   @property({
+    type: 'string',
+    length: 50,
+    postgresql: {columnName: 'structurecity', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
+  })
+  structureCity?: string;
+
+  @property({
     type: 'number',
     length: 53,
     postgresql: {columnName: 'structurelatitude', dataType: 'float', dataLength: 53, dataPrecision: null, dataScale: null, nullable: 'YES'},
