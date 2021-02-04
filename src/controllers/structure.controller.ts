@@ -175,8 +175,8 @@ export class StructureController {
         const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
         if (filter.where.latitudeNorthWest && filter.where.longitudeNorthWest && filter.where.latitudeSouthEast && filter.where.longitudeSouthEast) {
           const where = queryFilters.impose({ 
-            latitude: {lt: filter.where.latitudeNorthWest, gt: filter.where.latitudeSouthEast}, 
-            longitude : {gt: filter.where.longitudeNorthWest, lt: filter.where.longitudeSouthEast},
+            structureLatitude: {lt: filter.where.latitudeNorthWest, gt: filter.where.latitudeSouthEast}, 
+            structureLongitude : {gt: filter.where.longitudeNorthWest, lt: filter.where.longitudeSouthEast},
           }).build();
 
           filter.where = where;
