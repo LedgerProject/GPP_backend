@@ -1,5 +1,6 @@
 // Loopback imports
-import { Entity, model, property } from '@loopback/repository';
+import { Entity, hasMany, model, property } from '@loopback/repository';
+//import {StructuresCategoriesView} from './structures-categories-view.model';
 
 @model({
   settings: { idInjection: false, postgresql: { schema: 'public', table: 'structures' } }
@@ -99,6 +100,9 @@ export class Structure extends Entity {
     postgresql: { columnName: 'idIcon', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   idIcon?: string;
+
+  //@hasMany(() => StructuresCategoriesView)
+  //structureCategoryView?: StructuresCategoriesView;
 
   // Define well-known properties here
 

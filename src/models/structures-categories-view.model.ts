@@ -1,4 +1,5 @@
 import {Entity, model, property} from '@loopback/repository';
+//import {Structure} from './structure.model';
 
 @model({
   settings: {
@@ -32,6 +33,9 @@ export class StructuresCategoriesView extends Entity {
     postgresql: {columnName: 'identifier', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
   })
   identifier?: string;
+
+  //@belongsTo(() => Structure)
+    //idStructure: string;
 
   // Define well-known properties here
 

@@ -152,6 +152,7 @@ export class UserController {
         userProfile.permissions = [
           PermissionKeys.DocWalletManagement,
           PermissionKeys.StructureList,
+          PermissionKeys.StructureDetail,
           PermissionKeys.CategoriesList,
           PermissionKeys.AuthFeatures,
           PermissionKeys.ProfileEdit

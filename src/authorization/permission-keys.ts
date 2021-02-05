@@ -14,7 +14,6 @@ export const enum PermissionKeys {
     OrganizationStructuresManagement = 'OrganizationStructuresManagement',
     StructureCreation = 'StructureCreation',
     StructureUpdate = 'StructureUpdate',
-    StructureDetail = 'StructureDetail',
     StructureDelete = 'StructureDelete',
 
     // GPP operator + operator permissions
@@ -29,8 +28,11 @@ export const enum PermissionKeys {
     DocWalletManagement = 'DocWalletManagement',
     CategoriesList = 'CategoriesList',
 
-    // GPP operator + operator + user permissions
+    // Operator + user permissions
     StructureList = 'StructureList',
+    StructureDetail = 'StructureDetail',
+
+    // GPP operator + operator + user permissions
     AuthFeatures = 'AuthFeatures',
     ProfileEdit = 'ProfileEdit'
 }
