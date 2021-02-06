@@ -14,7 +14,6 @@ export * from './organization.repository';
 export * from './organizations-users-view.repository';
 export * from './structure.repository';
 export * from './structure-category.repository';
-export * from './structures-map-search-view.repository';
 export * from './structures-categories-view.repository';
 export * from './structure-image.repository';
 export * from './structure-language.repository';
