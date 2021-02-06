@@ -136,9 +136,12 @@ export class StructureController {
       filter.where = where;
     }
 
-    // Check if specified the bounded coordinates
+    let categoryFilter = false;
+
+    // Check filters
     if (filter !== undefined) {
       if (filter.where !== undefined) {
+        // Check if specified the bounded coordinates
         const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
         if (filter.where.latitudeNorthWest && filter.where.longitudeNorthWest && filter.where.latitudeSouthEast && filter.where.longitudeSouthEast) {
           const where = queryFilters.impose({
@@ -150,10 +153,36 @@ export class StructureController {
 
           filter.where = where;
         }
+
+        // Check if specified the category filter
+        new WhereBuilder<AnyObject>(filter?.where);
+        if (filter.where.idCategory) {
+          categoryFilter = true;
+
+          filter.include = [{
+              "relation": "structuresCategoriesView",
+              "scope": {
+                "where": {"idCategory": filter.where.idCategory}
+              }
+            }]
+        }
       }
     }
+    
+    let structuresReturn: StructuresView[] = [];
+    const structViewRep = await this.structuresViewRepository.find(filter);
 
-    return this.structuresViewRepository.find(filter);
+    if (categoryFilter) {
+      for (let key in structViewRep) {
+        if (structViewRep[key]['structuresCategoriesView']) {
+          structuresReturn.push(structViewRep[key]);
+        }
+      }
+    } else {
+      structuresReturn = structViewRep;
+    }
+
+    return structuresReturn;
   }
 
   //*** LIST MAP-SEARCH ***/

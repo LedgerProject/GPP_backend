@@ -1,5 +1,7 @@
-import {Entity, model, property} from '@loopback/repository';
-//import {Structure} from './structure.model';
+//Loopback imports
+import { belongsTo, Entity, model, property } from '@loopback/repository';
+//GPP imports
+import { StructuresView } from './structures-view.model';
 
 @model({
   settings: {
@@ -15,11 +17,11 @@ export class StructuresCategoriesView extends Entity {
   })
   idStructureCategory?: string;
 
-  @property({
+  @belongsTo(() => StructuresView, {name : 'structuresView'}, {
     type: 'string',
-    postgresql: {columnName: 'idStructure', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES'},
-  })
-  idStructure?: string;
+    postgresql: {columnName: 'idStructure', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES'
+  }})
+  idStructure: string;
 
   @property({
     type: 'string',
@@ -34,9 +36,6 @@ export class StructuresCategoriesView extends Entity {
   })
   identifier?: string;
 
-  //@belongsTo(() => Structure)
-    //idStructure: string;
-
   // Define well-known properties here
 
   // Indexer property to allow additional data
@@ -50,6 +49,7 @@ export class StructuresCategoriesView extends Entity {
 
 export interface StructuresCategoriesViewRelations {
   // describe navigational properties here
+  structuresCategoriesView?: StructuresCategoriesViewWithRelations;
 }
 
 export type StructuresCategoriesViewWithRelations = StructuresCategoriesView & StructuresCategoriesViewRelations;
