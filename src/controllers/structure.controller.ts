@@ -146,8 +146,8 @@ export class StructureController {
         if (filter.where.latitudeNorthWest && filter.where.longitudeNorthWest && filter.where.latitudeSouthEast && filter.where.longitudeSouthEast) {
           const where = queryFilters.impose({
             and : [{
-              structureLatitude: {between: [filter.where.latitudeSouthEast, filter.where.latitudeNorthWest]}, 
-              structureLongitude : {between: [filter.where.longitudeNorthWest, filter.where.longitudeSouthEast]}
+              latitude: {between: [filter.where.latitudeSouthEast, filter.where.latitudeNorthWest]}, 
+              longitude : {between: [filter.where.longitudeNorthWest, filter.where.longitudeSouthEast]}
             }]
           }).build();
 
