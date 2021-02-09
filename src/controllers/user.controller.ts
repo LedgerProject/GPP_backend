@@ -153,6 +153,8 @@ export class UserController {
           PermissionKeys.DocWalletManagement,
           PermissionKeys.StructureList,
           PermissionKeys.StructureDetail,
+          PermissionKeys.CountriesList,
+          PermissionKeys.CountryDetail,
           PermissionKeys.CategoriesList,
           PermissionKeys.AuthFeatures,
           PermissionKeys.ProfileEdit

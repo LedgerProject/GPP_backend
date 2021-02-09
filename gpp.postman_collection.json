@@ -458,7 +458,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}countries/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"include\":[\n\t{\"relation\": \"countryTopic\", \"scope\":\n\t  {\"include\": [{\n\t\t\"relation\": \"countryTopicLanguage\", \"scope\": {\"where\": {\"language\": \"en\"}}\n\t  }]}\n\t},\n\t{\"relation\": \"countryLanguage\", \"scope\": {\"where\": {\"language\": \"en\"}}}\n  ],\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -471,7 +471,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"include\":[\n\t{\"relation\": \"countryTopic\", \"scope\":\n\t  {\"include\": [{\n\t\t\"relation\": \"countryTopicLanguage\", \"scope\": {\"where\": {\"language\": \"en\"}}\n\t  }]}\n\t},\n\t{\"relation\": \"countryLanguage\", \"scope\": {\"where\": {\"language\": \"en\"}}}\n  ],\n  \"fields\": {\n    \"idCountry\": true,\n    \"identifier\": true,\n    \"completed\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"string\"\n  ]\n}"
 								}
 							],
 							"variable": [
@@ -2278,7 +2278,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"include\":[\n\t{\"relation\": \"icon\"},\n\t{\"relation\": \"structureCategory\", \"scope\":\n\t  {\"include\": [{\"relation\": \"category\", \"scope\": \n\t\t{\"include\": [{\"relation\": \"categoryLanguage\", \"scope\": {\"where\": {\"language\": \"en\"}}}]}\n\t  }]}\n\t},\n\t{\"relation\": \"structureImage\"},\n\t{\"relation\": \"structureLanguage\", \"scope\": {\"where\": {\"language\": \"en\"}}}\n],\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -2291,7 +2291,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}"
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"include\":[\n\t{\"relation\": \"icon\"},\n\t{\"relation\": \"structureCategory\", \"scope\":\n\t  {\"include\": [{\"relation\": \"category\", \"scope\": \n\t\t{\"include\": [{\"relation\": \"categoryLanguage\", \"scope\": {\"where\": {\"language\": \"en\"}}}]}\n\t  }]}\n\t},\n\t{\"relation\": \"structureImage\"},\n\t{\"relation\": \"structureLanguage\", \"scope\": {\"where\": {\"language\": \"en\"}}}\n],\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}"
 								}
 							],
 							"variable": [

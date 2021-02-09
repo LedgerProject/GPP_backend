@@ -1,5 +1,9 @@
 // Loopback imports
-import { Entity, model, property } from '@loopback/repository';
+// Loopback imports
+import { Entity, hasMany, model, property } from '@loopback/repository';
+// GPP imports
+import { CountryLanguage } from './country-language.model';
+import { CountryTopic } from './country-topic.model';
 
 @model({
   settings: { idInjection: false, postgresql: { schema: 'public', table: 'countries' } }
@@ -25,6 +29,12 @@ export class Country extends Entity {
     postgresql: { columnName: 'completed', dataType: 'boolean', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   completed?: boolean;
+
+  @hasMany(() => CountryLanguage, {keyTo: 'idCountry'})
+  countryLanguage?: CountryLanguage[];
+
+  @hasMany(() => CountryTopic, {keyTo: 'idCountry'})
+  countryTopic?: CountryTopic[];
 
   // Define well-known properties here
 

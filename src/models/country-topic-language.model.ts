@@ -1,5 +1,7 @@
 // Loopback imports
-import { Entity, model, property } from '@loopback/repository';
+import { belongsTo, Entity, model, property } from '@loopback/repository';
+// GPP imports
+import { CountryTopic } from './country-topic.model';
 
 @model({
   settings: {
@@ -15,11 +17,11 @@ export class CountryTopicLanguage extends Entity {
   })
   idCountryTopicLanguage: string;
 
-  @property({
+  @belongsTo(() => CountryTopic, {name : 'countryTopic'}, {
     type: 'string',
     required: true,
-    postgresql: { columnName: 'idCountryTopic', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
-  })
+    postgresql: {columnName: 'idCountryTopic', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'
+  }})
   idCountryTopic: string;
 
   @property({

@@ -65,7 +65,7 @@ export class CountryController {
       },
     },
   })
-  @authenticate('jwt', { "required": [PermissionKeys.GeneralCountriesManagement] })
+  @authenticate('jwt', { "required": [PermissionKeys.GeneralCountriesManagement, PermissionKeys.CountriesList] })
   async find(
     @param.query.object('filter', getFilterSchemaFor(Country)) filter?: Filter<Country>,
   ): Promise<Country[]> {
@@ -85,7 +85,7 @@ export class CountryController {
       },
     },
   })
-  @authenticate('jwt', { "required": [PermissionKeys.GeneralCountriesManagement] })
+  @authenticate('jwt', { "required": [PermissionKeys.GeneralCountriesManagement, PermissionKeys.CountryDetail] })
   async findById(
     @param.path.string('id') id: string,
     @param.query.object('filter', getFilterSchemaFor(Country)) filter?: Filter<Country>

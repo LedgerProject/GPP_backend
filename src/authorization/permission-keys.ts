@@ -27,6 +27,8 @@ export const enum PermissionKeys {
     // User permissions
     DocWalletManagement = 'DocWalletManagement',
     CategoriesList = 'CategoriesList',
+    CountriesList = 'CountriesList',
+    CountryDetail = 'CountryDetail',
 
     // Operator + user permissions
     StructureList = 'StructureList',
