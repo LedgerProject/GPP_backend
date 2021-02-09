@@ -1,5 +1,7 @@
 // Loopback imports
-import { Entity, hasMany, model, property } from '@loopback/repository';
+import { belongsTo, Entity, hasOne, model, property } from '@loopback/repository';
+//GPP imports
+import { Icon } from './icon.model';
 
 @model({
   settings: { idInjection: false, postgresql: { schema: 'public', table: 'structures' } }
@@ -94,11 +96,11 @@ export class Structure extends Entity {
   })
   website?: string;
 
-  @property({
+  @belongsTo(() => Icon, {name : 'icon'}, {
     type: 'string',
-    postgresql: { columnName: 'idIcon', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
-  })
-  idIcon?: string;
+    postgresql: {columnName: 'idIcon', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES'
+  }})
+  idIcon: string;
 
   // Define well-known properties here
 
