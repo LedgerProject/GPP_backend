@@ -1,5 +1,8 @@
 // Loopback imports
-import { Entity, model, property } from '@loopback/repository';
+import { Entity, hasMany, model, property } from '@loopback/repository';
+// GPP imports
+import { StructureCategory } from './structure-category.model';
+import { CategoryLanguage } from './category-language.model';
 
 @model({
   settings: { idInjection: false, postgresql: { schema: 'public', table: 'categories' } }
@@ -27,6 +30,12 @@ export class Category extends Entity {
     postgresql: { columnName: 'type', dataType: 'character varying', dataLength: 20, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   type: string;
+
+  @hasMany(() => StructureCategory, {keyTo: 'idCategory'})
+  structureCategory?: StructureCategory[];
+
+  @hasMany(() => CategoryLanguage, {keyTo: 'idCategory'})
+  categoryLanguage?: CategoryLanguage[];
 
   // Define well-known properties here
 

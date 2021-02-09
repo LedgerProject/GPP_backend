@@ -1,5 +1,8 @@
 // Loopback imports
-import { Entity, model, property } from '@loopback/repository';
+import { belongsTo, Entity, model, property } from '@loopback/repository';
+import { Category } from './category.model';
+//GPP imports
+import { Structure } from './structure.model';
 
 @model({
   settings: { idInjection: false, postgresql: { schema: 'public', table: 'structuresCategories' } }
@@ -12,18 +15,18 @@ export class StructureCategory extends Entity {
   })
   idStructureCategory: string;
 
-  @property({
+  @belongsTo(() => Structure, {name : 'structure'}, {
     type: 'string',
     required: true,
-    postgresql: { columnName: 'idStructure', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
-  })
+    postgresql: {columnName: 'idStructure', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'
+  }})
   idStructure: string;
 
-  @property({
+  @belongsTo(() => Category, {name : 'category'}, {
     type: 'string',
     required: true,
-    postgresql: { columnName: 'idCategory', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
-  })
+    postgresql: {columnName: 'idCategory', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'
+  }})
   idCategory: string;
 
   // Define well-known properties here

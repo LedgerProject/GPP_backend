@@ -1,7 +1,10 @@
 // Loopback imports
-import { belongsTo, Entity, hasOne, model, property } from '@loopback/repository';
+import { belongsTo, Entity, hasMany, hasOne, model, property } from '@loopback/repository';
 //GPP imports
 import { Icon } from './icon.model';
+import { StructureCategory } from './structure-category.model';
+import { StructureImage } from './structure-image.model';
+import { StructureLanguage } from './structure-language.model';
 
 @model({
   settings: { idInjection: false, postgresql: { schema: 'public', table: 'structures' } }
@@ -101,6 +104,15 @@ export class Structure extends Entity {
     postgresql: {columnName: 'idIcon', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES'
   }})
   idIcon: string;
+
+  @hasMany(() => StructureCategory, {keyTo: 'idStructure'})
+  structureCategory?: StructureCategory[];
+
+  @hasMany(() => StructureImage, {keyTo: 'idStructure'})
+  structureImage?: StructureImage[];
+
+  @hasMany(() => StructureLanguage, {keyTo: 'idStructure'})
+  structureLanguage?: StructureLanguage[];
 
   // Define well-known properties here
 

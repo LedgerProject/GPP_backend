@@ -1,5 +1,7 @@
 // Loopback imports
-import { Entity, model, property } from '@loopback/repository';
+import { belongsTo, Entity, model, property } from '@loopback/repository';
+// GPP imports
+import { Structure } from './structure.model';
 
 @model({
   settings: { idInjection: false, postgresql: { schema: 'public', table: 'structuresImages' } }
@@ -12,11 +14,11 @@ export class StructureImage extends Entity {
   })
   idStructureImage: string;
 
-  @property({
+  @belongsTo(() => Structure, {name : 'structure'}, {
     type: 'string',
     required: true,
-    postgresql: { columnName: 'idStructure', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
-  })
+    postgresql: {columnName: 'idStructure', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'
+  }})
   idStructure: string;
 
   @property({
