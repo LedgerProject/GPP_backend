@@ -1,5 +1,6 @@
 // Loopback imports
-import { Entity, model, property } from '@loopback/repository';
+import { belongsTo, Entity, model, property } from '@loopback/repository';
+import { Nationality } from './nationality.model';
 
 @model({
   settings: {
@@ -15,11 +16,11 @@ export class NationalityLanguage extends Entity {
   })
   idNationalityLanguage: string;
 
-  @property({
+  @belongsTo(() => Nationality, {name : 'nationality'}, {
     type: 'string',
     required: true,
-    postgresql: { columnName: 'idNationality', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
-  })
+    postgresql: {columnName: 'idNationality', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'
+  }})
   idNationality: string;
 
   @property({

@@ -29,6 +29,7 @@ export const enum PermissionKeys {
     CategoriesList = 'CategoriesList',
     CountriesList = 'CountriesList',
     CountryDetail = 'CountryDetail',
+    NationalitiesList = 'NationalitiesList',
 
     // Operator + user permissions
     StructureList = 'StructureList',

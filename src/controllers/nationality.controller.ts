@@ -65,7 +65,7 @@ export class NationalityController {
       },
     },
   })
-  @authenticate('jwt', { "required": [PermissionKeys.GeneralNationalitiesManagement] })
+  @authenticate('jwt', { "required": [PermissionKeys.GeneralNationalitiesManagement, PermissionKeys.NationalitiesList] })
   async find(
     @param.query.object('filter', getFilterSchemaFor(Nationality)) filter?: Filter<Nationality>,
   ): Promise<Nationality[]> {

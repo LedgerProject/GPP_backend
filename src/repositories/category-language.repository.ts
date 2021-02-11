@@ -6,7 +6,6 @@ import { GppDataSource } from '../datasources';
 import { Category, CategoryLanguage, CategoryLanguageRelations } from '../models';
 import { CategoryRepository } from './category.repository';
 
-
 export class CategoryLanguageRepository extends DefaultCrudRepository<
   CategoryLanguage,
   typeof CategoryLanguage.prototype.idCategoryLanguage,

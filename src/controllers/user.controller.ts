@@ -156,6 +156,7 @@ export class UserController {
           PermissionKeys.CountriesList,
           PermissionKeys.CountryDetail,
           PermissionKeys.CategoriesList,
+          PermissionKeys.NationalitiesList,
           PermissionKeys.AuthFeatures,
           PermissionKeys.ProfileEdit
         ]

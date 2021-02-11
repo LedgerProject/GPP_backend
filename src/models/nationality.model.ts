@@ -1,5 +1,7 @@
 // Loopback imports
-import { Entity, model, property } from '@loopback/repository';
+import { Entity, hasMany, model, property } from '@loopback/repository';
+// GPP imports
+import { NationalityLanguage } from './nationality-language.model';
 
 @model({
   settings: { idInjection: false, postgresql: { schema: 'public', table: 'nationalities' } }
@@ -19,6 +21,9 @@ export class Nationality extends Entity {
     postgresql: { columnName: 'identifier', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   identifier: string;
+
+  @hasMany(() => NationalityLanguage, {keyTo: 'idNationality'})
+  nationalityLanguage?: NationalityLanguage[];
 
   // Define well-known properties here
 
