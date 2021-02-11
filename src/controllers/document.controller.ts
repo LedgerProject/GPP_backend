@@ -242,6 +242,52 @@ export class DocumentController {
     response.end(fileContents);
   }
 
+  //*** DOWNLOAD ***/
+  @get('/documents-base64/{id}')
+  @authenticate('jwt', { required: [PermissionKeys.DocWalletManagement] })
+  async downloadBase64(
+    @param.path.string('id') id: string,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+    @param.query.object('filter', getFilterSchemaFor(Document)) filter?: Filter<Document>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): Promise<any> {
+    if (filter === undefined) {
+      filter = {};
+    }
+    if (filter.where === undefined) {
+      filter.where = {};
+    }
+    const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
+    const where = queryFilters.impose({ idDocument: id, idUser: currentUser.idUser }).build();
+    filter.where = where;
+
+    const documents = await this.documentRepository.find(filter);
+    if(documents.length !== 1){
+      throw new HttpErrors.NotFound("No documents found for that id and idUser");
+    }
+    const document = documents[0];
+
+    const fileName : string = document.filename;
+    const contentType : string = document.mimeType;
+
+    const chunksFilter: Filter = { where: { 
+        "idDocument": id
+      },
+      order: ['chunkIndexId ASC']
+    };
+    const encryptedChunks : DocumentEncryptedChunk[] = await this.documentEncryptedChunkRepository.find(chunksFilter);
+    let textDecrypted = "";
+
+    for await (const chunk of encryptedChunks) {
+      const result = await decrypt(chunk, currentUser.idUser);
+      textDecrypted = textDecrypted + result.textDecrypted;
+    }
+
+    response.end(textDecrypted);
+  }
+
   //*** DELETE ***/
   @del('/documents/{id}', {
     responses: {
