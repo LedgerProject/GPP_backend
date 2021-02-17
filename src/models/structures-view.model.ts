@@ -115,6 +115,12 @@ export class StructuresView extends Entity {
   })
   iconmarker?: string;
 
+  @property({
+    type: 'number',
+    required: false
+  })
+  distance?: number;
+
   @hasMany(() => StructuresCategoriesView, {keyTo: 'idStructure'})
   structuresCategoriesView?: StructuresCategoriesView[];
 

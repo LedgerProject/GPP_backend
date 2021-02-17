@@ -10,6 +10,7 @@ import { Structure, StructuresCategoriesView, StructureLanguage, StructuresView,
 import { StructureRepository, StructuresCategoriesViewRepository, StructureLanguageRepository, StructuresViewRepository, StructureImageRepository } from '../repositories';
 import { checkStructureOwner } from '../services/structure.service';
 
+const loopback = require('loopback');
 const fs = require('fs');
 const path = require('path');
 
@@ -169,11 +170,31 @@ export class StructureController {
     
     let structuresReturn: StructuresView[] = [];
     const structViewRep = await this.structuresViewRepository.find(filter);
+    
+    // If specified the user position, calculate the distance from the structure
+    if (filter !== undefined) {
+      if (filter.where !== undefined) {
+        const positionFilters = new WhereBuilder<AnyObject>(filter?.where);
+        if (filter.where.userLatitude && filter.where.userLongitude) {
+          const userPosition = new loopback.GeoPoint({lat: filter.where.userLatitude, lng: filter.where.userLongitude});
+          for (let key1 in structViewRep) {
+            const structurePosition = new loopback.GeoPoint({lat: structViewRep[key1]['latitude'], lng: structViewRep[key1]['longitude']});
+            const distance = userPosition.distanceTo(structurePosition, {type: 'kilometers'});
+            structViewRep[key1]['distance'] = distance;
+          }
+          //
+          // Sorting based on distance
+          structViewRep.sort((a, b) => a.distance! < b.distance! ? -1 : a.distance! > b.distance! ? 1 : 0);
+        }
+      }
+    }
+
+    structuresReturn = structViewRep;
 
     if (categoryFilter) {
-      for (let key in structViewRep) {
-        if (structViewRep[key]['structuresCategoriesView']) {
-          structuresReturn.push(structViewRep[key]);
+      for (let key2 in structViewRep) {
+        if (structViewRep[key2]['structuresCategoriesView']) {
+          structuresReturn.push(structViewRep[key2]);
         }
       }
     } else {
