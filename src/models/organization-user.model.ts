@@ -1,5 +1,8 @@
 //Loopback imports
-import { Entity, model, property } from '@loopback/repository';
+import { belongsTo, Entity, model, property } from '@loopback/repository';
+//GPP imports
+import { Organization } from './organization.model';
+import { User } from './user.model';
 
 @model({
   settings: { idInjection: false, postgresql: { schema: 'public', table: 'organizationsUsers' } }
@@ -12,18 +15,18 @@ export class OrganizationUser extends Entity {
   })
   idOrganizationUser: string;
 
-  @property({
+  @belongsTo(() => Organization, {name : 'organization'}, {
     type: 'string',
     required: true,
-    postgresql: { columnName: 'idOrganization', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
-  })
+    postgresql: {columnName: 'idOrganization', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'
+  }})
   idOrganization: string;
 
-  @property({
+  @belongsTo(() => User, {name : 'user'}, {
     type: 'string',
     required: true,
-    postgresql: { columnName: 'idUser', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
-  })
+    postgresql: {columnName: 'idUser', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'
+  }})
   idUser: string;
 
   @property.array(String)
@@ -35,9 +38,6 @@ export class OrganizationUser extends Entity {
     postgresql: { columnName: 'confirmed', dataType: 'boolean', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   confirmed: boolean;
-
-  /*@belongsTo(() => Organization)
-  organizationId: string;*/
 
   // Define well-known properties here
 

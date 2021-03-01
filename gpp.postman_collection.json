@@ -1192,6 +1192,49 @@
 					"response": []
 				},
 				{
+					"name": "documents-base64/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}documents/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idDocument\": true,\n    \"idUser\": true,\n    \"title\": true,\n    \"filename\": true,\n    \"mimeType\": true,\n    \"size\": true,\n    \"widthPixel\": true,\n    \"heightPixel\": true\n  }\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}documents",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idDocument\": true,\n    \"idUser\": true,\n    \"title\": true,\n    \"filename\": true,\n    \"mimeType\": true,\n    \"size\": true,\n    \"widthPixel\": true,\n    \"heightPixel\": true\n  }\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "documents/:id",
 					"request": {
 						"auth": {
@@ -1670,7 +1713,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEb2UiLCJlbWFpbCI6Impkb2VAZ21haWwuY29tIiwiaWRVc2VyIjoiNzYxOWZhOGEtN2VjOS00OGZlLThmMTktZjlhMTEyOWM1NDI0IiwicGVybWlzc2lvbnMiOlsiRG9jV2FsbGV0TWFuYWdlbWVudCIsIlN0cnVjdHVyZUxpc3QiLCJTdHJ1Y3R1cmVEZXRhaWwiLCJDb3VudHJpZXNMaXN0IiwiQ291bnRyeURldGFpbCIsIkNhdGVnb3JpZXNMaXN0IiwiTmF0aW9uYWxpdGllc0xpc3QiLCJBdXRoRmVhdHVyZXMiLCJQcm9maWxlRWRpdCJdLCJ1c2VyVHlwZSI6InVzZXIiLCJpYXQiOjE2MTMwNzAzMDQsImV4cCI6MTYxMzA5NTUwNH0.PmrCx6UMlJRW-ehlHwClSoaSTazcTWS3xji7xqLKy8M",
 									"type": "string"
 								}
 							]
@@ -1683,7 +1726,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}nationalities?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idNationality\": true,\n    \"identifier\": true\n  }\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}nationalities?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"include\":[\n    {\"relation\": \"nationalityLanguage\", \"scope\": {\"where\": {\"language\": \"en\"}}}\n  ],\n  \"fields\": {\n    \"idNationality\": true,\n    \"identifier\": true\n  }\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -1695,7 +1738,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idNationality\": true,\n    \"identifier\": true\n  }\n}"
+									"value": "{\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\"identifier\"],\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"include\":[\n    {\"relation\": \"nationalityLanguage\", \"scope\": {\"where\": {\"language\": \"en\"}}}\n  ],\n  \"fields\": {\n    \"idNationality\": true,\n    \"identifier\": true\n  }\n}"
 								}
 							]
 						}
@@ -2888,6 +2931,41 @@
 							"path": [
 								"{{path}}users",
 								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users?filter={\n  \"fields\": {\n    \"idUser\": true,\n    \"userType\": true,\n    \"firstName\": true,\n    \"lastName\": true,\n    \"email\": true,\n    \"emailConfirmed\": true,\n    \"password\": true,\n    \"passwordRecoveryToken\": true,\n    \"passwordRecoveryDate\": true,\n    \"idNationality\": true,\n    \"gender\": true,\n    \"birthday\": true\n  },\"include\":[\n\t{\"relation\": \"organizationUser\"}\n  ],\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"lastName\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}users"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"fields\": {\n    \"idUser\": true,\n    \"userType\": true,\n    \"firstName\": true,\n    \"lastName\": true,\n    \"email\": true,\n    \"emailConfirmed\": true,\n    \"password\": true,\n    \"passwordRecoveryToken\": true,\n    \"passwordRecoveryDate\": true,\n    \"idNationality\": true,\n    \"gender\": true,\n    \"birthday\": true\n  },\"include\":[\n\t{\"relation\": \"organizationUser\"}\n  ],\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"lastName\"\n  ]\n}"
+								}
 							]
 						}
 					},

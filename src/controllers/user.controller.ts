@@ -1,8 +1,8 @@
 //Loopback imports
 import { authenticate, AuthenticationBindings } from '@loopback/authentication';
 import { inject } from '@loopback/core';
-import { Filter, repository } from '@loopback/repository';
-import { get, getJsonSchemaRef, getModelSchemaRef, HttpErrors, param, post, requestBody} from '@loopback/rest';
+import { AnyObject, Filter, repository, WhereBuilder } from '@loopback/repository';
+import { get, getFilterSchemaFor, getJsonSchemaRef, getModelSchemaRef, HttpErrors, param, post, requestBody} from '@loopback/rest';
 import { UserProfile } from '@loopback/security';
 //Other imports
 import _ from 'lodash';
@@ -31,7 +31,7 @@ export class UserController {
     @inject(UserServiceBindings.USER_SERVICE)
     public userService: MyUserService,
     @inject(TokenServiceBindings.TOKEN_SERVICE)
-    public jwtService: JWTService,
+    public jwtService: JWTService
   ) { }
 
   //*** USER SIGNUP ***/
@@ -205,6 +205,69 @@ export class UserController {
     //userProfile.permissions = user.permissions;
     const jwt = await this.jwtService.generateToken(userProfile);
     return Promise.resolve({ token: jwt });
+  }
+
+  //*** LIST ***/
+  @get('/users', {
+    responses: {
+      '200': {
+        description: 'Array of User model instances',
+        content: {
+          'application/json': { schema: { type: 'array', items: getModelSchemaRef(User, { includeRelations: true })}}
+        }
+      }
+    }
+  })
+  @authenticate('jwt', { required: [PermissionKeys.OrganizationUsersManagement, PermissionKeys.GeneralUsersManagement] })
+  async find(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile,
+    @param.query.object('filter', getFilterSchemaFor(User)) filter?: Filter<User>
+  ): Promise<User[]> {
+    let organizationFilter = false;
+
+    // Avoid showing users
+    if (filter === undefined) {
+      filter = {};
+    }
+    if (filter.where === undefined) {
+      filter.where = {};
+    }
+    const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
+    const where = queryFilters.impose({ userType: { "neq" : 'user' } }).build();
+
+    filter.where = where;
+
+    // If operator, show only the owned organizations
+    if (currentUser.userType !== 'gppOperator') {
+      if (filter === undefined) {
+        filter = {};
+      }
+
+      filter.include = [{
+        "relation": "organizationUser",
+        "scope": {
+          "where": {"idOrganization": currentUser.idOrganization}
+        }
+      }]
+
+      organizationFilter = true;
+    }
+
+    let usersReturn: User[] = [];
+    const userRep = await this.userRepository.find(filter);
+
+    if (organizationFilter) {
+      for (let key in userRep) {
+        if (userRep[key]['organizationUser']) {
+          usersReturn.push(userRep[key]);
+        }
+      }
+    } else {
+      usersReturn = userRep;
+    }
+
+    return usersReturn;
   }
 
   //*** CHANGE ORGANIZATION ***/

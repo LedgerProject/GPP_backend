@@ -1,5 +1,7 @@
 // Loopback imports
-import { Entity, model, property } from '@loopback/repository';
+import { Entity, hasMany, model, property } from '@loopback/repository';
+// GPP imports
+import { OrganizationUser } from './organization-user.model';
 
 @model({
   settings: { idInjection: false, postgresql: { schema: 'public', table: 'organizations' } }
@@ -19,6 +21,9 @@ export class Organization extends Entity {
     postgresql: { columnName: 'name', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'NO' },
   })
   name: string;
+
+  @hasMany(() => OrganizationUser, {keyTo: 'idOrganization'})
+  organizationUser?: OrganizationUser[];
 
   // Define well-known properties here
 
