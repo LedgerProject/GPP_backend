@@ -189,7 +189,7 @@ export class StructureController {
       }
     }
 
-    structuresReturn = structViewRep;
+    structuresReturn = [];
 
     if (categoryFilter) {
       for (let key2 in structViewRep) {
