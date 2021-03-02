@@ -252,6 +252,17 @@ export class UserController {
       }]
 
       organizationFilter = true;
+    } else {
+      if (filter === undefined) {
+        filter = {};
+      }
+
+      filter.include = [{
+        "relation": "organizationUser",
+        "scope": {
+          "where": {"idOrganization": currentUser.idOrganization}
+        }
+      }]
     }
 
     let usersReturn: User[] = [];
