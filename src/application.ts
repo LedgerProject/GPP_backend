@@ -1,11 +1,12 @@
 // Loopback imports
 import { AuthenticationComponent, registerAuthenticationStrategy } from "@loopback/authentication";
 import { BootMixin } from '@loopback/boot';
-import { ApplicationConfig } from '@loopback/core';
+import { ApplicationConfig, createBindingFromClass } from '@loopback/core';
 import { RepositoryMixin } from '@loopback/repository';
 import { RestApplication } from '@loopback/rest';
 import { RestExplorerBindings, RestExplorerComponent } from '@loopback/rest-explorer';
 import { ServiceMixin } from '@loopback/service-proxy';
+import { CronComponent } from '@loopback/cron';
 import multer from "multer";
 // Other imports
 import path from 'path';
@@ -17,6 +18,8 @@ import { MySequence } from './sequence';
 import { BcryptHasher } from './services/hash.password.bcrypt';
 import { JWTService } from './services/jwt-service';
 import { MyUserService } from './services/user.service';
+import { MyCronJob } from "./services/cron-service";
+
 
 export class GPPBackend extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
@@ -41,6 +44,11 @@ export class GPPBackend extends BootMixin(
       path: '/explorer',
     });
     this.component(RestExplorerComponent);
+
+    // We need to setup cron jobs
+    this.component(CronComponent);
+
+    this.add(createBindingFromClass(MyCronJob));
 
     // Configure file upload with multer options
     this.configureFileUpload(options.fileStorageDirectory);
