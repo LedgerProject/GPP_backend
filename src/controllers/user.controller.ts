@@ -19,6 +19,11 @@ import { MyUserService } from '../services/user.service';
 import { validateCredentials } from '../services/validator';
 import { CredentialsRequestBody } from './specs/user.controller.spec';
 
+interface Invitation {
+  idUser: string;
+  invitationMessage: string;
+  permissions: string;
+}
 
 interface InvitationOutcome {
   code: string;
@@ -394,7 +399,7 @@ export class UserController {
 
   //*** INVITE USER ***/
   @authenticate('jwt', { required: [PermissionKeys.OrganizationUsersManagement] })
-  @get('/user/invite-organization/{id}/{permissions}', {
+  @post('/user/invite-organization', {
     responses: {
       '200': {
         description: 'Invite User into Organization',
@@ -403,8 +408,8 @@ export class UserController {
             schema: {
               type: 'object',
               properties: {
-                token: {
-                  type: 'string',
+                invitationOutcome: {
+                  type: 'object',
                 },
               },
             },
@@ -414,8 +419,8 @@ export class UserController {
     },
   })
   async inviteUser(
-    @param.path.string('id') id: string,
-    @param.path.string('permissions') permissions: string,
+    @requestBody()
+    invitation: Invitation,
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile
   ): Promise<{ invitationOutcome: InvitationOutcome }> {
@@ -424,12 +429,16 @@ export class UserController {
       message: ''
     };
 
+    const idUserInvite = invitation.idUser;
+    const invitationMessage = invitation.invitationMessage;
+    const permissions = invitation.permissions;
+
     // Get the organization information
     const orFilter: Filter = { where: { "idOrganization": currentUser.idOrganization }};
     const organizationData = await this.organizationRepository.find(orFilter);
 
     // Check if the operator is already into the organization
-    const filter: Filter = { where: { "idUser": id, "idOrganization": currentUser.idOrganization, "confirmed": true }};
+    const filter: Filter = { where: { "idUser": idUserInvite, "idOrganization": currentUser.idOrganization, "confirmed": true }};
     const organizationExists = await this.organizationUserRepository.find(filter);
 
     if (organizationExists.length > 0) {
@@ -439,7 +448,7 @@ export class UserController {
       };
     } else {
       // Get operator information
-      const opFilter: Filter = { where: { "idUser": id, "userType": "operator" }};
+      const opFilter: Filter = { where: { "idUser": idUserInvite, "userType": "operator" }};
       const userData = await this.userRepository.find(opFilter);
 
       if (userData.length < 1) {
@@ -449,7 +458,7 @@ export class UserController {
         };
       } else {
         // Delete previous missed invitation from database
-        const delFilter: Filter = { where: { "idUser": id, "idOrganization": currentUser.idOrganization }};
+        const delFilter: Filter = { where: { "idUser": idUserInvite, "idOrganization": currentUser.idOrganization }};
         const invitationRemove = await this.organizationUserRepository.find(delFilter);
 
         for (let x = 0; x < invitationRemove.length; x++) {
@@ -459,7 +468,7 @@ export class UserController {
         // Save the invitation into database
         const newUserOrganization: OrganizationUser = new OrganizationUser();
         newUserOrganization.idOrganization = currentUser.idOrganization;
-        newUserOrganization.idUser = id;
+        newUserOrganization.idUser = idUserInvite;
         newUserOrganization.permissions = [];
 
         // Set the permissions array
@@ -474,21 +483,31 @@ export class UserController {
         const sgMail = require('@sendgrid/mail');
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-        const confirmInvitationLink = process.env.PORTAL_URL + '/confirm-invitation/?confirm=' + newUserOrganization.invitationToken;
+        const invitationLink = process.env.PORTAL_URL + '/#/confirm-invitation/?confirm=' + newUserOrganization.invitationToken;
 
-        const emailText = 'Hello ' + userData[0].firstName + ' ' + userData[0].lastName + ', \
-          you were invited to be part of the organization named "' + organizationData[0].name + '". \
-          Copy and paste this link on your browser to accept the invitation: ' + confirmInvitationLink;
+        let emailSubject = process.env.INVITATION_EMAIL_SUBJECT;
+        emailSubject = emailSubject?.replace(/%firstName%/g, userData[0].firstName);
+        emailSubject = emailSubject?.replace(/%lastName%/g, userData[0].lastName);
 
-        const htmlText = 'Hello ' + userData[0].firstName + ' ' + userData[0].lastName + ',<br /> \
-        you were invited to be part of the organization named "' + organizationData[0].name + '".<br /><br /> \
-        Click on this link to accept the invitation: <a href="' + confirmInvitationLink + '" target="_blank">' + confirmInvitationLink + '</a><br /><br /> \
-        Global Passport Project staff';
+        let emailText = process.env.INVITATION_EMAIL_TEXT;
+        emailText = emailText?.replace(/%firstName%/g, userData[0].firstName);
+        emailText = emailText?.replace(/%lastName%/g, userData[0].lastName);
+        emailText = emailText?.replace(/%organizationName%/g, organizationData[0].name);
+        emailText = emailText?.replace(/%invitationLink%/g, invitationLink);
+        emailText = emailText?.replace(/%invitationMessage%/g, invitationMessage);
+        
+        let htmlText = process.env.INVITATION_EMAIL_HTML;
+        htmlText = htmlText?.replace(/%firstName%/g, userData[0].firstName);
+        htmlText = htmlText?.replace(/%lastName%/g, userData[0].lastName);
+        htmlText = htmlText?.replace(/%organizationName%/g, organizationData[0].name);
+        htmlText = htmlText?.replace(/%invitationLink%/g, invitationLink);
+        htmlText = htmlText?.replace(/%invitationMessage%/g, invitationMessage);
 
         const msg = {
           to: userData[0].email,
-          from: 'noreply@globalpassportproject.org',
-          subject: 'Global Passport Project: organization invitation',
+          from: process.env.INVITATION_EMAIL_FROM_EMAIL,
+          fromname: process.env.INVITATION_EMAIL_FROM_NAME,
+          subject: emailSubject,
           text: emailText,
           html: htmlText,
         }
