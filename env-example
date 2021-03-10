@@ -21,3 +21,13 @@ SALT=<encrypt salt>
 
 # GLOBAL PASSPORT PROJECT OPERATOR KEY
 GPP_REGISTRATION_KEY=<gpp operator registration key>
+
+# IPFS
+IPFS_GATEWAY=<ipfs gateway>
+
+# SENDGRID
+SENDGRID_API_KEY=<sendgrid api key>
+
+
+# PORTAL
+PORTAL_URL=<portal url>

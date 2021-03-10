@@ -7,16 +7,23 @@ import { UserProfile } from '@loopback/security';
 //Other imports
 import _ from 'lodash';
 import { PasswordHasherBindings, TokenServiceBindings, UserServiceBindings } from '../authorization/keys';
+import { v4 as uuidv4 } from 'uuid';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { UserTypeKeys } from '../authorization/user-type-keys';
-import { OrganizationsUsersView, User } from '../models';
-import { Credentials, OrganizationsUsersViewRepository, OrganizationUserRepository, UserRepository } from '../repositories';
+import { OrganizationUser, OrganizationsUsersView, User } from '../models';
+import { Credentials, OrganizationRepository, OrganizationsUsersViewRepository, OrganizationUserRepository, UserRepository } from '../repositories';
 import { BcryptHasher } from '../services/hash.password.bcrypt';
 import { JWTService } from '../services/jwt-service';
 import { MyUserService } from '../services/user.service';
 import { validateCredentials } from '../services/validator';
 import { CredentialsRequestBody } from './specs/user.controller.spec';
+
+
+interface InvitationOutcome {
+  code: string;
+  message: string;
+}
 
 export class UserController {
   constructor(
@@ -26,6 +33,8 @@ export class UserController {
     public organizationsUsersViewRepository: OrganizationsUsersViewRepository,
     @repository(OrganizationUserRepository)
     public organizationUserRepository: OrganizationUserRepository,
+    @repository(OrganizationRepository)
+    public organizationRepository: OrganizationRepository,
     @inject(PasswordHasherBindings.PASSWORD_HASHER)
     public hasher: BcryptHasher,
     @inject(UserServiceBindings.USER_SERVICE)
@@ -381,6 +390,128 @@ export class UserController {
     //userProfile.permissions = user.permissions;
     const jwt = await this.jwtService.generateToken(userProfile);
     return Promise.resolve({ token: jwt });
+  }
+
+  //*** INVITE USER ***/
+  @authenticate('jwt', { required: [PermissionKeys.OrganizationUsersManagement] })
+  @get('/user/invite-organization/{id}/{permissions}', {
+    responses: {
+      '200': {
+        description: 'Invite User into Organization',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                token: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async inviteUser(
+    @param.path.string('id') id: string,
+    @param.path.string('permissions') permissions: string,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
+  ): Promise<{ invitationOutcome: InvitationOutcome }> {
+    let response : InvitationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    // Get the organization information
+    const orFilter: Filter = { where: { "idOrganization": currentUser.idOrganization }};
+    const organizationData = await this.organizationRepository.find(orFilter);
+
+    // Check if the operator is already into the organization
+    const filter: Filter = { where: { "idUser": id, "idOrganization": currentUser.idOrganization, "confirmed": true }};
+    const organizationExists = await this.organizationsUsersViewRepository.find(filter);
+
+    if (organizationExists.length > 0) {
+      response = {
+        code: '10',
+        message: 'User already assigned to the current organization'
+      };
+    } else {
+      // Get operator information
+      const opFilter: Filter = { where: { "idUser": id, "userType": "operator" }};
+      const userData = await this.userRepository.find(opFilter);
+
+      if (userData.length < 1) {
+        response = {
+          code: '30',
+          message: 'User not exists'
+        };
+      } else {
+        // Delete previous missed invitation from database
+        const delFilter: Filter = { where: { "idUser": id, "idOrganization": currentUser.idOrganization }};
+        const invitationRemove = await this.organizationUserRepository.find(delFilter);
+
+        for (let x = 0; x < invitationRemove.length; x++) {
+          await this.organizationUserRepository.deleteById(invitationRemove[x].idOrganizationUser);
+        }
+
+        // Save the invitation into database
+        const newUserOrganization: OrganizationUser = new OrganizationUser();
+        newUserOrganization.idOrganization = currentUser.idOrganization;
+        newUserOrganization.idUser = id;
+        newUserOrganization.permissions = [];
+
+        // Set the permissions array
+        const arrPermissions = permissions.split(',');
+        for (let i = 0; i < arrPermissions.length; i++) {
+          newUserOrganization.permissions.push(arrPermissions[i]);
+        }
+        newUserOrganization.confirmed = false;
+        newUserOrganization.invitationToken = uuidv4();
+        await this.organizationUserRepository.save(newUserOrganization);
+
+        const sgMail = require('@sendgrid/mail');
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+        const confirmInvitationLink = process.env.PORTAL_URL + '/confirm-invitation/?confirm=' + newUserOrganization.invitationToken;
+
+        const emailText = 'Hello ' + userData[0].firstName + ' ' + userData[0].lastName + ', \
+          you were invited to be part of the organization named "' + organizationData[0].name + '". \
+          Copy and paste this link on your browser to accept the invitation: ' + confirmInvitationLink;
+
+        const htmlText = 'Hello ' + userData[0].firstName + ' ' + userData[0].lastName + ',<br /> \
+        you were invited to be part of the organization named "' + organizationData[0].name + '".<br /><br /> \
+        Click on this link to accept the invitation: <a href="' + confirmInvitationLink + '" target="_blank">' + confirmInvitationLink + '</a><br /><br /> \
+        Global Passport Project staff';
+
+        const msg = {
+          to: userData[0].email,
+          from: 'noreply@globalpassportproject.org',
+          subject: 'Global Passport Project: organization invitation',
+          text: emailText,
+          html: htmlText,
+        }
+
+        await sgMail
+          .send(msg)
+          .then(() => {
+            response = {
+              code: '202',
+              message: 'Invitation e-mail sent'
+            };
+          })
+          .catch((error: any) => {
+            console.error(error)
+            response = {
+              code: '20',
+              message: 'Error sending e-mail'
+            };
+          })
+      }
+    }
+
+    return Promise.resolve({ invitationOutcome: response });
   }
 
   //*** USER PROFILE ***/

@@ -39,6 +39,12 @@ export class OrganizationUser extends Entity {
   })
   confirmed: boolean;
 
+  @property({
+    type: 'string',
+    postgresql: { columnName: 'invitationToken', dataType: 'character varying', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'YES' },
+  })
+  invitationToken: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
