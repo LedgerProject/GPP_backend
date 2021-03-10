@@ -31,3 +31,10 @@ SENDGRID_API_KEY=<sendgrid api key>
 
 # PORTAL
 PORTAL_URL=<portal url>
+
+# INVITATION E-MAIL
+INVITATION_EMAIL_FROM_EMAIL=<sender e-mail>
+INVITATION_EMAIL_FROM_NAME=<sender name>
+INVITATION_EMAIL_SUBJECT=<invitation email subject> | params: %firstName%, %lastName%
+INVITATION_EMAIL_TEXT=<invitation email plain text> | params: %firstName%, %lastName%, %organizationName%, "%invitationMessage%", %invitationLink%
+INVITATION_EMAIL_HTML=<invitation email html text>  | params: %firstName%, %lastName%, %organizationName%, "%invitationMessage%", %invitationLink%

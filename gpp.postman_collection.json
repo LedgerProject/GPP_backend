@@ -2286,7 +2286,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures?filter={\n  \"where\": {\n    \"latitudeNorthWest\": null,\n    \"longitudeNorthWest\": null,\n    \"latitudeSouthEast\":null,\n    \"longitudeSouthEast\":null,\n    \"idCategory\": null\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"structurename\"\n  ]\n}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures?filter={\n  \"where\": {\n    \"latitudeNorthWest\": null,\n    \"longitudeNorthWest\": null,\n    \"latitudeSouthEast\":null,\n    \"longitudeSouthEast\":null,\n    \"idCategory\": null,\"city\":{\"ilike\":\"%25napoli%25\"}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"structurename\"\n  ]\n}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -2298,7 +2298,7 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "{\n  \"where\": {\n    \"latitudeNorthWest\": null,\n    \"longitudeNorthWest\": null,\n    \"latitudeSouthEast\":null,\n    \"longitudeSouthEast\":null,\n    \"idCategory\": null\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"structurename\"\n  ]\n}"
+									"value": "{\n  \"where\": {\n    \"latitudeNorthWest\": null,\n    \"longitudeNorthWest\": null,\n    \"latitudeSouthEast\":null,\n    \"longitudeSouthEast\":null,\n    \"idCategory\": null,\"city\":{\"ilike\":\"%25napoli%25\"}\n  },\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"organizationname\": true,\n    \"alias\": true,\n    \"structurename\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true,\n    \"iconimage\": true,\n    \"iconmarker\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"structurename\"\n  ]\n}"
 								}
 							]
 						}
@@ -2901,6 +2901,46 @@
 									"key": "secretKey",
 									"value": null
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user/invite-organization",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"idUser\": \"\",\r\n  \"invitationMessage\": \"\",\r\n  \"permissions\": \"\"\r\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}user/invite-organization",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}user",
+								"invite-organization"
 							]
 						}
 					},
