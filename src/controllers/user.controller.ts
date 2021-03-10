@@ -430,7 +430,7 @@ export class UserController {
 
     // Check if the operator is already into the organization
     const filter: Filter = { where: { "idUser": id, "idOrganization": currentUser.idOrganization, "confirmed": true }};
-    const organizationExists = await this.organizationsUsersViewRepository.find(filter);
+    const organizationExists = await this.organizationUserRepository.find(filter);
 
     if (organizationExists.length > 0) {
       response = {
