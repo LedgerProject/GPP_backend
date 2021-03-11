@@ -3,6 +3,11 @@ const fetch = require("node-fetch");
 /* 
   This function is calling sawtooth to write a json into blockchain
 */
+const headers = {
+  'Content-Type': 'application/json',
+  'accept': 'application/json'
+};
+
 export async function writeIntoBlockchain(jsonObject:any) {
 
   const apiroomBody: any = {
@@ -13,13 +18,11 @@ export async function writeIntoBlockchain(jsonObject:any) {
     }
   }
 
+
   const response = await fetch(APIROOM_WRITE_DICTIONARY_ENDPOINT, {
     method: 'POST',
     body: JSON.stringify(apiroomBody), 
-    headers: {
-      'Content-Type': 'application/json',
-      'accept': 'application/json'
-    }
+    headers: headers
   });
   const result = await response.json(); //extract JSON from the http response
   // do something with myJson
@@ -42,10 +45,7 @@ export async function retrieveJsonFromBlockchain(batchId:string) {
   const response = await fetch(APIROOM_READ_ENDPOINT, {
     method: 'POST',
     body: JSON.stringify(apiroomBody), 
-    headers: {
-      'Content-Type': 'application/json',
-      'accept': 'application/json'
-    }
+    headers: headers
   });
 
   const result = await response.json(); //extract JSON from the http response
@@ -69,10 +69,7 @@ export async function retrieveStatusFromBlockchain(batchId:string) {
   const response = await fetch(APIROOM_STATUS_ENDPOINT, {
     method: 'POST',
     body: JSON.stringify(apiroomBody), 
-    headers: {
-      'Content-Type': 'application/json',
-      'accept': 'application/json'
-    }
+    headers: headers
   });
 
   const result = await response.json(); //extract JSON from the http response
