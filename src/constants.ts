@@ -39,26 +39,26 @@ export const USER_TOKEN_DEFAULT_VALIDITY_IN_MINS = 5;
 export const ATTACHMENT_FILENAME = 'attachment; filename=';
 
 /**
- * Sawtooth endpoints
+ * Sawroom endpoints
  */
-export const SAWTOOTH_WRITE_URI = 'http://195.201.41.35';
+export const SAWROOM_WRITE_URI = 'http://195.201.41.35';
 
-export const SAWTOOTH_READ_URI = 'http://195.201.42.48';
+export const SAWROOM_READ_URI = 'http://195.201.42.48';
 
-export const SAWTOOTH_STATUS_URI = SAWTOOTH_WRITE_URI+':8008';
+export const SAWROOM_STATUS_URI = SAWROOM_WRITE_URI+':8008';
 
-export const SAWTOOTH_STATUS_PATH = '/batch_statuses?id=';
+export const SAWROOM_STATUS_PATH = '/batch_statuses?id=';
 
-export const SAWTOOTH_STATUS_ENDPOINT = SAWTOOTH_STATUS_URI+SAWTOOTH_STATUS_PATH;
+export const SAWROOM_STATUS_ENDPOINT = SAWROOM_STATUS_URI+SAWROOM_STATUS_PATH;
 
-export const SAWTOOTH_GPP_CONTEXT = 'global_passport_project_documentsEncryptedChunk';
+export const SAWROOM_GPP_CONTEXT = 'global_passport_project_documentsEncryptedChunk';
 
 export const APIROOM_BASE_URI = 'https://apiroom.net/api/pasfranc';
 
-export const APIROOM_WRITE_DICTIONARY_ENDPOINT = APIROOM_BASE_URI+ '/sawtooth-write-my-dictionary';
+export const APIROOM_WRITE_DICTIONARY_ENDPOINT = APIROOM_BASE_URI+ '/sawroom-write-my-dictionary';
 
-export const APIROOM_READ_ENDPOINT = APIROOM_BASE_URI+ '/sawtooth-read';
+export const APIROOM_READ_ENDPOINT = APIROOM_BASE_URI+ '/sawroom-read';
 
-export const APIROOM_STATUS_ENDPOINT = APIROOM_BASE_URI+ '/sawtooth-read-status';
+export const APIROOM_STATUS_ENDPOINT = APIROOM_BASE_URI+ '/sawroom-read-status';
 
 
