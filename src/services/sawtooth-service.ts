@@ -24,11 +24,14 @@ export async function writeIntoBlockchain(jsonObject:any) {
     body: JSON.stringify(apiroomBody), 
     headers: headers
   });
-  const result = await response.json(); //extract JSON from the http response
-  // do something with myJson
+  try {
+    const result = await response.json();
+    console.log(result);
+    return result.sawroom[SAWTOOTH_GPP_CONTEXT].batch_id;
+  } catch (err) {
+    console.log(".writeIntoBlockchain ERROR: Impossible to WRITE to SAWTOOTH: ", err);
+  }
 
-  console.log(result);
-  return result.sawroom[SAWTOOTH_GPP_CONTEXT].batch_id;
 }
 
 /* 
@@ -48,11 +51,14 @@ export async function retrieveJsonFromBlockchain(batchId:string) {
     headers: headers
   });
 
-  const result = await response.json(); //extract JSON from the http response
+  try {
+    const result = await response.json();
+    console.log(result);
 
-  console.log(result);
-
-  return result.sawroom[0];
+    return result.sawroom[0];
+  } catch (err) {
+    console.log(".retrieveJsonFromBlockchain ERROR: Impossible to READ from SAWTOOTH: ", err);
+  }
 }
 
 /* 
@@ -71,10 +77,11 @@ export async function retrieveStatusFromBlockchain(batchId:string) {
     body: JSON.stringify(apiroomBody), 
     headers: headers
   });
-
-  const result = await response.json(); //extract JSON from the http response
-
-  console.log(result);
-
-  return result.data[0].status;
+  try {
+    const result = await response.json();
+    console.log(result);
+    return result.data[0].status;
+  } catch (err) {
+    console.log(".retrieveStatusFromBlockchain ERROR: Impossible to GET STATUS from SAWTOOTH: ", err);
+  }
 }

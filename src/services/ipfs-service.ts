@@ -9,7 +9,7 @@ export async function uploadStringToIPFS(stringToUpload:string) {
     const results = await client.add(stringToUpload);
     return results.path;
   } catch(err){
-    console.log(err);
+    console.log(".uploadStringToIPFS ERROR: Impossible to UPLOAD to IPFS: ",err);
   }
 }
 
@@ -28,6 +28,6 @@ export async function retrieveStringFromIPFS(path:string) {
 
     return data; 
   } catch (err) {
-    console.log(err);
+    console.log(".retrieveStringFromIPFS ERROR: Impossible to RETRIEVE from IPFS: ",err);
   }
 }
