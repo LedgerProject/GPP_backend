@@ -25,7 +25,7 @@ export async function writeIntoBlockchain(jsonObject:any) {
   // do something with myJson
 
   console.log(result);
-  return result.sawroom.global_passport_project_documentsEncryptedChunk.batch_id;
+  return result.sawroom[SAWTOOTH_GPP_CONTEXT].batch_id;
 }
 
 /* 
