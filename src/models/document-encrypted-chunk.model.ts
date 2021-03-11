@@ -62,6 +62,20 @@ export class DocumentEncryptedChunk extends Entity {
   })
   ipfsPath?: string;
 
+  @property({
+    type: 'string',
+    length: 50,
+    postgresql: {columnName: 'batchId', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
+  })
+  batchId?: string;
+
+  @property({
+    type: 'string',
+    length: 50,
+    postgresql: {columnName: 'status', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
+  })
+  status?: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

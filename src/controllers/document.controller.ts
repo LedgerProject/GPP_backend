@@ -14,7 +14,8 @@ import { MEMORY_UPLOAD_SERVICE } from '../keys';
 import { MemoryUploadHandler, TempFile } from '../types';
 import { chunkString } from '../services/string-util';
 import { decrypt, encrypt } from '../services/zenroom-service';
-import { uploadStringToIPFS, retrieveStringFromIPFS } from '../services/ipfs-service';
+import { uploadStringToIPFS } from '../services/ipfs-service';
+import { writeIntoBlockchain, retrieveStatusFromBlockchain, retrieveJsonFromBlockchain } from '../services/sawtooth-service';
 import { TokenServiceBindings } from '../authorization/keys';
 import { JWTService } from '../services/jwt-service';
 import { ATTACHMENT_FILENAME, BASE64_ENCODING, CHUNK_MAX_CHAR_SIZE } from '../constants';
@@ -276,6 +277,29 @@ export class DocumentController {
     documentsEncryptedChunk.idDocument = documentUUIDReference;
     documentsEncryptedChunk.chunkIndexId = objectToSave.indexId;
     documentsEncryptedChunk.ipfsPath = await uploadStringToIPFS(documentsEncryptedChunk.text!);
+
+    let jsonToSave = {
+      "header": documentsEncryptedChunk.header,
+      "checksum": documentsEncryptedChunk.checksum,
+      "iv": documentsEncryptedChunk.iv,
+      "ipfsPath": documentsEncryptedChunk.ipfsPath
+    }
+
+    /*documentsEncryptedChunk.batchId = await writeIntoBlockchain(jsonToSave);
+    if(documentsEncryptedChunk.batchId){
+      documentsEncryptedChunk.status = await retrieveStatusFromBlockchain(batchId);;
+    }*/
+
+    let batchId = await writeIntoBlockchain(jsonToSave);
+    console.log(batchId);
+    // e3698444e17e580df40d81a6b66a0ec885c185237d4e0e945ebff18b94d245191ffe4d97ed37cc4aee8c526acbc0a659c79b97c71c2488385c37d3a796b7bcad
+
+    let status = await retrieveStatusFromBlockchain(batchId);
+    console.log(status);
+
+    let json = await retrieveJsonFromBlockchain('e3698444e17e580df40d81a6b66a0ec885c185237d4e0e945ebff18b94d245191ffe4d97ed37cc4aee8c526acbc0a659c79b97c71c2488385c37d3a796b7bcad');
+
+    console.log(json);
     return this.documentEncryptedChunkRepository.save(documentsEncryptedChunk);
   }
 

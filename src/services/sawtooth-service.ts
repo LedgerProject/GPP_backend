@@ -1,21 +1,21 @@
+import { APIROOM_READ_ENDPOINT, APIROOM_STATUS_ENDPOINT, APIROOM_WRITE_DICTIONARY_ENDPOINT, SAWTOOTH_GPP_CONTEXT, SAWTOOTH_READ_URI, SAWTOOTH_STATUS_ENDPOINT, SAWTOOTH_WRITE_URI } from "../constants";
+const fetch = require("node-fetch");
 /* 
   This function is calling sawtooth to write a json into blockchain
 */
-export async function writeIntoBlockchain(json:any) {
+export async function writeIntoBlockchain(jsonObject:any) {
 
   const apiroomBody: any = {
-    "keys" : {
-      "sawroomEndpoint": "http://195.201.41.35",
-      "myContextId1": "global_passport_project_documentsEncryptedChunk"
-    },
     "data" : {
-      "JSONToSave": json
+      "sawroomEndpoint": SAWTOOTH_WRITE_URI,
+      "myContextId1": SAWTOOTH_GPP_CONTEXT,
+      "JSONToSave": jsonObject
     }
   }
 
-  const response = await fetch('https://apiroom.net/api/pasfranc/sawtooth-write-my-dictionary', {
+  const response = await fetch(APIROOM_WRITE_DICTIONARY_ENDPOINT, {
     method: 'POST',
-    body: apiroomBody, 
+    body: JSON.stringify(apiroomBody), 
     headers: {
       'Content-Type': 'application/json',
       'accept': 'application/json'
@@ -25,24 +25,23 @@ export async function writeIntoBlockchain(json:any) {
   // do something with myJson
 
   console.log(result);
-
   return result.sawroom.global_passport_project_documentsEncryptedChunk.batch_id;
 }
 
 /* 
-  This function is callingsawtooth to read a json into blockchain
+  This function is calling sawtooth to read a json into blockchain
 */
 export async function retrieveJsonFromBlockchain(batchId:string) {
   const apiroomBody: any = {
       "data": {
-        "endpoint": "http://195.201.42.48",
+        "endpoint": SAWTOOTH_READ_URI,
         "batchId1": batchId
       }
   }
 
-  const response = await fetch('https://apiroom.net/api/pasfranc/sawtooth-read', {
+  const response = await fetch(APIROOM_READ_ENDPOINT, {
     method: 'POST',
-    body: apiroomBody, 
+    body: JSON.stringify(apiroomBody), 
     headers: {
       'Content-Type': 'application/json',
       'accept': 'application/json'
@@ -53,7 +52,7 @@ export async function retrieveJsonFromBlockchain(batchId:string) {
 
   console.log(result);
 
-  return result.sawroom[0].JSONToSave
+  return result.sawroom[0];
 }
 
 /* 
@@ -62,14 +61,14 @@ export async function retrieveJsonFromBlockchain(batchId:string) {
 export async function retrieveStatusFromBlockchain(batchId:string) {
   const apiroomBody: any = {
       "data": {
-          "endpoint": "http://195.201.41.35:8008/batch_statuses?id="+batchId,
+          "endpoint": SAWTOOTH_STATUS_ENDPOINT+batchId,
           "batchId": batchId
       }
   }
 
-  const response = await fetch('https://apiroom.net/api/pasfranc/sawtooth-read-status', {
+  const response = await fetch(APIROOM_STATUS_ENDPOINT, {
     method: 'POST',
-    body: apiroomBody, 
+    body: JSON.stringify(apiroomBody), 
     headers: {
       'Content-Type': 'application/json',
       'accept': 'application/json'
@@ -80,5 +79,5 @@ export async function retrieveStatusFromBlockchain(batchId:string) {
 
   console.log(result);
 
-  return result.data.status;
+  return result.data[0].status;
 }
