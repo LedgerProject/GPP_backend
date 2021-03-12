@@ -28,16 +28,29 @@ IPFS_GATEWAY=<ipfs gateway>
 # SENDGRID
 SENDGRID_API_KEY=<sendgrid api key>
 
-
 # PORTAL
 PORTAL_URL=<portal url>
+
+# CONFIRM ACCOUNT E-MAIL
+CONFIRM_ACCOUNT_EMAIL_FROM_EMAIL=<sender e-mail>
+CONFIRM_ACCOUNT_EMAIL_FROM_NAME=<sender name>
+CONFIRM_ACCOUNT_EMAIL_SUBJECT=<confirm account email subject> | params: %firstName%, %lastName%
+CONFIRM_ACCOUNT_EMAIL_TEXT=<confirm account email plain text> | params: %firstName%, %lastName%, %confirmationLink%
+CONFIRM_ACCOUNT_EMAIL_HTML=<confirm account email html text>  | params: %firstName%, %lastName%, %confirmationLink%
+
+# RESET PASSWORD E-MAIL
+RESET_PASSWORD_EMAIL_FROM_EMAIL=<sender e-mail>
+RESET_PASSWORD_EMAIL_FROM_NAME=<sender name>
+RESET_PASSWORD_EMAIL_SUBJECT=<reset password email subject> | params: %firstName%, %lastName%
+RESET_PASSWORD_EMAIL_TEXT=<reset password email plain text> | params: %firstName%, %lastName%, %resetPasswordLink%
+RESET_PASSWORD_EMAIL_HTML=<reset password email html text>  | params: %firstName%, %lastName%, %resetPasswordLink%
 
 # INVITATION E-MAIL
 INVITATION_EMAIL_FROM_EMAIL=<sender e-mail>
 INVITATION_EMAIL_FROM_NAME=<sender name>
 INVITATION_EMAIL_SUBJECT=<invitation email subject> | params: %firstName%, %lastName%
-INVITATION_EMAIL_TEXT=<invitation email plain text> | params: %firstName%, %lastName%, %organizationName%, "%invitationMessage%", %invitationLink%
-INVITATION_EMAIL_HTML=<invitation email html text>  | params: %firstName%, %lastName%, %organizationName%, "%invitationMessage%", %invitationLink%
+INVITATION_EMAIL_TEXT=<invitation email plain text> | params: %firstName%, %lastName%, %organizationName%, %invitationMessage%, %invitationLink%
+INVITATION_EMAIL_HTML=<invitation email html text>  | params: %firstName%, %lastName%, %organizationName%, %invitationMessage%, %invitationLink%
 
 # INVITATION CONFIRMED E-MAIL
 INVITATION_CONFIRMED_EMAIL_SUBJECT=<sender e-mail>

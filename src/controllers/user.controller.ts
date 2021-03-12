@@ -393,23 +393,51 @@ export class UserController {
       } else {
         userData.passwordRecoveryDate = new Date().toJSON();
         userData.passwordRecoveryToken = uuidv4();
-
-      }
-      
-
-      if (userData.emailConfirmed) {
-        
-      } else {
-        // Update the account to confirmed
-        userData.emailConfirmed = true;
-        userData.confirmAccountToken = '';
-
         await this.userRepository.updateById(userData.idUser, userData);
 
-        response = {
-          code: '202',
-          message: 'Account confirmed'
-        };
+        const sgMail = require('@sendgrid/mail');
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+        const resetPasswordLink = process.env.PORTAL_URL + '/#/reset-password/?confirm=' + userData.passwordRecoveryToken;
+
+        let emailSubject = process.env.RESET_PASSWORD_EMAIL_SUBJECT;
+        emailSubject = emailSubject?.replace(/%firstName%/g, userData.firstName);
+        emailSubject = emailSubject?.replace(/%lastName%/g, userData.lastName);
+
+        let emailText = process.env.RESET_PASSWORD_EMAIL_TEXT;
+        emailText = emailText?.replace(/%firstName%/g, userData.firstName);
+        emailText = emailText?.replace(/%lastName%/g, userData.lastName);
+        emailText = emailText?.replace(/%resetPasswordLink%/g, resetPasswordLink);
+        
+        let htmlText = process.env.RESET_PASSWORD_EMAIL_HTML;
+        htmlText = htmlText?.replace(/%firstName%/g, userData.firstName);
+        htmlText = htmlText?.replace(/%lastName%/g, userData.lastName);
+        htmlText = htmlText?.replace(/%resetPasswordLink%/g, resetPasswordLink);
+
+        const msg = {
+          to: userData.email,
+          from: process.env.RESET_PASSWORD_EMAIL_FROM_EMAIL,
+          fromname: process.env.RESET_PASSWORD_EMAIL_FROM_NAME,
+          subject: emailSubject,
+          text: emailText,
+          html: htmlText,
+        }
+
+        await sgMail
+          .send(msg)
+          .then(() => {
+            response = {
+              code: '202',
+              message: 'Reset password e-mail sent'
+            };
+          })
+          .catch((error: any) => {
+            console.error(error)
+            response = {
+              code: '20',
+              message: 'Error sending e-mail'
+            };
+          })
       }
     } else {
       response = {
