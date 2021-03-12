@@ -533,6 +533,125 @@ export class UserController {
     return Promise.resolve({ invitationOutcome: response });
   }
 
+  //*** CONFIRM INVITATION ***/
+  @post('/user/confirm-invitation', {
+    responses: {
+      '200': {
+        description: 'Confirm Invitation into Organization',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                confirmInvitation: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async confirmInvitation(
+    @param.path.string('invitationToken') invitationToken: string
+  ): Promise<{ invitationOutcome: InvitationOutcome }> {
+    let response : InvitationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    // Check if the invitation token exists
+    const invFilter: Filter = { where: { "invitationToken": invitationToken }};
+    const invitationData = await this.organizationUserRepository.findOne(invFilter);
+
+    if (invitationData) {
+      // Check if the invitation is already confirmed
+      if (invitationData.confirmed) {
+        response = {
+          code: '20',
+          message: 'Invitation already confirmed'
+        };
+      } else {
+        // Get the invitation organization
+        const orgFilter: Filter = { where: { "idOrganization": invitationData.idOrganization }};
+        const invitationOrganization = await this.organizationRepository.findOne(orgFilter);
+
+        let organizationName = '';
+        if (invitationOrganization) {
+          organizationName = invitationOrganization.name;
+        }
+        
+        // Get the invitation operator
+        const opFilter: Filter = { where: { "idUser": invitationData[0].idUser }};
+        const invitationUser = await this.userRepository.findOne(opFilter);
+
+        let userFirstName = '';
+        let userLastName = '';
+        let userEMail = '';
+        if (invitationUser) {
+          userFirstName = invitationUser.firstName;
+          userLastName = invitationUser.lastName;
+          userEMail = invitationUser.email;
+        }
+
+        // Update the invitation to confirmed
+        invitationData.confirmed = true;
+
+        await this.organizationUserRepository.updateById(invitationData.idOrganizationUser, invitationData);
+
+        const sgMail = require('@sendgrid/mail');
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+        let emailSubject = process.env.INVITATION_CONFIRMED_EMAIL_SUBJECT;
+        emailSubject = emailSubject?.replace(/%firstName%/g, userFirstName);
+        emailSubject = emailSubject?.replace(/%lastName%/g, userLastName);
+
+        let emailText = process.env.INVITATION_CONFIRMED_EMAIL_TEXT;
+        emailText = emailText?.replace(/%firstName%/g, userFirstName);
+        emailText = emailText?.replace(/%lastName%/g, userLastName);
+        emailText = emailText?.replace(/%organizationName%/g, organizationName);
+
+        let htmlText = process.env.INVITATION_CONFIRMED_EMAIL_HTML;
+        htmlText = htmlText?.replace(/%firstName%/g, userFirstName);
+        htmlText = htmlText?.replace(/%lastName%/g, userLastName);
+        htmlText = htmlText?.replace(/%organizationName%/g, organizationName);
+
+        const msg = {
+          to: userEMail,
+          from: process.env.INVITATION_CONFIRMED_EMAIL_FROM_EMAIL,
+          fromname: process.env.INVITATION_CONFIRMED_EMAIL_FROM_NAME,
+          subject: emailSubject,
+          text: emailText,
+          html: htmlText,
+        }
+    
+        await sgMail
+          .send(msg)
+          .then(() => {
+            response = {
+              code: '202',
+              message: 'Invitation confirmed and e-mail sent'
+            };
+          })
+          .catch((error: any) => {
+            console.error(error)
+            response = {
+              code: '201',
+              message: 'Invitation confirmed but e-mail not sent'
+            };
+          })
+      }
+    } else {
+      response = {
+        code: '10',
+        message: 'Invitation token not exists'
+      };
+    }
+
+    return Promise.resolve({ invitationOutcome: response });
+  }
+
   //*** USER PROFILE ***/
   @get('/users/me')
   @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })

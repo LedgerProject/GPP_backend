@@ -38,3 +38,10 @@ INVITATION_EMAIL_FROM_NAME=<sender name>
 INVITATION_EMAIL_SUBJECT=<invitation email subject> | params: %firstName%, %lastName%
 INVITATION_EMAIL_TEXT=<invitation email plain text> | params: %firstName%, %lastName%, %organizationName%, "%invitationMessage%", %invitationLink%
 INVITATION_EMAIL_HTML=<invitation email html text>  | params: %firstName%, %lastName%, %organizationName%, "%invitationMessage%", %invitationLink%
+
+# INVITATION CONFIRMED E-MAIL
+INVITATION_CONFIRMED_EMAIL_SUBJECT=<sender e-mail>
+INVITATION_CONFIRMED_EMAIL_FROM_EMAIL=<sender e-mail>
+INVITATION_CONFIRMED_EMAIL_FROM_NAME=<sender name>                       | params: %firstName%, %lastName%
+INVITATION_CONFIRMED_EMAIL_TEXT=<invitation confirmed email plain text>  | params: %firstName%, %lastName%, %organizationName%
+INVITATION_CONFIRMED_EMAIL_HTML=<invitation confirmed email html text>   | params: %firstName%, %lastName%, %organizationName%
