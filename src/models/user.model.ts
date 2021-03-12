@@ -89,6 +89,12 @@ export class User extends Entity {
   })
   birthday: string;
 
+  @property({
+    type: 'string',
+    postgresql: { columnName: 'confirmAccountToken', dataType: 'character varying', dataLength: 150, dataPrecision: null, dataScale: null, nullable: 'YES' },
+  })
+  confirmAccountToken: string;
+
   @hasMany(() => OrganizationUser, {keyTo: 'idUser'})
   organizationUser?: OrganizationUser[];
 

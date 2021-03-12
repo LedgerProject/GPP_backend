@@ -25,9 +25,20 @@ interface Invitation {
   permissions: string;
 }
 
-interface InvitationOutcome {
+interface ResetPasswordData {
+  email: string;
+}
+
+interface OperationOutcome {
   code: string;
   message: string;
+}
+
+interface UsersListInvitation {
+  idUser: string;
+  firstName: string;
+  lastName: string;
+  email: string;
 }
 
 export class UserController {
@@ -66,7 +77,7 @@ export class UserController {
         'application/json': {
           schema: getModelSchemaRef(User, {
             title: 'NewUser',
-            exclude: ['idUser', 'permissions', 'additionalProp1'],
+            exclude: ['idUser', 'additionalProp1'],
           }),
         },
       },
@@ -75,6 +86,10 @@ export class UserController {
     userData: User) {
     // Credentials validations
     validateCredentials(_.pick(userData, ['userType', 'email', 'password']));
+
+    if (userData.userType !== 'gppOperator' && userData.userType !== 'operator' && userData.userType !== 'user') {
+      throw new HttpErrors.BadRequest('Incorrect user type');
+    }
 
     // Check: if it is a GPP operator, if secretKey is correct
     if (userData.userType === UserTypeKeys.gppOperator && secretKey !== process.env.GPP_REGISTRATION_KEY) {
@@ -98,13 +113,113 @@ export class UserController {
     // Password hashing
     userData.password = await this.hasher.hashPassword(userData.password)
 
+    // Confirm account token
+    userData.confirmAccountToken = uuidv4();
+
     // User creation
     const newUser = await this.userRepository.create(userData);
 
     // Select the new user and omit some data
     const userCreated = await this.userRepository.findById(newUser.idUser, { fields: {idUser: true, userType: true, firstName: true, lastName: true, email: true} });
 
+    // Send e-mail for account confirmation
+    const sgMail = require('@sendgrid/mail');
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+    const confirmationLink = process.env.PORTAL_URL + '/#/confirm-account/?confirm=' + userData.confirmAccountToken;
+
+    let emailSubject = process.env.CONFIRM_ACCOUNT_EMAIL_SUBJECT;
+    emailSubject = emailSubject?.replace(/%firstName%/g, userData.firstName);
+    emailSubject = emailSubject?.replace(/%lastName%/g, userData.lastName);
+
+    let emailText = process.env.CONFIRM_ACCOUNT_EMAIL_TEXT;
+    emailText = emailText?.replace(/%firstName%/g, userData.firstName);
+    emailText = emailText?.replace(/%lastName%/g, userData.lastName);
+    emailText = emailText?.replace(/%confirmationLink%/g, confirmationLink);
+        
+    let htmlText = process.env.CONFIRM_ACCOUNT_EMAIL_HTML;
+    htmlText = htmlText?.replace(/%firstName%/g, userData.firstName);
+    htmlText = htmlText?.replace(/%lastName%/g, userData.lastName);
+    htmlText = htmlText?.replace(/%confirmationLink%/g, confirmationLink);
+
+    const msg = {
+      to: userData.email,
+      from: process.env.CONFIRM_ACCOUNT_EMAIL_FROM_EMAIL,
+      fromname: process.env.CONFIRM_ACCOUNT_EMAIL_FROM_NAME,
+      subject: emailSubject,
+      text: emailText,
+      html: htmlText,
+    }
+
+    await sgMail
+      .send(msg)
+      .then(() => {})
+      .catch((error: any) => {
+        console.error(error)
+      })
+
     return userCreated;
+  }
+
+  //*** CONFIRM ACCOUNT ***/
+  @post('/user/confirm-account', {
+    responses: {
+      '200': {
+        description: 'Confirm Account',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                confirmAccount: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async confirmAccount(
+    @param.path.string('confirmationToken') confirmationToken: string
+  ): Promise<{ confirmationOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    // Check if the confirmation token exists
+    const conFilter: Filter = { where: { "confirmAccountToken": confirmationToken }};
+    const userData = await this.userRepository.findOne(conFilter);
+
+    if (userData) {
+      // Check if the account is already confirmed
+      if (userData.emailConfirmed) {
+        response = {
+          code: '20',
+          message: 'Account already confirmed'
+        };
+      } else {
+        // Update the account to confirmed
+        userData.emailConfirmed = true;
+        userData.confirmAccountToken = '';
+
+        await this.userRepository.updateById(userData.idUser, userData);
+
+        response = {
+          code: '202',
+          message: 'Account confirmed'
+        };
+      }
+    } else {
+      response = {
+        code: '10',
+        message: 'Confirmation token not exists'
+      };
+    }
+
+    return Promise.resolve({ confirmationOutcome: response });
   }
 
   //*** USER LOGIN ***/
@@ -131,6 +246,11 @@ export class UserController {
     @requestBody(CredentialsRequestBody) credentials: Credentials): Promise<{ token: string }> {
     const user = await this.userService.verifyCredentials(credentials);
     const userProfile = this.userService.convertToUserProfile(user);
+
+    //Check if e-mail confirmed
+    if (!user.emailConfirmed) {
+      throw new HttpErrors.Forbidden('E-mail not confirmed');
+    }
 
     switch (user.userType) {
       case UserTypeKeys.gppOperator:
@@ -221,6 +341,86 @@ export class UserController {
     return Promise.resolve({ token: jwt });
   }
 
+  //*** RESET PASSWORD ***/
+  /*@post('/user/reset-password', {
+    responses: {
+      '200': {
+        description: 'Reset Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                resetPassword: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async resetPassword(
+    @requestBody()
+    resetPasswordData: ResetPasswordData,
+  ): Promise<{ resetPasswordOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    // Check if an user with this email exists
+    const usrFilter: Filter = { where: { "email": resetPasswordData.email }};
+    const userData = await this.userRepository.findOne(usrFilter);
+
+    if (userData) {
+      // Check if the user has already requested to reset the password
+      let requestAlreadyDone = false;
+      if (userData.passwordRecoveryDate) {
+        const requestDiff = new Date().getTime() - new Date(userData.passwordRecoveryDate).getTime();
+        const requestHours = requestDiff / 3600000;
+        if (requestHours < 24) {
+          requestAlreadyDone = true;
+        }
+      }
+
+      if (requestAlreadyDone) {
+        response = {
+          code: '20',
+          message: 'Request already done in the last 24 hours'
+        };
+      } else {
+        userData.passwordRecoveryDate = new Date().toJSON();
+        userData.passwordRecoveryToken = uuidv4();
+
+      }
+      
+
+      if (userData.emailConfirmed) {
+        
+      } else {
+        // Update the account to confirmed
+        userData.emailConfirmed = true;
+        userData.confirmAccountToken = '';
+
+        await this.userRepository.updateById(userData.idUser, userData);
+
+        response = {
+          code: '202',
+          message: 'Account confirmed'
+        };
+      }
+    } else {
+      response = {
+        code: '10',
+        message: 'Email not exists'
+      };
+    }
+
+    return Promise.resolve({ resetPasswordOutcome: response });
+  }*/
+
   //*** LIST ***/
   @get('/users', {
     responses: {
@@ -282,6 +482,44 @@ export class UserController {
     }
 
     return usersReturn;
+  }
+
+  //*** USERS LIST TO INVITE ***/
+  @get('/users/invite', {
+    responses: {
+      '200': {
+        description: 'Users List Invite',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt', { required: [PermissionKeys.OrganizationUsersManagement] })
+  async usersListInvite(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile,
+  ): Promise<UsersListInvitation[]> {
+    let usersListInvitation : UsersListInvitation[] = [];
+    let filter : Filter = {};
+    filter.where = {};
+    const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
+    const where = queryFilters.impose({ userType: "operator", emailConfirmed : true }).build();
+    filter.where = where;
+    let usersReturn: User[] = await this.userRepository.find(filter, { fields: {idUser: true, firstName: true, lastName: true, email: true}});
+    for (let key in usersReturn) {
+      usersListInvitation.push({
+        idUser : usersReturn[key]['idUser']!,
+        firstName : usersReturn[key]['firstName'],
+        lastName : usersReturn[key]['lastName'],
+        email : usersReturn[key]['email'],
+      });
+    }
+    return usersListInvitation;
   }
 
   //*** CHANGE ORGANIZATION ***/
@@ -423,8 +661,8 @@ export class UserController {
     invitation: Invitation,
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile
-  ): Promise<{ invitationOutcome: InvitationOutcome }> {
-    let response : InvitationOutcome = {
+  ): Promise<{ invitationOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
       code: '0',
       message: ''
     };
@@ -555,8 +793,8 @@ export class UserController {
   })
   async confirmInvitation(
     @param.path.string('invitationToken') invitationToken: string
-  ): Promise<{ invitationOutcome: InvitationOutcome }> {
-    let response : InvitationOutcome = {
+  ): Promise<{ invitationOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
       code: '0',
       message: ''
     };
@@ -597,6 +835,7 @@ export class UserController {
 
         // Update the invitation to confirmed
         invitationData.confirmed = true;
+        invitationData.invitationToken = '';
 
         await this.organizationUserRepository.updateById(invitationData.idOrganizationUser, invitationData);
 
