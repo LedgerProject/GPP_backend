@@ -342,7 +342,7 @@ export class UserController {
   }
 
   //*** RESET PASSWORD ***/
-  /*@post('/user/reset-password', {
+  @post('/user/reset-password', {
     responses: {
       '200': {
         description: 'Reset Password',
@@ -419,7 +419,7 @@ export class UserController {
     }
 
     return Promise.resolve({ resetPasswordOutcome: response });
-  }*/
+  }
 
   //*** LIST ***/
   @get('/users', {
@@ -485,7 +485,7 @@ export class UserController {
   }
 
   //*** USERS LIST TO INVITE ***/
-  @get('/users/invite', {
+  @get('/users/invite/{email}/{limit}', {
     responses: {
       '200': {
         description: 'Users List Invite',
@@ -501,15 +501,17 @@ export class UserController {
   })
   @authenticate('jwt', { required: [PermissionKeys.OrganizationUsersManagement] })
   async usersListInvite(
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile,
+    @param.path.string('email') email: string,
+    @param.path.number('limit') limit: number,
   ): Promise<UsersListInvitation[]> {
     let usersListInvitation : UsersListInvitation[] = [];
     let filter : Filter = {};
     filter.where = {};
     const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
-    const where = queryFilters.impose({ userType: "operator", emailConfirmed : true }).build();
+    const where = queryFilters.impose({ userType: "operator", emailConfirmed : true, "email": { ilike : '%' + email + '%' }}).build();
     filter.where = where;
+    filter.limit = limit;
+    filter.order = [ 'lastName', 'firstName', 'email' ];
     let usersReturn: User[] = await this.userRepository.find(filter, { fields: {idUser: true, firstName: true, lastName: true, email: true}});
     for (let key in usersReturn) {
       usersListInvitation.push({
