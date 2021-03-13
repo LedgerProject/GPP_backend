@@ -29,6 +29,14 @@ interface ResetPasswordData {
   email: string;
 }
 
+interface ConfirmationTokenData {
+  confirmationToken: string;
+}
+
+interface InvitationTokenData {
+  invitationToken: string;
+}
+
 interface OperationOutcome {
   code: string;
   message: string;
@@ -39,6 +47,20 @@ interface UsersListInvitation {
   firstName: string;
   lastName: string;
   email: string;
+}
+
+interface ConfirmResetPasswordData {
+  resetPasswordToken: string;
+  newPassword: string;
+}
+
+interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+}
+
+interface OrganizationUserData {
+  idUser: string;
 }
 
 export class UserController {
@@ -111,7 +133,7 @@ export class UserController {
     userData.emailConfirmed = false;
 
     // Password hashing
-    userData.password = await this.hasher.hashPassword(userData.password)
+    userData.password = await this.hasher.hashPassword(userData.password);
 
     // Confirm account token
     userData.confirmAccountToken = uuidv4();
@@ -183,40 +205,55 @@ export class UserController {
     },
   })
   async confirmAccount(
-    @param.path.string('confirmationToken') confirmationToken: string
+    @requestBody()
+    confirmationToken: ConfirmationTokenData
   ): Promise<{ confirmationOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
       message: ''
     };
 
-    // Check if the confirmation token exists
-    const conFilter: Filter = { where: { "confirmAccountToken": confirmationToken }};
-    const userData = await this.userRepository.findOne(conFilter);
+    if (confirmationToken.confirmationToken) {
+      // Check if the confirmation token exists
+      const conFilter: Filter = { where: { "confirmAccountToken": confirmationToken.confirmationToken }};
+      const userData = await this.userRepository.findOne(conFilter);
 
-    if (userData) {
-      // Check if the account is already confirmed
-      if (userData.emailConfirmed) {
-        response = {
-          code: '20',
-          message: 'Account already confirmed'
-        };
+      if (userData) {
+        // Check if the account is already confirmed
+        if (userData.emailConfirmed) {
+          response = {
+            code: '20',
+            message: 'Account already confirmed'
+          };
+        } else {
+          // Update the account to confirmed
+          userData.emailConfirmed = true;
+          userData.confirmAccountToken = '';
+
+          await this.userRepository.updateById(userData.idUser, userData);
+
+          if (userData.userType == 'user') {
+            response = {
+              code: '202',
+              message: 'User account confirmed'
+            };
+          } else {
+            response = {
+              code: '204',
+              message: 'Operator account confirmed'
+            };
+          }
+        }
       } else {
-        // Update the account to confirmed
-        userData.emailConfirmed = true;
-        userData.confirmAccountToken = '';
-
-        await this.userRepository.updateById(userData.idUser, userData);
-
         response = {
-          code: '202',
-          message: 'Account confirmed'
+          code: '10',
+          message: 'Confirmation token not exists'
         };
       }
     } else {
       response = {
-        code: '10',
-        message: 'Confirmation token not exists'
+        code: '11',
+        message: 'Specify a token'
       };
     }
 
@@ -342,6 +379,16 @@ export class UserController {
     return Promise.resolve({ token: jwt });
   }
 
+  //*** USER PROFILE ***/
+  @get('/users/me')
+  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
+  async me(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
+  ): Promise<UserProfile> {
+    return Promise.resolve(currentUser);
+  }
+
   //*** RESET PASSWORD ***/
   @post('/user/reset-password', {
     responses: {
@@ -371,54 +418,266 @@ export class UserController {
       message: ''
     };
 
-    // Check if an user with this email exists
-    const usrFilter: Filter = { where: { "email": resetPasswordData.email }};
-    const userData = await this.userRepository.findOne(usrFilter);
+    if (resetPasswordData.email) {
+      // Check if an user with this email exists
+      const usrFilter: Filter = { where: { "email": resetPasswordData.email }};
+      const userData = await this.userRepository.findOne(usrFilter);
 
-    if (userData) {
-      // Check if the user has already requested to reset the password
-      let requestAlreadyDone = false;
-      if (userData.passwordRecoveryDate) {
-        const requestDiff = new Date().getTime() - new Date(userData.passwordRecoveryDate).getTime();
-        const requestHours = requestDiff / 3600000;
-        if (requestHours < 24) {
-          requestAlreadyDone = true;
+      if (userData) {
+        // Check if the user has already requested to reset the password
+        let requestAlreadyDone = false;
+        if (userData.passwordRecoveryDate) {
+          const requestDiff = new Date().getTime() - new Date(userData.passwordRecoveryDate).getTime();
+          const requestHours = requestDiff / 3600000;
+          if (requestHours < 24) {
+            requestAlreadyDone = true;
+          }
         }
-      }
 
-      if (requestAlreadyDone) {
-        response = {
-          code: '20',
-          message: 'Request already done in the last 24 hours'
-        };
+        if (requestAlreadyDone) {
+          response = {
+            code: '20',
+            message: 'Request already done in the last 24 hours'
+          };
+        } else {
+          userData.passwordRecoveryDate = new Date().toJSON();
+          userData.passwordRecoveryToken = uuidv4();
+          await this.userRepository.updateById(userData.idUser, userData);
+
+          const sgMail = require('@sendgrid/mail');
+          sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+          const resetPasswordLink = process.env.PORTAL_URL + '/#/reset-password/?confirm=' + userData.passwordRecoveryToken;
+
+          let emailSubject = process.env.RESET_PASSWORD_EMAIL_SUBJECT;
+          emailSubject = emailSubject?.replace(/%firstName%/g, userData.firstName);
+          emailSubject = emailSubject?.replace(/%lastName%/g, userData.lastName);
+
+          let emailText = process.env.RESET_PASSWORD_EMAIL_TEXT;
+          emailText = emailText?.replace(/%firstName%/g, userData.firstName);
+          emailText = emailText?.replace(/%lastName%/g, userData.lastName);
+          emailText = emailText?.replace(/%resetPasswordLink%/g, resetPasswordLink);
+          
+          let htmlText = process.env.RESET_PASSWORD_EMAIL_HTML;
+          htmlText = htmlText?.replace(/%firstName%/g, userData.firstName);
+          htmlText = htmlText?.replace(/%lastName%/g, userData.lastName);
+          htmlText = htmlText?.replace(/%resetPasswordLink%/g, resetPasswordLink);
+
+          const msg = {
+            to: userData.email,
+            from: process.env.RESET_PASSWORD_EMAIL_FROM_EMAIL,
+            fromname: process.env.RESET_PASSWORD_EMAIL_FROM_NAME,
+            subject: emailSubject,
+            text: emailText,
+            html: htmlText,
+          }
+
+          await sgMail
+            .send(msg)
+            .then(() => {
+              response = {
+                code: '202',
+                message: 'Reset password e-mail sent'
+              };
+            })
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .catch((error: any) => {
+              console.error(error)
+              response = {
+                code: '30',
+                message: 'Error sending e-mail'
+              };
+            })
+        }
       } else {
-        userData.passwordRecoveryDate = new Date().toJSON();
-        userData.passwordRecoveryToken = uuidv4();
-        await this.userRepository.updateById(userData.idUser, userData);
+        response = {
+          code: '10',
+          message: 'Email not exists'
+        };
+      }
+    } else {
+      response = {
+        code: '11',
+        message: 'Specify an email'
+      };
+    }
+
+    return Promise.resolve({ resetPasswordOutcome: response });
+  }
+
+  //*** CONFIRM RESET PASSWORD ***/
+  @post('/user/confirm-reset-password', {
+    responses: {
+      '200': {
+        description: 'Confirm Reset Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                resetPassword: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async confirmResetPassword(
+    @requestBody()
+    confirmResetPasswordData: ConfirmResetPasswordData,
+  ): Promise<{ confirmResetPasswordOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    if (confirmResetPasswordData.resetPasswordToken) {
+      // Check if an user with this token exists
+      const usrFilter: Filter = { where: { "passwordRecoveryToken": confirmResetPasswordData.resetPasswordToken }};
+      const userData = await this.userRepository.findOne(usrFilter);
+
+      if (userData) {
+        // Check if new password is at least 8 characters
+        if (confirmResetPasswordData.newPassword.length >= 8) {
+          // Password hashing
+          userData.password = await this.hasher.hashPassword(confirmResetPasswordData.newPassword);
+          userData.passwordRecoveryToken = '';
+          await this.userRepository.updateById(userData.idUser, userData);
+
+          const sgMail = require('@sendgrid/mail');
+          sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+          let emailSubject = process.env.CONFIRM_RESET_PASSWORD_EMAIL_SUBJECT;
+          emailSubject = emailSubject?.replace(/%firstName%/g, userData.firstName);
+          emailSubject = emailSubject?.replace(/%lastName%/g, userData.lastName);
+
+          let emailText = process.env.CONFIRM_RESET_PASSWORD_EMAIL_TEXT;
+          emailText = emailText?.replace(/%firstName%/g, userData.firstName);
+          emailText = emailText?.replace(/%lastName%/g, userData.lastName);
+          
+          let htmlText = process.env.CONFIRM_RESET_PASSWORD_EMAIL_HTML;
+          htmlText = htmlText?.replace(/%firstName%/g, userData.firstName);
+          htmlText = htmlText?.replace(/%lastName%/g, userData.lastName);
+
+          const msg = {
+            to: userData.email,
+            from: process.env.CONFIRM_RESET_PASSWORD_EMAIL_FROM_EMAIL,
+            fromname: process.env.CONFIRM_RESET_PASSWORD_EMAIL_FROM_NAME,
+            subject: emailSubject,
+            text: emailText,
+            html: htmlText,
+          }
+
+          await sgMail
+            .send(msg)
+            .then(() => {
+              response = {
+                code: '202',
+                message: 'Reset password confirmed and e-mail sent'
+              };
+            })
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .catch((error: any) => {
+              console.error(error)
+              response = {
+                code: '201',
+                message: 'Reset password confirmed but e-mail not sent'
+              };
+            })
+        } else {
+          response = {
+            code: '20',
+            message: 'New password at least 8 characters'
+          };
+        }
+      } else {
+        response = {
+          code: '10',
+          message: 'Token not exists'
+        };
+      }
+    } else {
+      response = {
+        code: '11',
+        message: 'Specify a token'
+      };
+    }
+
+    return Promise.resolve({ confirmResetPasswordOutcome: response });
+  }
+
+  //*** CHANGE PASSWORD ***/
+  @post('/user/change-password', {
+    responses: {
+      '200': {
+        description: 'Change Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                resetPassword: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt', { required: [PermissionKeys.ProfileEdit] })
+  async changePassword(
+    @requestBody()
+    changePasswordData: ChangePasswordData,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
+  ): Promise<{ changePasswordOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    // Check if the current password match
+    const userType : string = currentUser.userType;
+    const email : string = currentUser.email!;
+
+    const credentials = {
+      userType: userType,
+      email: email,
+      password: changePasswordData.currentPassword
+    };
+    const user = await this.userService.verifyCredentials(credentials);
+
+    if (user) {
+      // Check if new password is at least 8 characters
+      if (changePasswordData.newPassword.length >= 8) {
+        // Password hashing
+        user.password = await this.hasher.hashPassword(changePasswordData.newPassword);
+        await this.userRepository.updateById(user.idUser, user);
 
         const sgMail = require('@sendgrid/mail');
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-        const resetPasswordLink = process.env.PORTAL_URL + '/#/reset-password/?confirm=' + userData.passwordRecoveryToken;
+        let emailSubject = process.env.CHANGE_PASSWORD_EMAIL_SUBJECT;
+        emailSubject = emailSubject?.replace(/%firstName%/g, user.firstName);
+        emailSubject = emailSubject?.replace(/%lastName%/g, user.lastName);
 
-        let emailSubject = process.env.RESET_PASSWORD_EMAIL_SUBJECT;
-        emailSubject = emailSubject?.replace(/%firstName%/g, userData.firstName);
-        emailSubject = emailSubject?.replace(/%lastName%/g, userData.lastName);
-
-        let emailText = process.env.RESET_PASSWORD_EMAIL_TEXT;
-        emailText = emailText?.replace(/%firstName%/g, userData.firstName);
-        emailText = emailText?.replace(/%lastName%/g, userData.lastName);
-        emailText = emailText?.replace(/%resetPasswordLink%/g, resetPasswordLink);
+        let emailText = process.env.CHANGE_PASSWORD_EMAIL_TEXT;
+        emailText = emailText?.replace(/%firstName%/g, user.firstName);
+        emailText = emailText?.replace(/%lastName%/g, user.lastName);
         
-        let htmlText = process.env.RESET_PASSWORD_EMAIL_HTML;
-        htmlText = htmlText?.replace(/%firstName%/g, userData.firstName);
-        htmlText = htmlText?.replace(/%lastName%/g, userData.lastName);
-        htmlText = htmlText?.replace(/%resetPasswordLink%/g, resetPasswordLink);
+        let htmlText = process.env.CHANGE_PASSWORD_EMAIL_HTML;
+        htmlText = htmlText?.replace(/%firstName%/g, user.firstName);
+        htmlText = htmlText?.replace(/%lastName%/g, user.lastName);
 
         const msg = {
-          to: userData.email,
-          from: process.env.RESET_PASSWORD_EMAIL_FROM_EMAIL,
-          fromname: process.env.RESET_PASSWORD_EMAIL_FROM_NAME,
+          to: user.email,
+          from: process.env.CHANGE_PASSWORD_EMAIL_FROM_EMAIL,
+          fromname: process.env.CHANGE_PASSWORD_EMAIL_FROM_NAME,
           subject: emailSubject,
           text: emailText,
           html: htmlText,
@@ -429,26 +688,31 @@ export class UserController {
           .then(() => {
             response = {
               code: '202',
-              message: 'Reset password e-mail sent'
+              message: 'Change password confirmed and e-mail sent'
             };
           })
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .catch((error: any) => {
             console.error(error)
             response = {
-              code: '20',
-              message: 'Error sending e-mail'
+              code: '201',
+              message: 'Change password confirmed but e-mail not sent'
             };
           })
+      } else {
+        response = {
+          code: '20',
+          message: 'New password at least 8 characters'
+        };
       }
     } else {
       response = {
         code: '10',
-        message: 'Email not exists'
+        message: 'Wrong current password'
       };
     }
 
-    return Promise.resolve({ resetPasswordOutcome: response });
+    return Promise.resolve({ changePasswordOutcome: response });
   }
 
   //*** LIST ***/
@@ -552,119 +816,6 @@ export class UserController {
       });
     }
     return usersListInvitation;
-  }
-
-  //*** CHANGE ORGANIZATION ***/
-  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
-  @get('/users/change-organization/{id}', {
-    responses: {
-      '200': {
-        description: 'Token change organization',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              properties: {
-                token: {
-                  type: 'string',
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  })
-  async changeOrganization(
-    @param.path.string('id') id: string,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
-  ): Promise<{ token: string }> {
-    const filter: Filter = { where: { "idUser": currentUser.idUser } };
-    const user = await this.userRepository.findOne(filter);
-
-    const userProfile = this.userService.convertToUserProfile(user!);
-
-    switch (user!.userType) {
-      case UserTypeKeys.gppOperator:
-        userProfile.permissions = [
-          PermissionKeys.GeneralOrganizationManagement,
-          PermissionKeys.GeneralUsersManagement,
-          PermissionKeys.GeneralStructuresManagement,
-          PermissionKeys.GeneralCountriesManagement,
-          PermissionKeys.GeneralIconsManagement,
-          PermissionKeys.GeneralCategoriesManagement,
-          PermissionKeys.GeneralNationalitiesManagement,
-          PermissionKeys.StructureCreation,
-          PermissionKeys.CheckTokenDocWallet,
-          PermissionKeys.MyOrganizationList,
-          PermissionKeys.AuthFeatures,
-          PermissionKeys.ProfileEdit
-        ]
-        break;
-
-      case UserTypeKeys.operator:
-        userProfile.permissions = [
-          PermissionKeys.CheckTokenDocWallet,
-          PermissionKeys.OrganizationCreation,
-          PermissionKeys.OrganizationUpdate,
-          PermissionKeys.OrganizationDetail,
-          PermissionKeys.OrganizationDelete,
-          PermissionKeys.MyOrganizationList,
-          PermissionKeys.AuthFeatures,
-          PermissionKeys.ProfileEdit
-        ];
-        break;
-
-      default:
-        throw new HttpErrors.Forbidden('Not allowed');
-    }
-
-    if (user!.userType !== UserTypeKeys.gppOperator) {
-      // Check permissions for first organization
-      const filterOrg: Filter = { where: { "idUser": user!.idUser, "idOrganization": id } };
-      const firstOrganization = await this.organizationUserRepository.findOne(filterOrg);
-
-      if (firstOrganization !== undefined) {
-        const permissions = firstOrganization?.permissions
-        if (permissions?.includes(PermissionKeys.OrganizationAdministrator)) {
-          userProfile.permissions.push(PermissionKeys.OrganizationUsersManagement);
-          userProfile.permissions.push(PermissionKeys.OrganizationStructuresManagement);
-          userProfile.permissions.push(PermissionKeys.StructureCreation);
-          userProfile.permissions.push(PermissionKeys.StructureUpdate);
-          userProfile.permissions.push(PermissionKeys.StructureList);
-          userProfile.permissions.push(PermissionKeys.StructureDetail);
-          userProfile.permissions.push(PermissionKeys.StructureDelete);
-        } else {
-          if (permissions?.includes(PermissionKeys.OrganizationUsersManagement)) {
-            userProfile.permissions.push(PermissionKeys.OrganizationUsersManagement);
-          }
-          if (permissions?.includes(PermissionKeys.OrganizationStructuresManagement)) {
-            userProfile.permissions.push(PermissionKeys.OrganizationStructuresManagement);
-            userProfile.permissions.push(PermissionKeys.StructureCreation);
-            userProfile.permissions.push(PermissionKeys.StructureUpdate);
-            userProfile.permissions.push(PermissionKeys.StructureList);
-            userProfile.permissions.push(PermissionKeys.StructureDetail);
-            userProfile.permissions.push(PermissionKeys.StructureDelete);
-          }
-        }
-      } else {
-        throw new HttpErrors.Forbidden('Wrong organization');
-      }
-
-      // Associate idOrganization to the userProfile
-      userProfile.idOrganization = id;
-    } else {
-      // Associate idOrganization to null value
-      userProfile.idOrganization = null;
-    }
-
-    // Associate userType to the userProfile
-    userProfile.userType = user!.userType;
-
-    //userProfile.permissions = user.permissions;
-    const jwt = await this.jwtService.generateToken(userProfile);
-    return Promise.resolve({ token: jwt });
   }
 
   //*** INVITE USER ***/
@@ -825,115 +976,528 @@ export class UserController {
     },
   })
   async confirmInvitation(
-    @param.path.string('invitationToken') invitationToken: string
+    @requestBody()
+    invitationToken: InvitationTokenData
   ): Promise<{ invitationOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
       message: ''
     };
 
-    // Check if the invitation token exists
-    const invFilter: Filter = { where: { "invitationToken": invitationToken }};
-    const invitationData = await this.organizationUserRepository.findOne(invFilter);
+    if (invitationToken.invitationToken) {
+      // Check if the invitation token exists
+      const invFilter: Filter = { where: { "invitationToken": invitationToken.invitationToken }};
+      const invitationData = await this.organizationUserRepository.findOne(invFilter);
 
-    if (invitationData) {
-      // Check if the invitation is already confirmed
-      if (invitationData.confirmed) {
-        response = {
-          code: '20',
-          message: 'Invitation already confirmed'
-        };
+      if (invitationData) {
+        // Check if the invitation is already confirmed
+        if (invitationData.confirmed) {
+          response = {
+            code: '20',
+            message: 'Invitation already confirmed'
+          };
+        } else {
+          // Get the invitation organization
+          const orgFilter: Filter = { where: { "idOrganization": invitationData.idOrganization }};
+          const invitationOrganization = await this.organizationRepository.findOne(orgFilter);
+
+          let organizationName = '';
+          if (invitationOrganization) {
+            organizationName = invitationOrganization.name;
+          }
+          
+          // Get the invitation operator
+          const opFilter: Filter = { where: { "idUser": invitationData.idUser }};
+          const invitationUser = await this.userRepository.findOne(opFilter);
+
+          let userFirstName = '';
+          let userLastName = '';
+          let userEMail = '';
+          if (invitationUser) {
+            userFirstName = invitationUser.firstName;
+            userLastName = invitationUser.lastName;
+            userEMail = invitationUser.email;
+          }
+
+          // Update the invitation to confirmed
+          invitationData.confirmed = true;
+          invitationData.invitationToken = '';
+
+          await this.organizationUserRepository.updateById(invitationData.idOrganizationUser, invitationData);
+
+          const sgMail = require('@sendgrid/mail');
+          sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+          let emailSubject = process.env.INVITATION_CONFIRMED_EMAIL_SUBJECT;
+          emailSubject = emailSubject?.replace(/%firstName%/g, userFirstName);
+          emailSubject = emailSubject?.replace(/%lastName%/g, userLastName);
+
+          let emailText = process.env.INVITATION_CONFIRMED_EMAIL_TEXT;
+          emailText = emailText?.replace(/%firstName%/g, userFirstName);
+          emailText = emailText?.replace(/%lastName%/g, userLastName);
+          emailText = emailText?.replace(/%organizationName%/g, organizationName);
+
+          let htmlText = process.env.INVITATION_CONFIRMED_EMAIL_HTML;
+          htmlText = htmlText?.replace(/%firstName%/g, userFirstName);
+          htmlText = htmlText?.replace(/%lastName%/g, userLastName);
+          htmlText = htmlText?.replace(/%organizationName%/g, organizationName);
+
+          const msg = {
+            to: userEMail,
+            from: process.env.INVITATION_CONFIRMED_EMAIL_FROM_EMAIL,
+            fromname: process.env.INVITATION_CONFIRMED_EMAIL_FROM_NAME,
+            subject: emailSubject,
+            text: emailText,
+            html: htmlText,
+          }
+      
+          await sgMail
+            .send(msg)
+            .then(() => {
+              response = {
+                code: '202',
+                message: 'Invitation confirmed and e-mail sent'
+              };
+            })
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .catch((error: any) => {
+              console.error(error)
+              response = {
+                code: '201',
+                message: 'Invitation confirmed but e-mail not sent'
+              };
+            })
+        }
       } else {
-        // Get the invitation organization
-        const orgFilter: Filter = { where: { "idOrganization": invitationData.idOrganization }};
-        const invitationOrganization = await this.organizationRepository.findOne(orgFilter);
-
-        let organizationName = '';
-        if (invitationOrganization) {
-          organizationName = invitationOrganization.name;
-        }
-        
-        // Get the invitation operator
-        const opFilter: Filter = { where: { "idUser": invitationData[0].idUser }};
-        const invitationUser = await this.userRepository.findOne(opFilter);
-
-        let userFirstName = '';
-        let userLastName = '';
-        let userEMail = '';
-        if (invitationUser) {
-          userFirstName = invitationUser.firstName;
-          userLastName = invitationUser.lastName;
-          userEMail = invitationUser.email;
-        }
-
-        // Update the invitation to confirmed
-        invitationData.confirmed = true;
-        invitationData.invitationToken = '';
-
-        await this.organizationUserRepository.updateById(invitationData.idOrganizationUser, invitationData);
-
-        const sgMail = require('@sendgrid/mail');
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-        let emailSubject = process.env.INVITATION_CONFIRMED_EMAIL_SUBJECT;
-        emailSubject = emailSubject?.replace(/%firstName%/g, userFirstName);
-        emailSubject = emailSubject?.replace(/%lastName%/g, userLastName);
-
-        let emailText = process.env.INVITATION_CONFIRMED_EMAIL_TEXT;
-        emailText = emailText?.replace(/%firstName%/g, userFirstName);
-        emailText = emailText?.replace(/%lastName%/g, userLastName);
-        emailText = emailText?.replace(/%organizationName%/g, organizationName);
-
-        let htmlText = process.env.INVITATION_CONFIRMED_EMAIL_HTML;
-        htmlText = htmlText?.replace(/%firstName%/g, userFirstName);
-        htmlText = htmlText?.replace(/%lastName%/g, userLastName);
-        htmlText = htmlText?.replace(/%organizationName%/g, organizationName);
-
-        const msg = {
-          to: userEMail,
-          from: process.env.INVITATION_CONFIRMED_EMAIL_FROM_EMAIL,
-          fromname: process.env.INVITATION_CONFIRMED_EMAIL_FROM_NAME,
-          subject: emailSubject,
-          text: emailText,
-          html: htmlText,
-        }
-    
-        await sgMail
-          .send(msg)
-          .then(() => {
-            response = {
-              code: '202',
-              message: 'Invitation confirmed and e-mail sent'
-            };
-          })
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .catch((error: any) => {
-            console.error(error)
-            response = {
-              code: '201',
-              message: 'Invitation confirmed but e-mail not sent'
-            };
-          })
+        response = {
+          code: '10',
+          message: 'Invitation token not exists'
+        };
       }
     } else {
       response = {
-        code: '10',
-        message: 'Invitation token not exists'
+        code: '11',
+        message: 'Specify a token'
       };
     }
 
     return Promise.resolve({ invitationOutcome: response });
   }
 
-  //*** USER PROFILE ***/
-  @get('/users/me')
-  @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
-  async me(
+  //*** REMOVE USER FROM ORGANIZATION ***/
+  @post('/user/remove-organization', {
+    responses: {
+      '200': {
+        description: 'Remove User from organization',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                removeOrganizationUser: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt', { required: [PermissionKeys.OrganizationUsersManagement] })
+  async removeOrganizationUser(
+    @requestBody()
+    removeOrganizationUser: OrganizationUserData,
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile
-  ): Promise<UserProfile> {
-    return Promise.resolve(currentUser);
+  ): Promise<{ removeOrganizationUserOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    // Check if this is the last user admin of the organization
+    let userRemovable = false;
+    const orgFilter: Filter = { where: { "idOrganization": currentUser.idOrganization, "permissions": [ 'OrganizationAdministrator' ], "confirmed": true }};
+    const numUsers = await this.organizationUserRepository.find(orgFilter);
+
+    if (numUsers.length > 1) {
+      userRemovable = true;
+    } else if (numUsers.length == 1) {
+      if (numUsers[0].idUser !== removeOrganizationUser.idUser) {
+        userRemovable = true;
+      }
+    }
+
+    if (userRemovable) {
+      if (removeOrganizationUser.idUser) {
+        // Check if the user exists
+        const usrFilter: Filter = { where: { "idUser": removeOrganizationUser.idUser }};
+        const userData = await this.userRepository.findOne(usrFilter);
+
+        if (userData) {
+          // Check if the user is a operator or gppOperator
+          if (userData.userType === 'operator' || userData.userType === 'gppOperator') {
+            // Get the authenticated user roles into the organization
+            const curOrgUsrFilter: Filter = { where: { "idOrganization": currentUser.idOrganization, "idUser": currentUser.idUser }};
+            const curOrganizationUser = await this.organizationUserRepository.findOne(curOrgUsrFilter);
+
+            let authUserAdmin = false;
+            if (curOrganizationUser) {
+              for (const x in curOrganizationUser.permissions) {
+                if (curOrganizationUser.permissions[x] === 'OrganizationAdministrator') {
+                  authUserAdmin = true;
+                }
+              }
+            }
+
+            // Check if the user is into the organization
+            const orgUsrFilter: Filter = { where: { "idOrganization": currentUser.idOrganization, "idUser": removeOrganizationUser.idUser }};
+            const organizationUser = await this.organizationUserRepository.findOne(orgUsrFilter);
+
+            if (organizationUser) {
+              // Check if the user is not an administrator
+              let userAdmin = false;
+              for (const i in organizationUser.permissions) {
+                if (organizationUser.permissions[i] === 'OrganizationAdministrator') {
+                  userAdmin = true;
+                }
+              }
+
+              if (authUserAdmin === false && userAdmin === true) {
+                response = {
+                  code: '21',
+                  message: 'Cannot remove an administrator'
+                };
+              } else {
+                // Get the organization name
+                const namFilter: Filter = { where: { "idOrganization": currentUser.idOrganization }};
+                const organizationInfo = await this.organizationRepository.findOne(namFilter);
+
+                let organizationName : string = '';
+                if (organizationInfo) {
+                  organizationName = organizationInfo.name;
+                }
+
+                // Remove the user from organization
+                await this.organizationUserRepository.deleteById(organizationUser.idOrganizationUser);
+
+                const sgMail = require('@sendgrid/mail');
+                sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+                let emailSubject = process.env.REMOVED_FROM_ORGANIZATION_EMAIL_SUBJECT;
+                emailSubject = emailSubject?.replace(/%firstName%/g, userData.firstName);
+                emailSubject = emailSubject?.replace(/%lastName%/g, userData.lastName);
+
+                let emailText = process.env.REMOVED_FROM_ORGANIZATION_EMAIL_TEXT;
+                emailText = emailText?.replace(/%firstName%/g, userData.firstName);
+                emailText = emailText?.replace(/%lastName%/g, userData.lastName);
+                emailText = emailText?.replace(/%organizationName%/g, organizationName);
+
+                let htmlText = process.env.REMOVED_FROM_ORGANIZATION_EMAIL_HTML;
+                htmlText = htmlText?.replace(/%firstName%/g, userData.firstName);
+                htmlText = htmlText?.replace(/%lastName%/g, userData.lastName);
+                htmlText = emailText?.replace(/%organizationName%/g, organizationName);
+
+                const msg = {
+                  to: userData.email,
+                  from: process.env.REMOVED_FROM_ORGANIZATION_EMAIL_FROM_EMAIL,
+                  fromname: process.env.REMOVED_FROM_ORGANIZATION_EMAIL_FROM_NAME,
+                  subject: emailSubject,
+                  text: emailText,
+                  html: htmlText,
+                }
+            
+                await sgMail
+                  .send(msg)
+                  .then(() => {
+                    response = {
+                      code: '202',
+                      message: 'Removed from organization and e-mail sent'
+                    };
+                  })
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  .catch((error: any) => {
+                    console.error(error)
+                    response = {
+                      code: '201',
+                      message: 'Removed from organization but e-mail not sent'
+                    };
+                  })
+              }
+            } else {
+              response = {
+                code: '13',
+                message: 'User is not in your organization'
+              };
+            }
+          } else {
+            response = {
+              code: '12',
+              message: 'User is not an administrator'
+            };
+          }
+        } else {
+          response = {
+            code: '10',
+            message: 'User not exists'
+          };
+        }
+      } else {
+        response = {
+          code: '11',
+          message: 'Specify an user id'
+        };
+      }
+    } else {
+      response = {
+        code: '20',
+        message: 'Cannot remove the last administrator from organization'
+      };
+    }
+
+    return Promise.resolve({ removeOrganizationUserOutcome: response });
   }
+
+  //*** ASSIGN USER TO GPP ***/
+  @post('/user/set-admin', {
+    responses: {
+      '200': {
+        description: 'Set User as GPP Administrator',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                confirmAdmin: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt', { required: [PermissionKeys.GeneralUsersManagement] })
+  async confirmAdmin(
+    @requestBody()
+    confirmAdmin: OrganizationUserData,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
+  ): Promise<{ setAdminOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    if (confirmAdmin.idUser) {
+      // Check if the user exists
+      const usrFilter: Filter = { where: { "idUser": confirmAdmin.idUser }};
+      const userData = await this.userRepository.findOne(usrFilter);
+
+      if (userData) {
+        // Check if the user email is already confirmed
+        if (userData.emailConfirmed) {
+          // Check if the user is an operator
+          if (userData.userType === 'operator') {
+            // Set the user as administrator
+            userData.userType = 'gppOperator';
+            await this.userRepository.updateById(userData.idUser, userData);
+
+            const sgMail = require('@sendgrid/mail');
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+            let emailSubject = process.env.ADMIN_CONFIRMED_EMAIL_SUBJECT;
+            emailSubject = emailSubject?.replace(/%firstName%/g, userData.firstName);
+            emailSubject = emailSubject?.replace(/%lastName%/g, userData.lastName);
+
+            let emailText = process.env.ADMIN_CONFIRMED_EMAIL_TEXT;
+            emailText = emailText?.replace(/%firstName%/g, userData.firstName);
+            emailText = emailText?.replace(/%lastName%/g, userData.lastName);
+
+            let htmlText = process.env.ADMIN_CONFIRMED_EMAIL_HTML;
+            htmlText = htmlText?.replace(/%firstName%/g, userData.firstName);
+            htmlText = htmlText?.replace(/%lastName%/g, userData.lastName);
+
+            const msg = {
+              to: userData.email,
+              from: process.env.ADMIN_CONFIRMED_EMAIL_FROM_EMAIL,
+              fromname: process.env.ADMIN_CONFIRMED_EMAIL_FROM_NAME,
+              subject: emailSubject,
+              text: emailText,
+              html: htmlText,
+            }
+        
+            await sgMail
+              .send(msg)
+              .then(() => {
+                response = {
+                  code: '202',
+                  message: 'Admin confirmed and e-mail sent'
+                };
+              })
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              .catch((error: any) => {
+                console.error(error)
+                response = {
+                  code: '201',
+                  message: 'Admin confirmed but e-mail not sent'
+                };
+              })
+          } else {
+            response = {
+              code: '13',
+              message: 'User is not an operator'
+            };
+          }
+        } else {
+          response = {
+            code: '12',
+            message: 'User email not confirmed'
+          };
+        }
+      } else {
+        response = {
+          code: '10',
+          message: 'User not exists'
+        };
+      }
+    } else {
+      response = {
+        code: '11',
+        message: 'Specify an user id'
+      };
+    }
+
+    return Promise.resolve({ setAdminOutcome: response });
+  }
+
+  //*** REMOVE USER FROM GPP ***/
+  @post('/user/del-admin', {
+    responses: {
+      '200': {
+        description: 'Remove User as GPP Administrator',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                removeAdmin: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt', { required: [PermissionKeys.GeneralUsersManagement] })
+  async removeAdmin(
+    @requestBody()
+    removeAdmin: OrganizationUserData,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
+  ): Promise<{ delAdminOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    // Check if the user to remove is not himself
+    if (removeAdmin.idUser !== currentUser.idUser) {
+      if (removeAdmin.idUser) {
+        // Check if the user exists
+        const usrFilter: Filter = { where: { "idUser": removeAdmin.idUser }};
+        const userData = await this.userRepository.findOne(usrFilter);
+
+        if (userData) {
+          // Check if the user email is already confirmed
+          if (userData.emailConfirmed) {
+            // Check if the user is a gppOperator
+            if (userData.userType === 'gppOperator') {
+              // Set the user as operator
+              userData.userType = 'operator';
+              await this.userRepository.updateById(userData.idUser, userData);
+
+              const sgMail = require('@sendgrid/mail');
+              sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+              let emailSubject = process.env.ADMIN_REMOVED_EMAIL_SUBJECT;
+              emailSubject = emailSubject?.replace(/%firstName%/g, userData.firstName);
+              emailSubject = emailSubject?.replace(/%lastName%/g, userData.lastName);
+
+              let emailText = process.env.ADMIN_REMOVED_EMAIL_TEXT;
+              emailText = emailText?.replace(/%firstName%/g, userData.firstName);
+              emailText = emailText?.replace(/%lastName%/g, userData.lastName);
+
+              let htmlText = process.env.ADMIN_REMOVED_EMAIL_HTML;
+              htmlText = htmlText?.replace(/%firstName%/g, userData.firstName);
+              htmlText = htmlText?.replace(/%lastName%/g, userData.lastName);
+
+              const msg = {
+                to: userData.email,
+                from: process.env.ADMIN_REMOVED_EMAIL_FROM_EMAIL,
+                fromname: process.env.ADMIN_REMOVED_EMAIL_FROM_NAME,
+                subject: emailSubject,
+                text: emailText,
+                html: htmlText,
+              }
+          
+              await sgMail
+                .send(msg)
+                .then(() => {
+                  response = {
+                    code: '202',
+                    message: 'Admin removed and e-mail sent'
+                  };
+                })
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .catch((error: any) => {
+                  console.error(error)
+                  response = {
+                    code: '201',
+                    message: 'Admin removed but e-mail not sent'
+                  };
+                })
+            } else {
+              response = {
+                code: '13',
+                message: 'User is not an administrator'
+              };
+            }
+          } else {
+            response = {
+              code: '12',
+              message: 'User email not confirmed'
+            };
+          }
+        } else {
+          response = {
+            code: '10',
+            message: 'User not exists'
+          };
+        }
+      } else {
+        response = {
+          code: '11',
+          message: 'Specify an user id'
+        };
+      }
+    } else {
+      response = {
+        code: '14',
+        message: 'Cannot specify your id'
+      };
+    }
+
+    return Promise.resolve({ delAdminOutcome: response });
+  }
+
+  //*** REMOVE ALL USER DATA ***/
+
+  //*** EDIT USER PROFILE ***/
 
   //*** USER OWNED ORGANIZATIONS ***/
   @authenticate('jwt', { required: [PermissionKeys.MyOrganizationList] })
@@ -947,15 +1511,116 @@ export class UserController {
     return myOrganizations;
   }
 
-  //*** USER PROFILE ***/
-  @get('/users/token/{id}')
+  //*** CHANGE ORGANIZATION ***/
   @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
-  async giveMeToken(
+  @get('/users/change-organization/{id}', {
+    responses: {
+      '200': {
+        description: 'Token change organization',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                token: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async changeOrganization(
+    @param.path.string('id') id: string,
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile
-  ): Promise<OrganizationsUsersView[]>  {
-    const filter: Filter = { where: { "idUser": currentUser.idUser, "confirmed": true } };
-    const myOrganizations = await this.organizationsUsersViewRepository.find(filter);
-    return myOrganizations;
+  ): Promise<{ token: string }> {
+    const filter: Filter = { where: { "idUser": currentUser.idUser } };
+    const user = await this.userRepository.findOne(filter);
+
+    const userProfile = this.userService.convertToUserProfile(user!);
+
+    switch (user!.userType) {
+      case UserTypeKeys.gppOperator:
+        userProfile.permissions = [
+          PermissionKeys.GeneralOrganizationManagement,
+          PermissionKeys.GeneralUsersManagement,
+          PermissionKeys.GeneralStructuresManagement,
+          PermissionKeys.GeneralCountriesManagement,
+          PermissionKeys.GeneralIconsManagement,
+          PermissionKeys.GeneralCategoriesManagement,
+          PermissionKeys.GeneralNationalitiesManagement,
+          PermissionKeys.StructureCreation,
+          PermissionKeys.CheckTokenDocWallet,
+          PermissionKeys.MyOrganizationList,
+          PermissionKeys.AuthFeatures,
+          PermissionKeys.ProfileEdit
+        ]
+        break;
+
+      case UserTypeKeys.operator:
+        userProfile.permissions = [
+          PermissionKeys.CheckTokenDocWallet,
+          PermissionKeys.OrganizationCreation,
+          PermissionKeys.OrganizationUpdate,
+          PermissionKeys.OrganizationDetail,
+          PermissionKeys.OrganizationDelete,
+          PermissionKeys.MyOrganizationList,
+          PermissionKeys.AuthFeatures,
+          PermissionKeys.ProfileEdit
+        ];
+        break;
+
+      default:
+        throw new HttpErrors.Forbidden('Not allowed');
+    }
+
+    if (user!.userType !== UserTypeKeys.gppOperator) {
+      // Check permissions for first organization
+      const filterOrg: Filter = { where: { "idUser": user!.idUser, "idOrganization": id } };
+      const firstOrganization = await this.organizationUserRepository.findOne(filterOrg);
+
+      if (firstOrganization !== undefined) {
+        const permissions = firstOrganization?.permissions
+        if (permissions?.includes(PermissionKeys.OrganizationAdministrator)) {
+          userProfile.permissions.push(PermissionKeys.OrganizationUsersManagement);
+          userProfile.permissions.push(PermissionKeys.OrganizationStructuresManagement);
+          userProfile.permissions.push(PermissionKeys.StructureCreation);
+          userProfile.permissions.push(PermissionKeys.StructureUpdate);
+          userProfile.permissions.push(PermissionKeys.StructureList);
+          userProfile.permissions.push(PermissionKeys.StructureDetail);
+          userProfile.permissions.push(PermissionKeys.StructureDelete);
+        } else {
+          if (permissions?.includes(PermissionKeys.OrganizationUsersManagement)) {
+            userProfile.permissions.push(PermissionKeys.OrganizationUsersManagement);
+          }
+          if (permissions?.includes(PermissionKeys.OrganizationStructuresManagement)) {
+            userProfile.permissions.push(PermissionKeys.OrganizationStructuresManagement);
+            userProfile.permissions.push(PermissionKeys.StructureCreation);
+            userProfile.permissions.push(PermissionKeys.StructureUpdate);
+            userProfile.permissions.push(PermissionKeys.StructureList);
+            userProfile.permissions.push(PermissionKeys.StructureDetail);
+            userProfile.permissions.push(PermissionKeys.StructureDelete);
+          }
+        }
+      } else {
+        throw new HttpErrors.Forbidden('Wrong organization');
+      }
+
+      // Associate idOrganization to the userProfile
+      userProfile.idOrganization = id;
+    } else {
+      // Associate idOrganization to null value
+      userProfile.idOrganization = null;
+    }
+
+    // Associate userType to the userProfile
+    userProfile.userType = user!.userType;
+
+    //userProfile.permissions = user.permissions;
+    const jwt = await this.jwtService.generateToken(userProfile);
+    return Promise.resolve({ token: jwt });
   }
 }

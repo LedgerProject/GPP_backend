@@ -2907,6 +2907,47 @@
 					"response": []
 				},
 				{
+					"name": "user/confirm-account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"confirmationToken\": \"\"\r\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}/user/confirm-account",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}",
+								"user",
+								"confirm-account"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "user/invite-organization",
 					"request": {
 						"auth": {
@@ -2947,6 +2988,293 @@
 					"response": []
 				},
 				{
+					"name": "user/confirm-invitation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"invitationToken\": \"\"\r\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}/user/confirm-invitation",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}",
+								"user",
+								"confirm-invitation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user/remove-organization",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"idUser\": \"\"\r\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}/user/remove-organization",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}",
+								"user",
+								"remove-organization"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user/reset-password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"\"\r\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}/user/reset-password",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}",
+								"user",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user/confirm-reset-password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"resetPasswordToken\": \"\",\r\n  \"newPassword\": \"\"\r\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}/user/confirm-reset-password",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}",
+								"user",
+								"confirm-reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user/change-password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"currentPassword\": \"\",\r\n  \"newPassword\": \"\"\r\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}/user/change-password",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}",
+								"user",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user/del-admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"idUser\": \"\"\r\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}/user/del-admin",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}",
+								"user",
+								"del-admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user/set-admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"idUser\": \"\"\r\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}/user/set-admin",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}",
+								"user",
+								"set-admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "users/me",
 					"request": {
 						"auth": {
@@ -2978,6 +3306,41 @@
 				},
 				{
 					"name": "users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users?filter={\n  \"fields\": {\n    \"idUser\": true,\n    \"userType\": true,\n    \"firstName\": true,\n    \"lastName\": true,\n    \"email\": true,\n    \"emailConfirmed\": true,\n    \"password\": true,\n    \"passwordRecoveryToken\": true,\n    \"passwordRecoveryDate\": true,\n    \"idNationality\": true,\n    \"gender\": true,\n    \"birthday\": true\n  },\"include\":[\n\t{\"relation\": \"organizationUser\"}\n  ],\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"lastName\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}users"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"fields\": {\n    \"idUser\": true,\n    \"userType\": true,\n    \"firstName\": true,\n    \"lastName\": true,\n    \"email\": true,\n    \"emailConfirmed\": true,\n    \"password\": true,\n    \"passwordRecoveryToken\": true,\n    \"passwordRecoveryDate\": true,\n    \"idNationality\": true,\n    \"gender\": true,\n    \"birthday\": true\n  },\"include\":[\n\t{\"relation\": \"organizationUser\"}\n  ],\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"lastName\"\n  ]\n}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "users/invite",
 					"request": {
 						"auth": {
 							"type": "bearer",

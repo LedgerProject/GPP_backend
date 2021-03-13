@@ -45,6 +45,20 @@ RESET_PASSWORD_EMAIL_SUBJECT=<reset password email subject> | params: %firstName
 RESET_PASSWORD_EMAIL_TEXT=<reset password email plain text> | params: %firstName%, %lastName%, %resetPasswordLink%
 RESET_PASSWORD_EMAIL_HTML=<reset password email html text>  | params: %firstName%, %lastName%, %resetPasswordLink%
 
+# CONFIRM RESET PASSWORD E-MAIL
+CONFIRM_RESET_PASSWORD_EMAIL_FROM_EMAIL=<sender e-mail>
+CONFIRM_RESET_PASSWORD_EMAIL_FROM_NAME=<sender name>
+CONFIRM_RESET_PASSWORD_EMAIL_SUBJECT=<confirm reset password email subject> | params: %firstName%, %lastName%
+CONFIRM_RESET_PASSWORD_EMAIL_TEXT=<confirm reset password email plain text> | params: %firstName%, %lastName%
+CONFIRM_RESET_PASSWORD_EMAIL_HTML=<confirm reset password email html text>  | params: %firstName%, %lastName%
+
+# CHANGE PASSWORD E-MAIL
+CHANGE_PASSWORD_EMAIL_FROM_EMAIL=<sender e-mail>
+CHANGE_PASSWORD_EMAIL_FROM_NAME=<sender name>
+CHANGE_PASSWORD_EMAIL_SUBJECT=<change password email subject> | params: %firstName%, %lastName%
+CHANGE_PASSWORD_EMAIL_TEXT=<change password email plain text> | params: %firstName%, %lastName%
+CHANGE_PASSWORD_EMAIL_HTML=<change password email html text>  | params: %firstName%, %lastName%
+
 # INVITATION E-MAIL
 INVITATION_EMAIL_FROM_EMAIL=<sender e-mail>
 INVITATION_EMAIL_FROM_NAME=<sender name>
@@ -53,8 +67,29 @@ INVITATION_EMAIL_TEXT=<invitation email plain text> | params: %firstName%, %last
 INVITATION_EMAIL_HTML=<invitation email html text>  | params: %firstName%, %lastName%, %organizationName%, %invitationMessage%, %invitationLink%
 
 # INVITATION CONFIRMED E-MAIL
-INVITATION_CONFIRMED_EMAIL_SUBJECT=<sender e-mail>
 INVITATION_CONFIRMED_EMAIL_FROM_EMAIL=<sender e-mail>
-INVITATION_CONFIRMED_EMAIL_FROM_NAME=<sender name>                       | params: %firstName%, %lastName%
+INVITATION_CONFIRMED_EMAIL_FROM_NAME=<sender name>                       
+INVITATION_CONFIRMED_EMAIL_SUBJECT=<invitation email subject>            | params: %firstName%, %lastName%
 INVITATION_CONFIRMED_EMAIL_TEXT=<invitation confirmed email plain text>  | params: %firstName%, %lastName%, %organizationName%
 INVITATION_CONFIRMED_EMAIL_HTML=<invitation confirmed email html text>   | params: %firstName%, %lastName%, %organizationName%
+
+# REMOVED FROM ORGANIZATION E-MAIL
+REMOVED_FROM_ORGANIZATION_EMAIL_FROM_EMAIL=<sender e-mail>
+REMOVED_FROM_ORGANIZATION_EMAIL_FROM_NAME=<sender name>
+REMOVED_FROM_ORGANIZATION_EMAIL_SUBJECT=<removed from organization email subject>  | params: %firstName%, %lastName%
+REMOVED_FROM_ORGANIZATION_EMAIL_TEXT=<removed from organization email plain text>  | params: %firstName%, %lastName%, %organizationName%
+REMOVED_FROM_ORGANIZATION_EMAIL_HTML=<removed from organization email html text>   | params: %firstName%, %lastName%, %organizationName%
+
+# SET AS ADMIN E-MAIL
+ADMIN_CONFIRMED_EMAIL_FROM_EMAIL=<sender e-mail>
+ADMIN_CONFIRMED_EMAIL_FROM_NAME=<sender name>
+ADMIN_CONFIRMED_EMAIL_SUBJECT=<set as admin email subject>  | params: %firstName%, %lastName%
+ADMIN_CONFIRMED_EMAIL_TEXT=<set as admin email plain text>  | params: %firstName%, %lastName%
+ADMIN_CONFIRMED_EMAIL_HTML=<set as admin email html text>   | params: %firstName%, %lastName%
+
+# SET AS ADMIN E-MAIL
+ADMIN_REMOVED_EMAIL_FROM_EMAIL=<sender e-mail>
+ADMIN_REMOVED_EMAIL_FROM_NAME=<sender name>
+ADMIN_REMOVED_EMAIL_SUBJECT=<remove as admin email subject>  | params: %firstName%, %lastName%
+ADMIN_REMOVED_EMAIL_TEXT=<remove as admin email plain text>  | params: %firstName%, %lastName%, %organizationName%
+ADMIN_REMOVED_EMAIL_HTML=<remove as admin email html text>   | params: %firstName%, %lastName%
