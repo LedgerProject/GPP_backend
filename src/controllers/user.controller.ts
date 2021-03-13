@@ -154,6 +154,7 @@ export class UserController {
     await sgMail
       .send(msg)
       .then(() => {})
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .catch((error: any) => {
         console.error(error)
       })
@@ -431,6 +432,7 @@ export class UserController {
               message: 'Reset password e-mail sent'
             };
           })
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .catch((error: any) => {
             console.error(error)
             response = {
@@ -500,7 +502,7 @@ export class UserController {
     const userRep = await this.userRepository.find(filter);
 
     if (organizationFilter) {
-      for (let key in userRep) {
+      for (const key in userRep) {
         if (userRep[key]['organizationUser']) {
           usersReturn.push(userRep[key]);
         }
@@ -532,16 +534,16 @@ export class UserController {
     @param.path.string('email') email: string,
     @param.path.number('limit') limit: number,
   ): Promise<UsersListInvitation[]> {
-    let usersListInvitation : UsersListInvitation[] = [];
-    let filter : Filter = {};
+    const usersListInvitation : UsersListInvitation[] = [];
+    const filter : Filter = {};
     filter.where = {};
     const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
     const where = queryFilters.impose({ userType: "operator", emailConfirmed : true, "email": { ilike : '%' + email + '%' }}).build();
     filter.where = where;
     filter.limit = limit;
     filter.order = [ 'lastName', 'firstName', 'email' ];
-    let usersReturn: User[] = await this.userRepository.find(filter, { fields: {idUser: true, firstName: true, lastName: true, email: true}});
-    for (let key in usersReturn) {
+    const usersReturn: User[] = await this.userRepository.find(filter, { fields: {idUser: true, firstName: true, lastName: true, email: true}});
+    for (const key in usersReturn) {
       usersListInvitation.push({
         idUser : usersReturn[key]['idUser']!,
         firstName : usersReturn[key]['firstName'],
@@ -729,7 +731,7 @@ export class UserController {
         const delFilter: Filter = { where: { "idUser": idUserInvite, "idOrganization": currentUser.idOrganization }};
         const invitationRemove = await this.organizationUserRepository.find(delFilter);
 
-        for (let x = 0; x < invitationRemove.length; x++) {
+        for (const x in invitationRemove) {
           await this.organizationUserRepository.deleteById(invitationRemove[x].idOrganizationUser);
         }
 
@@ -741,7 +743,7 @@ export class UserController {
 
         // Set the permissions array
         const arrPermissions = permissions.split(',');
-        for (let i = 0; i < arrPermissions.length; i++) {
+        for (const i in arrPermissions) {
           newUserOrganization.permissions.push(arrPermissions[i]);
         }
         newUserOrganization.confirmed = false;
@@ -788,6 +790,7 @@ export class UserController {
               message: 'Invitation e-mail sent'
             };
           })
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .catch((error: any) => {
             console.error(error)
             response = {
@@ -903,6 +906,7 @@ export class UserController {
               message: 'Invitation confirmed and e-mail sent'
             };
           })
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .catch((error: any) => {
             console.error(error)
             response = {
@@ -949,7 +953,7 @@ export class UserController {
   async giveMeToken(
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile
-  ): Promise<any>  {
+  ): Promise<OrganizationsUsersView[]>  {
     const filter: Filter = { where: { "idUser": currentUser.idUser, "confirmed": true } };
     const myOrganizations = await this.organizationsUsersViewRepository.find(filter);
     return myOrganizations;
