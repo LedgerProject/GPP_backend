@@ -232,7 +232,7 @@ export class UserController {
 
           await this.userRepository.updateById(userData.idUser, userData);
 
-          if (userData.userType == 'user') {
+          if (userData.userType === 'user') {
             response = {
               code: '202',
               message: 'User account confirmed'
@@ -336,7 +336,7 @@ export class UserController {
 
     if (user!.userType !== UserTypeKeys.gppOperator) {
       // Check permissions for first organization
-      const filter: Filter = { where: { "idUser": user.idUser } };
+      const filter: Filter = { where: { "idUser": user.idUser, "confirmed": true } };
       const firstOrganization = await this.organizationUserRepository.findOne(filter);
 
       if (firstOrganization !== undefined) {
@@ -1123,7 +1123,7 @@ export class UserController {
 
     if (numUsers.length > 1) {
       userRemovable = true;
-    } else if (numUsers.length == 1) {
+    } else if (numUsers.length === 1) {
       if (numUsers[0].idUser !== removeOrganizationUser.idUser) {
         userRemovable = true;
       }
@@ -1174,7 +1174,7 @@ export class UserController {
                 const namFilter: Filter = { where: { "idOrganization": currentUser.idOrganization }};
                 const organizationInfo = await this.organizationRepository.findOne(namFilter);
 
-                let organizationName : string = '';
+                let organizationName  = '';
                 if (organizationInfo) {
                   organizationName = organizationInfo.name;
                 }

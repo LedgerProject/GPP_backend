@@ -123,9 +123,9 @@ export class AuthorizeInterceptor implements Provider<Interceptor> {
           }
         }
 
-        const results = intersection(permissions, requiredPermissions.required).length;
+        const results2 = intersection(permissions, requiredPermissions.required).length;
         
-        if (!results) {
+        if (!results2) {
           throw new HttpErrors.Forbidden('YOU HAVE NO MORE THIS PERMISSION2');
         }
       }
