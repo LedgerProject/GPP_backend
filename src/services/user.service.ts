@@ -1,12 +1,13 @@
 // Loopback imports
 import { UserService } from '@loopback/authentication';
 import { inject } from '@loopback/core';
-import { repository } from '@loopback/repository';
+import { Filter, repository } from '@loopback/repository';
 import { HttpErrors } from '@loopback/rest';
 import { securityId, UserProfile } from '@loopback/security';
 // GPP imports
 import { PasswordHasherBindings } from '../authorization/keys';
 import { User } from '../models';
+import { OrganizationUserRepository } from '../repositories';
 import { Credentials, UserRepository } from '../repositories/user.repository';
 import { BcryptHasher } from './hash.password.bcrypt';
 
@@ -51,4 +52,37 @@ export class MyUserService implements UserService<User, Credentials> {
     }
     return { [securityId]: `${user.idUser}`, name: userName, email: user.email, idUser: user.idUser }
   }
+}
+
+export async function checkUserEditable(loggedUser: UserProfile, idUser: string, userRepository: UserRepository, organizationUserRepository: OrganizationUserRepository): Promise<boolean> {
+  // If user, check if it is himself
+  if (loggedUser.userType === 'user') {
+    if (loggedUser.idUser !== idUser) {
+      return false;
+    }
+  }
+
+  // If operator, check if it is an owned user
+  if (loggedUser.userType === 'operator') {
+    if (loggedUser.idUser !== idUser) {
+      if (loggedUser.idOrganization) {
+        const orgUsrFilter: Filter = { where: { "idOrganization": loggedUser.idOrganization, "idUser": idUser, "confirmed": true }};
+        const organizationUser = await organizationUserRepository.findOne(orgUsrFilter);
+
+        if (!organizationUser) {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+  }
+
+  const userData = await userRepository.findById(idUser, { fields: {idUser: true, userType: true} });
+
+  if (userData.userType === 'user' && loggedUser.userType === 'operator') {
+    return false;
+  }
+
+  return true;
 }

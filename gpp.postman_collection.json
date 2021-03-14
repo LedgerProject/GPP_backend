@@ -2883,7 +2883,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"userType\": \"string\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"email\": \"string\",\n  \"emailConfirmed\": true,\n  \"password\": \"string\",\n  \"passwordRecoveryToken\": \"string\",\n  \"passwordRecoveryDate\": \"2020-11-03T12:03:58.201Z\",\n  \"idNationality\": \"string\",\n  \"gender\": \"string\",\n  \"birthday\": \"2020-11-03T12:03:58.201Z\"\n}"
+							"raw": "{\n  \"userType\": \"string\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"email\": \"string\",\n  \"password\": \"string\",\n  \"idNationality\": \"string\",\n  \"gender\": \"string\",\n  \"birthday\": \"2020-11-03T12:03:58.201Z\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users/signup?secretKey",
@@ -3333,6 +3333,96 @@
 								{
 									"key": "filter",
 									"value": "{\n  \"fields\": {\n    \"idUser\": true,\n    \"userType\": true,\n    \"firstName\": true,\n    \"lastName\": true,\n    \"email\": true,\n    \"emailConfirmed\": true,\n    \"password\": true,\n    \"passwordRecoveryToken\": true,\n    \"passwordRecoveryDate\": true,\n    \"idNationality\": true,\n    \"gender\": true,\n    \"birthday\": true\n  },\"include\":[\n\t{\"relation\": \"organizationUser\"}\n  ],\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"lastName\"\n  ]\n}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "users/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/:id?filter={\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"include\":[\n\t{\"relation\": \"icon\"},\n\t{\"relation\": \"structureCategory\", \"scope\":\n\t  {\"include\": [{\"relation\": \"category\", \"scope\": \n\t\t{\"include\": [{\"relation\": \"categoryLanguage\", \"scope\": {\"where\": {\"language\": \"en\"}}}]}\n\t  }]}\n\t},\n\t{\"relation\": \"structureImage\"},\n\t{\"relation\": \"structureLanguage\", \"scope\": {\"where\": {\"language\": \"en\"}}}\n],\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}structures",
+								":id"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"include\":[\n\t{\"relation\": \"icon\"},\n\t{\"relation\": \"structureCategory\", \"scope\":\n\t  {\"include\": [{\"relation\": \"category\", \"scope\": \n\t\t{\"include\": [{\"relation\": \"categoryLanguage\", \"scope\": {\"where\": {\"language\": \"en\"}}}]}\n\t  }]}\n\t},\n\t{\"relation\": \"structureImage\"},\n\t{\"relation\": \"structureLanguage\", \"scope\": {\"where\": {\"language\": \"en\"}}}\n],\n  \"fields\": {\n    \"idStructure\": true,\n    \"idOrganization\": true,\n    \"alias\": true,\n    \"name\": true,\n    \"address\": true,\n    \"city\": true,\n    \"latitude\": true,\n    \"longitude\": true,\n    \"email\": true,\n    \"phoneNumberPrefix\": true,\n    \"phoneNumber\": true,\n    \"website\": true,\n    \"idIcon\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"name\"\n  ]\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "users/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"idNationality\": \"string\",\n  \"gender\": \"string\",\n  \"birthday\": \"2020-11-03T12:03:58.201Z\"\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
 								}
 							]
 						}

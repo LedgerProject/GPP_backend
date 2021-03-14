@@ -1,8 +1,8 @@
 //Loopback imports
 import { authenticate, AuthenticationBindings } from '@loopback/authentication';
 import { inject } from '@loopback/core';
-import { AnyObject, Filter, repository, WhereBuilder } from '@loopback/repository';
-import { get, getFilterSchemaFor, getJsonSchemaRef, getModelSchemaRef, HttpErrors, param, post, requestBody} from '@loopback/rest';
+import { AnyObject, Filter, FilterBuilder, repository, WhereBuilder } from '@loopback/repository';
+import { get, getFilterSchemaFor, getJsonSchemaRef, getModelSchemaRef, HttpErrors, param, patch, post, requestBody} from '@loopback/rest';
 import { UserProfile } from '@loopback/security';
 //Other imports
 import _ from 'lodash';
@@ -18,6 +18,7 @@ import { JWTService } from '../services/jwt-service';
 import { MyUserService } from '../services/user.service';
 import { validateCredentials } from '../services/validator';
 import { CredentialsRequestBody } from './specs/user.controller.spec';
+import { checkUserEditable } from '../services/user.service';
 
 interface Invitation {
   idUser: string;
@@ -778,6 +779,95 @@ export class UserController {
     return usersReturn;
   }
 
+  //*** DETAILS ***/
+  @get('/users/{id}', {
+    responses: {
+      '200': {
+        description: 'User model instance',
+        content: {
+          'application/json': { schema: getModelSchemaRef(User, { includeRelations: true })}
+        }
+      }
+    }
+  })
+  @authenticate('jwt', { required: [PermissionKeys.ProfileEdit, PermissionKeys.OrganizationUsersManagement, PermissionKeys.GeneralUsersManagement] })
+  async findById(
+    @param.path.string('id') id: string,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile,
+    @param.query.object('filter', getFilterSchemaFor(User)) filter?: Filter<User>
+  ): Promise<User> {
+    // Check if specified the id
+    if (!id) {
+      throw new HttpErrors.BadRequest('Specify the user id');
+    }
+
+    // Check if the user id editable
+    const userEditable = await checkUserEditable(currentUser, id, this.userRepository, this.organizationUserRepository);
+
+    if (!userEditable) {
+      throw new HttpErrors.Forbidden('INVALID ACCESS PERMISSIONS');
+    }
+    return await this.userRepository.findById(id, { fields: {idUser: true, userType: true, firstName: true, lastName: true, email: true, idNationality: true, gender: true, birthday: true} });
+  }
+
+  //*** UPDATE ***/
+  @patch('/users/{id}', {
+    responses: {
+      '204': {
+        description: 'User PATCH success',
+      }
+    }
+  })
+  @authenticate('jwt', { required: [PermissionKeys.ProfileEdit, PermissionKeys.OrganizationUsersManagement, PermissionKeys.GeneralUsersManagement] })
+  async updateById(
+    @param.path.string('id') id: string,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile,
+    @requestBody({
+      content: {
+        'application/json': { schema: getModelSchemaRef(User, { partial: true })}
+      }
+    })
+    user: User,
+  ): Promise<void> {
+    // Check if specified the id
+    if (!id) {
+      throw new HttpErrors.BadRequest('Specify the user id');
+    }
+
+    // Check if the user id editable
+    const userEditable = await checkUserEditable(currentUser, id, this.userRepository, this.organizationUserRepository);
+
+    if (!userEditable) {
+      throw new HttpErrors.Forbidden('INVALID ACCESS PERMISSIONS');
+    }
+
+    // Load the user
+    const usrFilter: Filter = { where: { "idUser": id }};
+    const userUpdate = await this.userRepository.findOne(usrFilter);
+
+    if (userUpdate) {
+      if (user.firstName) {
+        userUpdate.firstName = user.firstName;
+      }
+      if (user.lastName) {
+        userUpdate.lastName = user.lastName;
+      }
+      if (user.idNationality) {
+        userUpdate.idNationality = user.idNationality;
+      }
+      if (user.gender) {
+        userUpdate.gender = user.gender;
+      }
+      if (user.birthday) {
+        userUpdate.birthday = user.birthday;
+      }
+    }
+
+    await this.userRepository.updateById(id, userUpdate!);
+  }
+
   //*** USERS LIST TO INVITE ***/
   @get('/users/invite/{email}/{limit}', {
     responses: {
@@ -1496,8 +1586,6 @@ export class UserController {
   }
 
   //*** REMOVE ALL USER DATA ***/
-
-  //*** EDIT USER PROFILE ***/
 
   //*** USER OWNED ORGANIZATIONS ***/
   @authenticate('jwt', { required: [PermissionKeys.MyOrganizationList] })
