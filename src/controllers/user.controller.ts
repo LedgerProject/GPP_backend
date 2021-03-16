@@ -316,6 +316,7 @@ export class UserController {
           PermissionKeys.OrganizationDetail,
           PermissionKeys.OrganizationDelete,
           PermissionKeys.MyOrganizationList,
+          PermissionKeys.NationalitiesList,
           PermissionKeys.AuthFeatures,
           PermissionKeys.ProfileEdit
         ];
