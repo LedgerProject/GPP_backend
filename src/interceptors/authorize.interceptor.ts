@@ -95,6 +95,7 @@ export class AuthorizeInterceptor implements Provider<Interceptor> {
               PermissionKeys.OrganizationDetail,
               PermissionKeys.OrganizationDelete,
               PermissionKeys.MyOrganizationList,
+              PermissionKeys.NationalitiesList,
               PermissionKeys.AuthFeatures,
               PermissionKeys.ProfileEdit
             ];
