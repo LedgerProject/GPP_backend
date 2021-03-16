@@ -1,4 +1,4 @@
-import { APIROOM_READ_ENDPOINT, APIROOM_STATUS_ENDPOINT, APIROOM_WRITE_DICTIONARY_ENDPOINT, SAWROOM_GPP_CONTEXT, SAWROOM_READ_URI, SAWROOM_STATUS_ENDPOINT, SAWROOM_WRITE_URI } from "../constants";
+import { APIROOM_READ_ENDPOINT, APIROOM_WRITE_DICTIONARY_ENDPOINT, SAWROOM_READ_URI, SAWROOM_WRITE_URI } from "../constants";
 const fetch = require("node-fetch");
 /* 
   This function is calling SAWROOM to write a json into blockchain
@@ -10,14 +10,15 @@ const headers = {
 
 export async function writeIntoBlockchain(jsonObject:any) {
 
+  const messageToEncrypt = JSON.stringify(jsonObject);
+
   const apiroomBody: any = {
     "data" : {
       "sawroomEndpoint": SAWROOM_WRITE_URI,
-      "myContextId1": SAWROOM_GPP_CONTEXT,
-      "JSONToSave": jsonObject
+      "message": messageToEncrypt,
+      "password": process.env.SALT
     }
   }
-
 
   const response = await fetch(APIROOM_WRITE_DICTIONARY_ENDPOINT, {
     method: 'POST',
@@ -27,7 +28,7 @@ export async function writeIntoBlockchain(jsonObject:any) {
   try {
     const result = await response.json();
     console.log(result);
-    return result.sawroom[SAWROOM_GPP_CONTEXT].batch_id;
+    return result.transactionId;
   } catch (err) {
     console.log(".writeIntoBlockchain ERROR: Impossible to WRITE to SAWROOM: ", err);
   }
@@ -37,13 +38,16 @@ export async function writeIntoBlockchain(jsonObject:any) {
 /* 
   This function is calling SAWROOM to read a json into blockchain
 */
-export async function retrieveJsonFromBlockchain(batchId:string) {
+export async function retrieveJsonFromBlockchain(transactionId:string) {
   const apiroomBody: any = {
       "data": {
         "endpoint": SAWROOM_READ_URI,
-        "batchId1": batchId
+        "password": process.env.SALT,
+        "transactionId": transactionId
       }
   }
+console.log(APIROOM_READ_ENDPOINT);
+console.log(JSON.stringify(apiroomBody));
 
   const response = await fetch(APIROOM_READ_ENDPOINT, {
     method: 'POST',
@@ -55,33 +59,8 @@ export async function retrieveJsonFromBlockchain(batchId:string) {
     const result = await response.json();
     console.log(result);
 
-    return result.sawroom[0];
+    return JSON.parse(result.textDecrypted);
   } catch (err) {
     console.log(".retrieveJsonFromBlockchain ERROR: Impossible to READ from SAWROOM: ", err);
-  }
-}
-
-/* 
-  This function is calling retrieve transaction status from blockchain
-*/
-export async function retrieveStatusFromBlockchain(batchId:string) {
-  const apiroomBody: any = {
-      "data": {
-          "endpoint": SAWROOM_STATUS_ENDPOINT+batchId,
-          "batchId": batchId
-      }
-  }
-
-  const response = await fetch(APIROOM_STATUS_ENDPOINT, {
-    method: 'POST',
-    body: JSON.stringify(apiroomBody), 
-    headers: headers
-  });
-  try {
-    const result = await response.json();
-    console.log(result);
-    return result.data[0].status;
-  } catch (err) {
-    console.log(".retrieveStatusFromBlockchain ERROR: Impossible to GET STATUS from SAWROOM: ", err);
   }
 }

@@ -41,24 +41,14 @@ export const ATTACHMENT_FILENAME = 'attachment; filename=';
 /**
  * Sawroom endpoints
  */
-export const SAWROOM_WRITE_URI = 'http://195.201.41.35';
+export const SAWROOM_WRITE_URI = process.env.SAWROOM_WRITE_URI!;
 
-export const SAWROOM_READ_URI = 'http://195.201.42.48';
+export const SAWROOM_READ_URI = process.env.SAWROOM_READ_URI!;
 
-export const SAWROOM_STATUS_URI = SAWROOM_WRITE_URI+':8008';
+export const APIROOM_BASE_URI = process.env.APIROOM_BASE_URI!;
 
-export const SAWROOM_STATUS_PATH = '/batch_statuses?id=';
+export const APIROOM_WRITE_DICTIONARY_ENDPOINT = APIROOM_BASE_URI+process.env.APIROOM_WRITE_DICTIONARY_PATH!;
 
-export const SAWROOM_STATUS_ENDPOINT = SAWROOM_STATUS_URI+SAWROOM_STATUS_PATH;
-
-export const SAWROOM_GPP_CONTEXT = 'global_passport_project_documentsEncryptedChunk';
-
-export const APIROOM_BASE_URI = 'https://apiroom.net/api/pasfranc';
-
-export const APIROOM_WRITE_DICTIONARY_ENDPOINT = APIROOM_BASE_URI+ '/sawroom-write-my-dictionary';
-
-export const APIROOM_READ_ENDPOINT = APIROOM_BASE_URI+ '/sawroom-read';
-
-export const APIROOM_STATUS_ENDPOINT = APIROOM_BASE_URI+ '/sawroom-read-status';
+export const APIROOM_READ_ENDPOINT = APIROOM_BASE_URI+process.env.APIROOM_READ_PATH!;
 
 
