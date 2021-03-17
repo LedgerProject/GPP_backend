@@ -795,8 +795,7 @@ export class UserController {
   async findById(
     @param.path.string('id') id: string,
     @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile,
-    @param.query.object('filter', getFilterSchemaFor(User)) filter?: Filter<User>
+    currentUser: UserProfile
   ): Promise<User> {
     // Check if specified the id
     if (!id) {
@@ -813,7 +812,17 @@ export class UserController {
     if (!userEditable) {
       throw new HttpErrors.Forbidden('INVALID ACCESS PERMISSIONS');
     }
-    return await this.userRepository.findById(id, { fields: {idUser: true, userType: true, firstName: true, lastName: true, email: true, idNationality: true, gender: true, birthday: true} });
+
+    let filter : Filter<User> = {};
+
+    filter.include = [{
+      "relation": "organizationUser",
+      "scope": {
+        "where": {"idOrganization": currentUser.idOrganization}
+      }
+    }];
+
+    return await this.userRepository.findById(id, {include: [{relation : 'organizationUser', scope : { where : {idOrganization : currentUser.idOrganization}}}], fields: {idUser: true, userType: true, firstName: true, lastName: true, email: true, idNationality: true, gender: true, birthday: true} });
   }
 
   //*** UPDATE ***/
