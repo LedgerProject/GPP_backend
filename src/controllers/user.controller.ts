@@ -803,6 +803,10 @@ export class UserController {
       throw new HttpErrors.BadRequest('Specify the user id');
     }
 
+    if (id === 'logged-user') {
+      id = currentUser.idUser;
+    }
+
     // Check if the user id editable
     const userEditable = await checkUserEditable(currentUser, id, this.userRepository, this.organizationUserRepository);
 
