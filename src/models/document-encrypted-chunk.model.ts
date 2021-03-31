@@ -65,9 +65,9 @@ export class DocumentEncryptedChunk extends Entity {
   @property({
     type: 'string',
     length: 50,
-    postgresql: {columnName: 'batchId', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
+    postgresql: {columnName: 'transactionId', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
   })
-  batchId?: string;
+  transactionId?: string;
 
   @property({
     type: 'string',

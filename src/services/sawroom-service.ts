@@ -25,9 +25,10 @@ export async function writeIntoBlockchain(jsonObject:any) {
     body: JSON.stringify(apiroomBody), 
     headers: headers
   });
+  
   try {
     const result = await response.json();
-    console.log(result);
+
     return result.transactionId;
   } catch (err) {
     console.log(".writeIntoBlockchain ERROR: Impossible to WRITE to SAWROOM: ", err);
@@ -46,8 +47,6 @@ export async function retrieveJsonFromBlockchain(transactionId:string) {
         "transactionId": transactionId
       }
   }
-console.log(APIROOM_READ_ENDPOINT);
-console.log(JSON.stringify(apiroomBody));
 
   const response = await fetch(APIROOM_READ_ENDPOINT, {
     method: 'POST',
@@ -57,7 +56,6 @@ console.log(JSON.stringify(apiroomBody));
 
   try {
     const result = await response.json();
-    console.log(result);
 
     return JSON.parse(result.textDecrypted);
   } catch (err) {

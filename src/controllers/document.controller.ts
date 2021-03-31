@@ -15,7 +15,7 @@ import { MemoryUploadHandler, TempFile } from '../types';
 import { chunkString } from '../services/string-util';
 import { decrypt, encrypt } from '../services/zenroom-service';
 import { uploadStringToIPFS } from '../services/ipfs-service';
-import { writeIntoBlockchain, retrieveJsonFromBlockchain } from '../services/sawroom-service';
+import { writeIntoBlockchain } from '../services/sawroom-service';
 import { TokenServiceBindings } from '../authorization/keys';
 import { JWTService } from '../services/jwt-service';
 import { ATTACHMENT_FILENAME, BASE64_ENCODING, CHUNK_MAX_CHAR_SIZE } from '../constants';
@@ -285,18 +285,11 @@ export class DocumentController {
       "ipfsPath": documentsEncryptedChunk.ipfsPath
     }
 
-    /*documentsEncryptedChunk.batchId = await writeIntoBlockchain(jsonToSave);
-    if(documentsEncryptedChunk.batchId){
-      documentsEncryptedChunk.status = await retrieveStatusFromBlockchain(batchId);;
-    }*/
+    documentsEncryptedChunk.transactionId = await writeIntoBlockchain(jsonToSave);
+    if(documentsEncryptedChunk.transactionId){
+      documentsEncryptedChunk.status = 'PENDING';
+    }
 
-    let transactionId = await writeIntoBlockchain(jsonToSave);
-    console.log(transactionId);
-    // e3698444e17e580df40d81a6b66a0ec885c185237d4e0e945ebff18b94d245191ffe4d97ed37cc4aee8c526acbc0a659c79b97c71c2488385c37d3a796b7bcad
-
-    let json = await retrieveJsonFromBlockchain('c274b567051628ddfaf7f3ac6cdcb6e58af88a7a31a0a4c1fefbb7bc69a85104aad8fc');
-
-    console.log(json);
     return this.documentEncryptedChunkRepository.save(documentsEncryptedChunk);
   }
 
