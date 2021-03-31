@@ -1,6 +1,7 @@
 import { DocumentEncryptedChunk } from '../models';
 import { ENCRYPT, DECRYPT } from '../scenarios/zenroom-scenarios'
 import { retrieveStringFromIPFS } from '../services/ipfs-service';
+import { retrieveJsonFromBlockchain } from './sawroom-service';
 const zenroom = require('zenroom');
 const saltedMd5 = require('salted-md5');
 /* 
@@ -36,10 +37,22 @@ export function encrypt(stringToEncrypt: string, password:string) {
   This function is using zenroom to decrypt a specific chunk
 */
 export async function decrypt(chunk: DocumentEncryptedChunk, password:string) {
-
   let text = chunk.text;
-  if(chunk.ipfsPath){
-    text = await retrieveStringFromIPFS(chunk.ipfsPath);
+  let checksum = chunk.checksum;
+  let header = chunk.header;
+  let iv = chunk.iv;
+  let ipfsPath = chunk.ipfsPath;
+
+  if (chunk.status === 'COMMITTED' && chunk.transactionId) {
+    let json = await retrieveJsonFromBlockchain(chunk.transactionId);
+    checksum = json.checksum;
+    header = json.header;
+    iv = json.iv;
+    ipfsPath = json.ipfsPath ? json.ipfsPath : ipfsPath;
+  }
+
+  if (ipfsPath){
+    text = await retrieveStringFromIPFS(ipfsPath);
   }
 
   const savedLines: any = []
@@ -55,9 +68,9 @@ export async function decrypt(chunk: DocumentEncryptedChunk, password:string) {
 
   const data: any = {
     "secret_message": {
-      "checksum": chunk.checksum,
-      "header": chunk.header,
-      "iv": chunk.iv,
+      "checksum": checksum,
+      "header": header,
+      "iv": iv,
       "text": text
     }
   }

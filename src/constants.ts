@@ -37,3 +37,18 @@ export const USER_TOKEN_DEFAULT_VALIDITY_IN_MINS = 5;
  * Attachment filename
  */
 export const ATTACHMENT_FILENAME = 'attachment; filename=';
+
+/**
+ * Sawroom endpoints
+ */
+export const SAWROOM_WRITE_URI = process.env.SAWROOM_WRITE_URI!;
+
+export const SAWROOM_READ_URI = process.env.SAWROOM_READ_URI!;
+
+export const APIROOM_BASE_URI = process.env.APIROOM_BASE_URI!;
+
+export const APIROOM_WRITE_DICTIONARY_ENDPOINT = APIROOM_BASE_URI+process.env.APIROOM_WRITE_DICTIONARY_PATH!;
+
+export const APIROOM_READ_ENDPOINT = APIROOM_BASE_URI+process.env.APIROOM_READ_PATH!;
+
+
