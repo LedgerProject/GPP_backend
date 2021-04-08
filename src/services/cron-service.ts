@@ -1,10 +1,15 @@
-import {CronJob, cronJob} from '@loopback/cron';
+import { CronJob, cronJob } from '@loopback/cron';
+import { movePendingToCommitted } from './blockchain-checker.service.';
+import { DocumentEncryptedChunksRepository } from '../repositories';
+import { repository } from '@loopback/repository';
 
 @cronJob()
 export class MyCronJob extends CronJob {
-  constructor() {
+  constructor(    
+  @repository(DocumentEncryptedChunksRepository)
+  public documentEncryptedChunkRepository : DocumentEncryptedChunksRepository) {
     super({
-      name: 'my-job',
+      name: 'blockchain-checker',
       onTick: () => {
         // do the work
         this.performMyJob();
@@ -15,6 +20,6 @@ export class MyCronJob extends CronJob {
   }
 
   performMyJob() {
-    console.log('Job is running.');
+    movePendingToCommitted(this.documentEncryptedChunkRepository);
   }
 }
