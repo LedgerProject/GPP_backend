@@ -1,5 +1,5 @@
 //Loopback imports
-import { authenticate } from '@loopback/authentication';
+import { authenticate, AuthenticationBindings } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { AnyObject, Filter, repository, WhereBuilder } from '@loopback/repository';
 import { del, get, getFilterSchemaFor, getModelSchemaRef, HttpErrors, param, patch, post, requestBody } from '@loopback/rest';
@@ -13,6 +13,15 @@ import { checkStructureOwner } from '../services/structure.service';
 const loopback = require('loopback');
 const fs = require('fs');
 const path = require('path');
+
+interface StructureMessage {
+  structureMessage: string;
+}
+
+interface OperationOutcome {
+  code: string;
+  message: string;
+}
 
 // Set the path to the structures folder
 const galleriesStructuresPath = path.join(__dirname, '..', '..', 'public', 'galleries', 'structures');
@@ -264,6 +273,101 @@ export class StructureController {
     }
 
     await this.structureRepository.deleteById(id);
+  }
+
+  //*** SEND MESSAGE ***/
+  @authenticate('jwt', { required: [PermissionKeys.StructureDetail] })
+  @post('/structures/{id}/send-message', {
+    responses: {
+      '200': {
+        description: 'Send Message to Structure',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                messageOutcome: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async sendMessage(
+    @param.path.string('id') id: string,
+    @requestBody()
+    structureMessage: StructureMessage,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
+  ): Promise<{ messageOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+    const message = structureMessage.structureMessage;
+
+    // Get the structure information
+    const structure = await this.structureRepository.findById(id);
+
+    if (structure) {
+      if (structure.email) {
+        const sgMail = require('@sendgrid/mail');
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+        let emailSubject = process.env.STRUCTURE_MESSAGE_EMAIL_SUBJECT;
+        emailSubject = emailSubject?.replace(/%userEMail%/g, currentUser.email!);
+
+        let emailText = process.env.STRUCTURE_MESSAGE_EMAIL_TEXT;
+        emailText = emailText?.replace(/%userEMail%/g, currentUser.email!);
+        emailText = emailText?.replace(/%message%/g, message);
+
+        let htmlText = process.env.STRUCTURE_MESSAGE_EMAIL_HTML;
+        htmlText = htmlText?.replace(/%userEMail%/g, currentUser.email!);
+        htmlText = htmlText?.replace(/%message%/g, message);
+
+        const msg = {
+          to: structure.email,
+          from: process.env.STRUCTURE_MESSAGE_EMAIL_FROM_EMAIL,
+          replyTo: currentUser.email!,
+          fromname: process.env.STRUCTURE_MESSAGE_EMAIL_FROM_NAME,
+          subject: emailSubject,
+          text: emailText,
+          html: htmlText,
+        }
+
+        await sgMail
+          .send(msg)
+          .then(() => {
+            response = {
+              code: '202',
+              message: 'Message sent'
+            };
+          })
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .catch((error: any) => {
+            console.error(error)
+            response = {
+              code: '20',
+              message: 'Error sending e-mail'
+            };
+          })
+      } else {
+        response = {
+          code: '11',
+          message: 'Structure e-mail not specified'
+        };
+      }
+    } else {
+      response = {
+        code: '10',
+        message: 'Structure not exists'
+      };
+    }
+
+    return Promise.resolve({ messageOutcome: response });
   }
 
   //*** LANGUAGES LIST ***/

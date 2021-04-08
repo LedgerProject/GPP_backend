@@ -26,6 +26,10 @@ interface Invitation {
   permissions: string;
 }
 
+interface Permissions {
+  permissions: string;
+}
+
 interface ResetPasswordData {
   email: string;
 }
@@ -1057,6 +1061,68 @@ export class UserController {
     }
 
     return Promise.resolve({ invitationOutcome: response });
+  }
+
+  //*** CHANGE PERMISSIONS USER ***/
+  @authenticate('jwt', { required: [PermissionKeys.OrganizationUsersManagement] })
+  @post('/user/{id}/change-permissions', {
+    responses: {
+      '200': {
+        description: 'Change User Permissions',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                changePermissionsOutcome: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async changePermissionsUser(
+    @param.path.string('id') id: string,
+    @requestBody()
+    permissions: Permissions,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
+  ): Promise<{ changePermissionsOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    const changedPermissions = permissions.permissions;
+
+    // Check if the operator is already into the organization
+    const filter: Filter = { where: { "idUser": id, "idOrganization": currentUser.idOrganization, "confirmed": true }};
+    const organizationUser = await this.organizationUserRepository.findOne(filter);
+
+    if (!organizationUser) {
+      response = {
+        code: '10',
+        message: 'User not in the current organization'
+      };
+    } else {
+      // Set the permissions array
+      const arrPermissions = changedPermissions.split(',');
+      organizationUser.permissions = [];
+      for (const i in arrPermissions) {
+        organizationUser.permissions.push(arrPermissions[i]);
+      }
+      await this.organizationUserRepository.updateById(organizationUser.idOrganizationUser, organizationUser);
+
+      response = {
+        code: '202',
+        message: 'User permissions updated'
+      };
+    }
+
+    return Promise.resolve({ changePermissionsOutcome: response });
   }
 
   //*** CONFIRM INVITATION ***/
