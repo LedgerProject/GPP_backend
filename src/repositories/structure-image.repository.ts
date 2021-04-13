@@ -21,6 +21,6 @@ export class StructureImageRepository extends DefaultCrudRepository<
     protected structureRepositoryGetter: Getter<StructureRepository>,
   ) {
     super(StructureImage, dataSource);
-    this.structure = this.createBelongsToAccessorFor('structure', structureRepositoryGetter);
+    this.structure = this.createBelongsToAccessorFor('structure_join', structureRepositoryGetter);
   }
 }
