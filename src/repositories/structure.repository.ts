@@ -47,7 +47,7 @@ export class StructureRepository extends DefaultCrudRepository<
     this.structureImage = this.createHasManyRepositoryFactoryFor('structureImage', structureImageRepositoryGetter);
     this.structureLanguage = this.createHasManyRepositoryFactoryFor('structureLanguage', structureLanguageRepositoryGetter);
 
-    this.registerInclusionResolver('icon', this.icon.inclusionResolver);
+    this.registerInclusionResolver('icon_join', this.icon.inclusionResolver);
     this.registerInclusionResolver('structureCategory', this.structureCategory.inclusionResolver);
     this.registerInclusionResolver('structureImage', this.structureImage.inclusionResolver);
     this.registerInclusionResolver('structureLanguage', this.structureLanguage.inclusionResolver);
