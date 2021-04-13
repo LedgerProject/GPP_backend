@@ -14,7 +14,7 @@ export class StructureLanguage extends Entity {
   })
   idStructureLanguage: string;
 
-  @belongsTo(() => Structure, {name : 'structure'}, {
+  @belongsTo(() => Structure, {name : 'structure_join'}, {
     type: 'string',
     required: true,
     postgresql: {columnName: 'idStructure', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'

@@ -21,6 +21,6 @@ export class StructureLanguageRepository extends DefaultCrudRepository<
     protected structureRepositoryGetter: Getter<StructureRepository>,
   ) {
     super(StructureLanguage, dataSource);
-    this.structure = this.createBelongsToAccessorFor('structure', structureRepositoryGetter);
+    this.structure = this.createBelongsToAccessorFor('structure_join', structureRepositoryGetter);
   }
 }

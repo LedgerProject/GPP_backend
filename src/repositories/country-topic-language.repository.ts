@@ -21,6 +21,6 @@ export class CountryTopicLanguageRepository extends DefaultCrudRepository<
     protected countryTopicRepositoryGetter: Getter<CountryTopicRepository>,
   ) {
     super(CountryTopicLanguage, dataSource);
-    this.countryTopic = this.createBelongsToAccessorFor('countryTopic', countryTopicRepositoryGetter);
+    this.countryTopic = this.createBelongsToAccessorFor('countryTopic_join', countryTopicRepositoryGetter);
   }
 }

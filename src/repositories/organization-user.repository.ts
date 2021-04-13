@@ -28,8 +28,8 @@ export class OrganizationUserRepository extends DefaultCrudRepository<
     protected userRepositoryGetter: Getter<UserRepository>,
   ) {
     super(OrganizationUser, dataSource);
-    this.organization = this.createBelongsToAccessorFor('organization', organizationRepositoryGetter);
-    this.user = this.createBelongsToAccessorFor('user', userRepositoryGetter);
+    this.organization = this.createBelongsToAccessorFor('organization_join', organizationRepositoryGetter);
+    this.user = this.createBelongsToAccessorFor('user_join', userRepositoryGetter);
 
     this.registerInclusionResolver('user', this.user.inclusionResolver);
   }

@@ -21,6 +21,6 @@ export class StructuresCategoriesViewRepository extends DefaultCrudRepository<
     protected structuresViewRepositoryGetter: Getter<StructuresViewRepository>,
   ) {
     super(StructuresCategoriesView, dataSource);
-    this.structuresView = this.createBelongsToAccessorFor('structuresView', structuresViewRepositoryGetter);
+    this.structuresView = this.createBelongsToAccessorFor('structuresView_join', structuresViewRepositoryGetter);
   }
 }

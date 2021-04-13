@@ -2,7 +2,7 @@
 import { authenticate, AuthenticationBindings } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { AnyObject, Filter, FilterBuilder, repository, WhereBuilder } from '@loopback/repository';
-import { get, getFilterSchemaFor, getJsonSchemaRef, getModelSchemaRef, HttpErrors, param, patch, post, requestBody} from '@loopback/rest';
+import { del, get, getFilterSchemaFor, getJsonSchemaRef, getModelSchemaRef, HttpErrors, param, patch, post, requestBody} from '@loopback/rest';
 import { UserProfile } from '@loopback/security';
 //Other imports
 import _ from 'lodash';
@@ -1666,6 +1666,19 @@ export class UserController {
   }
 
   //*** REMOVE ALL USER DATA ***/
+  @del('/users', {
+    responses: {
+      '204': {
+        description: 'User DELETE success',
+      },
+    },
+  })
+  async deleteCurrentUser(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
+  ): Promise<void> {
+    await this.userRepository.deleteById(currentUser.idUser);
+  }
 
   //*** USER OWNED ORGANIZATIONS ***/
   @authenticate('jwt', { required: [PermissionKeys.MyOrganizationList] })

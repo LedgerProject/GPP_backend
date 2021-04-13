@@ -14,7 +14,7 @@ export class CategoryLanguage extends Entity {
   })
   idCategoryLanguage: string;
 
-  @belongsTo(() => Structure, {name : 'category'}, {
+  @belongsTo(() => Structure, {name : 'category_join'}, {
     type: 'string',
     required: true,
     postgresql: {columnName: 'idCategory', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'

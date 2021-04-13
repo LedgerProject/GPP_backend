@@ -28,8 +28,8 @@ export class StructureCategoryRepository extends DefaultCrudRepository<
     protected categoryRepositoryGetter: Getter<CategoryRepository>,
   ) {
     super(StructureCategory, dataSource);
-    this.structure = this.createBelongsToAccessorFor('structure', structureRepositoryGetter);
-    this.category = this.createBelongsToAccessorFor('category', categoryRepositoryGetter);
+    this.structure = this.createBelongsToAccessorFor('structure_join', structureRepositoryGetter);
+    this.category = this.createBelongsToAccessorFor('category_join', categoryRepositoryGetter);
 
     this.registerInclusionResolver('category', this.category.inclusionResolver);
   }

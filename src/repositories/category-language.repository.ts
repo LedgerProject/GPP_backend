@@ -21,6 +21,6 @@ export class CategoryLanguageRepository extends DefaultCrudRepository<
     protected categoryRepositoryGetter: Getter<CategoryRepository>,
   ) {
     super(CategoryLanguage, dataSource);
-    this.category = this.createBelongsToAccessorFor('category', categoryRepositoryGetter);
+    this.category = this.createBelongsToAccessorFor('category_join', categoryRepositoryGetter);
   }
 }

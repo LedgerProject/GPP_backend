@@ -17,7 +17,7 @@ export class CountryTopicLanguage extends Entity {
   })
   idCountryTopicLanguage: string;
 
-  @belongsTo(() => CountryTopic, {name : 'countryTopic'}, {
+  @belongsTo(() => CountryTopic, {name : 'countryTopic_join'}, {
     type: 'string',
     required: true,
     postgresql: {columnName: 'idCountryTopic', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'

@@ -17,7 +17,7 @@ export class StructuresCategoriesView extends Entity {
   })
   idStructureCategory?: string;
 
-  @belongsTo(() => StructuresView, {name : 'structuresView'}, {
+  @belongsTo(() => StructuresView, {name : 'structuresView_join'}, {
     type: 'string',
     postgresql: {columnName: 'idStructure', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES'
   }})

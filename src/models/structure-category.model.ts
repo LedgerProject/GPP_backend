@@ -15,14 +15,14 @@ export class StructureCategory extends Entity {
   })
   idStructureCategory: string;
 
-  @belongsTo(() => Structure, {name : 'structure'}, {
+  @belongsTo(() => Structure, {name : 'structure_join'}, {
     type: 'string',
     required: true,
     postgresql: {columnName: 'idStructure', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'
   }})
   idStructure: string;
 
-  @belongsTo(() => Category, {name : 'category'}, {
+  @belongsTo(() => Category, {name : 'category_join'}, {
     type: 'string',
     required: true,
     postgresql: {columnName: 'idCategory', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'

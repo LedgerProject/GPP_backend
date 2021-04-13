@@ -99,7 +99,7 @@ export class Structure extends Entity {
   })
   website?: string;
 
-  @belongsTo(() => Icon, {name : 'icon'}, {
+  @belongsTo(() => Icon, {name : 'icon_join'}, {
     type: 'string',
     postgresql: {columnName: 'idIcon', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES'
   }})

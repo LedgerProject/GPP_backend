@@ -15,14 +15,14 @@ export class OrganizationUser extends Entity {
   })
   idOrganizationUser: string;
 
-  @belongsTo(() => Organization, {name : 'organization'}, {
+  @belongsTo(() => Organization, {name : 'organization_join'}, {
     type: 'string',
     required: true,
     postgresql: {columnName: 'idOrganization', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'
   }})
   idOrganization: string;
 
-  @belongsTo(() => User, {name : 'user'}, {
+  @belongsTo(() => User, {name : 'user_join'}, {
     type: 'string',
     required: true,
     postgresql: {columnName: 'idUser', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'
