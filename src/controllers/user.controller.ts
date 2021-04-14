@@ -8,6 +8,7 @@ import { UserProfile } from '@loopback/security';
 import _ from 'lodash';
 import { PasswordHasherBindings, TokenServiceBindings, UserServiceBindings } from '../authorization/keys';
 import { v4 as uuidv4 } from 'uuid';
+import { createPBKDF } from 'keypair-lib';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { UserTypeKeys } from '../authorization/user-type-keys';
@@ -19,6 +20,16 @@ import { MyUserService } from '../services/user.service';
 import { validateCredentials } from '../services/validator';
 import { CredentialsRequestBody } from './specs/user.controller.spec';
 import { checkUserEditable } from '../services/user.service';
+
+interface UserData {
+  email: string;
+}
+
+interface PBKBFResponse {
+  code: string;
+  message: string;
+  pbkdf: string;
+}
 
 interface Invitation {
   idUser: string;
@@ -85,6 +96,60 @@ export class UserController {
     @inject(TokenServiceBindings.TOKEN_SERVICE)
     public jwtService: JWTService
   ) { }
+
+  //*** GET USER PBKDF ***/
+  @get('/users/pbkdf', {
+    responses: {
+      '200': {
+        description: 'Get user PBKDF',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                operationOutcome: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async pbkdf(
+    @requestBody()
+    userData: UserData
+  ): Promise<{ pbkdfResponse: PBKBFResponse }> {
+    let response : PBKBFResponse = {
+      code: '0',
+      message: '',
+      pbkdf: ''
+    };
+
+    // Check if the email already exists
+    const usrFilter: Filter = { where: { "email": userData.email }};
+    const usrData = await this.userRepository.findOne(usrFilter);
+
+    if (usrData) {
+      response = {
+        code: '20',
+        message: 'E-Mail address already exists',
+        pbkdf: ''
+      };
+    } else {
+      console.log(userData);
+      const data = await createPBKDF(userData);
+      console.log(data);
+      response = {
+        code: '202',
+        message: 'PBKDF generated',
+        pbkdf: data.key_derivation
+      };
+    }
+
+    return Promise.resolve({ pbkdfResponse: response });
+  }
 
   //*** USER SIGNUP ***/
   @post('/users/signup', {
