@@ -134,7 +134,7 @@ export class UserController {
     if (usrData) {
       response = {
         code: '20',
-        message: 'E-Mail address already exists',
+        message: 'E-Mail address exists',
         pbkdf: ''
       };
     } else {
@@ -197,6 +197,11 @@ export class UserController {
 
     if ((await this.userRepository.find(filter))[0] !== undefined) {
       throw new HttpErrors.BadRequest('This email already exists');
+    }
+
+    // Check: if user, check if passed pbkdf and public key
+    if (userData.userType === 'user' && (!userData.pbkdf || !userData.publicKey)) {
+      throw new HttpErrors.BadRequest('pbkdf or public key not passed');
     }
 
     // Set emailConfirmed to false
