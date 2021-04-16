@@ -98,7 +98,7 @@ export class UserController {
   ) { }
 
   //*** GET USER PBKDF ***/
-  @get('/users/pbkdf', {
+  @post('/users/pbkdf', {
     responses: {
       '200': {
         description: 'Get user PBKDF',
@@ -128,7 +128,7 @@ export class UserController {
     };
 
     // Check if the email already exists
-    const usrFilter: Filter = { where: { "email": userData.email }};
+    const usrFilter: Filter = { where: { "email": userData.email, "userType": "user" }};
     const usrData = await this.userRepository.findOne(usrFilter);
 
     if (usrData) {
