@@ -7,9 +7,11 @@ import { SecurityBindings, UserProfile } from '@loopback/security';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { Structure, StructuresCategoriesView, StructureLanguage, StructuresView, StructureImage } from '../models';
-import { StructureRepository, StructuresCategoriesViewRepository, StructureLanguageRepository, StructuresViewRepository, StructureImageRepository } from '../repositories';
+import { StructureRepository, StructuresCategoriesViewRepository, StructureLanguageRepository, StructuresViewRepository, StructureImageRepository, IconRepository } from '../repositories';
 import { checkStructureOwner } from '../services/structure.service';
+import { ImporterFactory } from 'xlsx-import/lib/ImporterFactory';
 
+const exportToExcel = require('export-to-excel');
 const loopback = require('loopback');
 const fs = require('fs');
 const path = require('path');
@@ -22,6 +24,47 @@ interface OperationOutcome {
   code: string;
   message: string;
 }
+
+interface ExcelStructureRow {
+  alias: string;
+  name: string;
+  address: string;
+  city: string;
+  latitude: number;
+  longitude: number;
+  email: string | undefined;
+  phoneNumberPrefix: string | undefined;
+  phoneNumber: string | undefined;
+  website: string | undefined;
+  icon: string | undefined;
+  descriptionEng: string | undefined;
+  descriptionFra: string | undefined;
+}
+
+// tslint:disable:object-literal-sort-keys
+const excelConfig = () => ({
+  items: {
+      worksheet: 'Foglio1',
+      type: 'list',
+      rowOffset: 1,
+      columns: [
+          { index: 1, key: 'alias' },
+          { index: 2, key: 'name' },
+          { index: 3, key: 'address' },
+          { index: 4, key: 'city' },
+          { index: 5, key: 'latitude', mapper: (v: string) => Number(v) },
+          { index: 6, key: 'longitude', mapper: (v: string) => Number(v) },
+          { index: 7, key: 'email' },
+          { index: 8, key: 'phoneNumberPrefix' },
+          { index: 9, key: 'phoneNumber' },
+          { index: 10, key: 'website' },
+          { index: 11, key: 'icon' },
+          { index: 12, key: 'descriptionEng' },
+          { index: 13, key: 'descriptionFra' },
+      ],
+  },
+});
+// tslint:enable:object-literal-sort-keys
 
 // Set the path to the structures folder
 const galleriesStructuresPath = path.join(__dirname, '..', '..', 'public', 'galleries', 'structures');
@@ -38,6 +81,8 @@ export class StructureController {
     public structuresCategoriesViewRepository: StructuresCategoriesViewRepository,
     @repository(StructureImageRepository)
     public structureImageRepository: StructureImageRepository,
+    @repository(IconRepository)
+    public iconRepository: IconRepository,
     @inject(SecurityBindings.USER)
     public user: UserProfile
   ) { }
@@ -440,5 +485,197 @@ export class StructureController {
 
     const filter: Filter = { where: { "idStructure": id } };
     return this.structureImageRepository.find(filter);
+  }
+
+  //*** IMPORT FILE EXCEL ***/
+  @post('/import-excel', {
+    responses: {
+      '200': {
+        description: 'Import structures from Excel file',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                operationOutcome: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      }
+    }
+  })
+  @authenticate('jwt', { required: [PermissionKeys.GeneralStructuresManagement] })
+  async importExcel(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
+  ): Promise<{ operationOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+    const config = excelConfig();
+
+    const factory = new ImporterFactory();
+    
+    const importer = await factory.from('public/temp/test2.xlsx');
+
+    const items = importer.getAllItems<ExcelStructureRow>(config.items);
+
+    let currentRow = 0;
+    let importErrors = '';
+
+    for (const item of items) {
+      // Check if alias is specified that is correct
+      
+      // Check if name is specified
+
+    }
+
+    return Promise.resolve({ operationOutcome: response });
+  }
+
+  //*** EXPORT FILE EXCEL ***/
+  @post('/export-excel', {
+    responses: {
+      '200': {
+        description: 'Export structures from Excel file',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                operationOutcome: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      }
+    }
+  })
+  @authenticate('jwt', { required: [PermissionKeys.GeneralStructuresManagement] })
+  async exportExcel(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile
+  ): Promise<{ operationOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    let exportStructures : ExcelStructureRow[] = [];
+
+    let structuresData = await this.structureRepository.find();
+
+    for (let key1 in structuresData) {
+      // Get english description
+      const filterEng: Filter = { where: { "idStructure": structuresData[key1]['idStructure'], "language": "en" } };
+      let descEng = await this.structureLanguageRepository.findOne(filterEng);
+
+      // Get french description
+      const filterFra: Filter = { where: { "idStructure": structuresData[key1]['idStructure'], "language": "fr" } };
+      let descFra = await this.structureLanguageRepository.findOne(filterFra);
+
+      // Get icon name
+      const filterIco: Filter = { where: { "idIcon": structuresData[key1]['idIcon'] } };
+      let descIco = await this.iconRepository.findOne(filterFra);
+
+      const exportStructure = {
+        alias: structuresData[key1]['alias'],
+        name: structuresData[key1]['name'],
+        address: structuresData[key1]['address'],
+        city: structuresData[key1]['city'],
+        latitude: structuresData[key1]['latitude'],
+        longitude: structuresData[key1]['longitude'],
+        email: structuresData[key1]['email'],
+        phoneNumberPrefix: structuresData[key1]['phoneNumberPrefix'],
+        phoneNumber: structuresData[key1]['phoneNumber'],
+        website: structuresData[key1]['website'],
+        icon: descIco?.name,
+        descriptionEng: descEng?.description,
+        descriptionFra: descFra?.description
+      };
+
+      exportStructures.push(exportStructure);
+    }
+
+    exportToExcel.exportXLSX({
+      filename: 'public/export/gpp-structures-' + Date.now(),
+      sheetname: 'structures',
+      title: [
+          {
+            "fieldName": "alias",
+            "displayName": "Alias",
+            "cellWidth": 25
+          },
+          {
+            "fieldName": "name",
+            "displayName": "Name",
+            "cellWidth": 30
+          },
+          {
+            "fieldName": "address",
+            "displayName": "Address",
+            "cellWidth": 30
+          },
+          {
+            "fieldName": "city",
+            "displayName": "City",
+            "cellWidth": 25
+          },
+          {
+            "fieldName": "latitude",
+            "displayName": "Latitude",
+            "cellWidth": 15
+          },
+          {
+            "fieldName": "longitude",
+            "displayName": "Longitude",
+            "cellWidth": 15
+          },
+          {
+            "fieldName": "email",
+            "displayName": "E-Mail",
+            "cellWidth": 25
+          },
+          {
+            "fieldName": "phoneNumberPrefix",
+            "displayName": "Phone Number Prefix",
+            "cellWidth": 6,
+          },
+          {
+            "fieldName": "phoneNumber",
+            "displayName": "Phone Number",
+            "cellWidth": 15,
+          },
+          {
+            "fieldName": "website",
+            "displayName": "Website",
+            "cellWidth": 30,
+          },
+          {
+            "fieldName": "icon",
+            "displayName": "Icon",
+            "cellWidth": 15,
+          },
+          {
+            "fieldName": "descriptionEng",
+            "displayName": "Description English",
+            "cellWidth": 50,
+          },
+          {
+            "fieldName": "descriptionFra",
+            "displayName": "Description French",
+            "cellWidth": 50,
+          }
+      ],
+      data: exportStructures
+    })
+
+    return Promise.resolve({ operationOutcome: response });
   }
 }
