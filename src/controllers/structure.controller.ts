@@ -582,7 +582,7 @@ export class StructureController {
 
       // Get icon name
       const filterIco: Filter = { where: { "idIcon": structuresData[key1]['idIcon'] } };
-      let descIco = await this.iconRepository.findOne(filterFra);
+      let descIco = await this.iconRepository.findOne(filterIco);
 
       const exportStructure = {
         alias: structuresData[key1]['alias'],
