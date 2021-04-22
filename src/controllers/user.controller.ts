@@ -8,7 +8,7 @@ import { UserProfile } from '@loopback/security';
 import _ from 'lodash';
 import { PasswordHasherBindings, TokenServiceBindings, UserServiceBindings } from '../authorization/keys';
 import { v4 as uuidv4 } from 'uuid';
-import { createPBKDF } from 'keypair-lib';
+import { createPBKDF, sanitizeAnswers, verifyAnswers } from 'keypair-lib';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { UserTypeKeys } from '../authorization/user-type-keys';
@@ -43,6 +43,11 @@ interface Permissions {
 
 interface ResetPasswordData {
   email: string;
+  answer1: string;  // Only from frontend, not from app
+  answer2: string;  // Only from frontend, not from app
+  answer3: string;  // Only from frontend, not from app
+  answer4: string;  // Only from frontend, not from app
+  answer5: string;  // Only from frontend, not from app
 }
 
 interface ConfirmationTokenData {
@@ -97,7 +102,7 @@ export class UserController {
     public jwtService: JWTService
   ) { }
 
-  //*** GET USER PBKDF ***/
+  //*** GENERATE USER PBKDF ***/
   @post('/users/pbkdf', {
     responses: {
       '200': {
@@ -138,13 +143,62 @@ export class UserController {
         pbkdf: ''
       };
     } else {
-      console.log(userData);
       const data = await createPBKDF(userData);
-      console.log(data);
       response = {
         code: '202',
         message: 'PBKDF generated',
         pbkdf: data.key_derivation
+      };
+    }
+
+    return Promise.resolve({ pbkdfResponse: response });
+  }
+
+  //*** GET USER PBKDF FROM DATABASE ***/
+  @post('/users/get-pbkdf', {
+    responses: {
+      '200': {
+        description: 'Get user PBKDF from database',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                operationOutcome: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async getPBKDF(
+    @requestBody()
+    userData: UserData
+  ): Promise<{ pbkdfResponse: PBKBFResponse }> {
+    let response : PBKBFResponse = {
+      code: '0',
+      message: '',
+      pbkdf: ''
+    };
+
+    // Check if the email already exists
+    const usrFilter: Filter = { where: { "email": userData.email, "userType": "user" }};
+    const usrData = await this.userRepository.findOne(usrFilter);
+
+    if (!usrData) {
+      response = {
+        code: '20',
+        message: 'E-Mail address not exists',
+        pbkdf: ''
+      };
+    } else {
+      response = {
+        code: '202',
+        message: 'PBKDF selected',
+        pbkdf: usrData.pbkdf
       };
     }
 
@@ -500,70 +554,98 @@ export class UserController {
       const userData = await this.userRepository.findOne(usrFilter);
 
       if (userData) {
-        // Check if the user has already requested to reset the password
-        let requestAlreadyDone = false;
-        if (userData.passwordRecoveryDate) {
-          const requestDiff = new Date().getTime() - new Date(userData.passwordRecoveryDate).getTime();
-          const requestHours = requestDiff / 3600000;
-          if (requestHours < 24) {
-            requestAlreadyDone = true;
+        let resultVerify = false;
+
+        // If passed pbkdf and answers, check if the generated public key is equal to the public key in the database
+        if (resetPasswordData.answer1 && resetPasswordData.answer2 && resetPasswordData.answer3 && resetPasswordData.answer4 && resetPasswordData.answer5) {
+          let answers = {
+            question1: resetPasswordData.answer1,
+            question2: resetPasswordData.answer2,
+            question3: resetPasswordData.answer3,
+            question4: resetPasswordData.answer4,
+            question5: resetPasswordData.answer5
+          };
+        
+          answers = sanitizeAnswers(answers);
+
+          resultVerify = await verifyAnswers(answers, userData.pbkdf, userData.email, userData.publicKey);
+
+          if (!resultVerify) {
+            response = {
+              code: '50',
+              message: 'Answers not correct'
+            };
           }
+        } else {
+          resultVerify = true;
         }
 
-        if (requestAlreadyDone) {
-          response = {
-            code: '20',
-            message: 'Request already done in the last 24 hours'
-          };
-        } else {
-          userData.passwordRecoveryDate = new Date().toJSON();
-          userData.passwordRecoveryToken = uuidv4();
-          await this.userRepository.updateById(userData.idUser, userData);
-
-          const sgMail = require('@sendgrid/mail');
-          sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-          const resetPasswordLink = process.env.PORTAL_URL + '/#/reset-password/?confirm=' + userData.passwordRecoveryToken;
-
-          let emailSubject = process.env.RESET_PASSWORD_EMAIL_SUBJECT;
-          emailSubject = emailSubject?.replace(/%firstName%/g, userData.firstName);
-          emailSubject = emailSubject?.replace(/%lastName%/g, userData.lastName);
-
-          let emailText = process.env.RESET_PASSWORD_EMAIL_TEXT;
-          emailText = emailText?.replace(/%firstName%/g, userData.firstName);
-          emailText = emailText?.replace(/%lastName%/g, userData.lastName);
-          emailText = emailText?.replace(/%resetPasswordLink%/g, resetPasswordLink);
-          
-          let htmlText = process.env.RESET_PASSWORD_EMAIL_HTML;
-          htmlText = htmlText?.replace(/%firstName%/g, userData.firstName);
-          htmlText = htmlText?.replace(/%lastName%/g, userData.lastName);
-          htmlText = htmlText?.replace(/%resetPasswordLink%/g, resetPasswordLink);
-
-          const msg = {
-            to: userData.email,
-            from: process.env.RESET_PASSWORD_EMAIL_FROM_EMAIL,
-            fromname: process.env.RESET_PASSWORD_EMAIL_FROM_NAME,
-            subject: emailSubject,
-            text: emailText,
-            html: htmlText,
+        if (resultVerify) {
+          // Check if the user has already requested to reset the password
+          let requestAlreadyDone = false;
+          if (userData.passwordRecoveryDate) {
+            const requestDiff = new Date().getTime() - new Date(userData.passwordRecoveryDate).getTime();
+            const requestHours = requestDiff / 3600000;
+            if (requestHours < 24) {
+              requestAlreadyDone = true;
+            }
           }
 
-          await sgMail
-            .send(msg)
-            .then(() => {
-              response = {
-                code: '202',
-                message: 'Reset password e-mail sent'
-              };
-            })
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .catch((error: any) => {
-              console.error(error)
-              response = {
-                code: '30',
-                message: 'Error sending e-mail'
-              };
-            })
+          if (requestAlreadyDone) {
+            response = {
+              code: '20',
+              message: 'Request already done in the last 24 hours'
+            };
+          } else {
+            userData.passwordRecoveryDate = new Date().toJSON();
+            userData.passwordRecoveryToken = uuidv4();
+            await this.userRepository.updateById(userData.idUser, userData);
+
+            const sgMail = require('@sendgrid/mail');
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+            const resetPasswordLink = process.env.PORTAL_URL + '/#/reset-password/?confirm=' + userData.passwordRecoveryToken;
+
+            let emailSubject = process.env.RESET_PASSWORD_EMAIL_SUBJECT;
+            emailSubject = emailSubject?.replace(/%firstName%/g, userData.firstName);
+            emailSubject = emailSubject?.replace(/%lastName%/g, userData.lastName);
+
+            let emailText = process.env.RESET_PASSWORD_EMAIL_TEXT;
+            emailText = emailText?.replace(/%firstName%/g, userData.firstName);
+            emailText = emailText?.replace(/%lastName%/g, userData.lastName);
+            emailText = emailText?.replace(/%resetPasswordLink%/g, resetPasswordLink);
+            
+            let htmlText = process.env.RESET_PASSWORD_EMAIL_HTML;
+            htmlText = htmlText?.replace(/%firstName%/g, userData.firstName);
+            htmlText = htmlText?.replace(/%lastName%/g, userData.lastName);
+            htmlText = htmlText?.replace(/%resetPasswordLink%/g, resetPasswordLink);
+
+            const msg = {
+              to: userData.email,
+              from: process.env.RESET_PASSWORD_EMAIL_FROM_EMAIL,
+              fromname: process.env.RESET_PASSWORD_EMAIL_FROM_NAME,
+              subject: emailSubject,
+              text: emailText,
+              html: htmlText,
+            }
+
+            await sgMail
+              .send(msg)
+              .then(() => {
+                response = {
+                  code: '202',
+                  message: 'Reset password e-mail sent'
+                };
+              })
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              .catch((error: any) => {
+                console.error(error)
+                response = {
+                  code: '30',
+                  message: 'Error sending e-mail'
+                };
+              })
+          }
         }
       } else {
         response = {
