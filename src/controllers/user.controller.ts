@@ -31,6 +31,13 @@ interface PBKBFResponse {
   pbkdf: string;
 }
 
+interface PBKBFPublicKeyResponse {
+  code: string;
+  message: string;
+  pbkdf: string;
+  publicKey: string;
+}
+
 interface Invitation {
   idUser: string;
   invitationMessage: string;
@@ -154,17 +161,17 @@ export class UserController {
     return Promise.resolve({ pbkdfResponse: response });
   }
 
-  //*** GET USER PBKDF FROM DATABASE ***/
-  @post('/users/get-pbkdf', {
+  //*** GET USER PBKDF AND PUBLIC KEY FROM DATABASE ***/
+  @post('/users/get-pbkdf-publickey', {
     responses: {
       '200': {
-        description: 'Get user PBKDF from database',
+        description: 'Get user PBKDF and public key from database',
         content: {
           'application/json': {
             schema: {
               type: 'object',
               properties: {
-                operationOutcome: {
+                pbkdfPublicKeyResponse: {
                   type: 'object',
                 },
               },
@@ -177,11 +184,12 @@ export class UserController {
   async getPBKDF(
     @requestBody()
     userData: UserData
-  ): Promise<{ pbkdfResponse: PBKBFResponse }> {
-    let response : PBKBFResponse = {
+  ): Promise<{ pbkdfPublicKeyResponse: PBKBFPublicKeyResponse }> {
+    let response : PBKBFPublicKeyResponse = {
       code: '0',
       message: '',
-      pbkdf: ''
+      pbkdf: '',
+      publicKey: '',
     };
 
     // Check if the email already exists
@@ -192,17 +200,19 @@ export class UserController {
       response = {
         code: '20',
         message: 'E-Mail address not exists',
-        pbkdf: ''
+        pbkdf: '',
+        publicKey: '',
       };
     } else {
       response = {
         code: '202',
-        message: 'PBKDF selected',
-        pbkdf: usrData.pbkdf
+        message: 'PBKDF and public key selected',
+        pbkdf: usrData.pbkdf,
+        publicKey: usrData.publicKey,
       };
     }
 
-    return Promise.resolve({ pbkdfResponse: response });
+    return Promise.resolve({ pbkdfPublicKeyResponse: response });
   }
 
   //*** USER SIGNUP ***/
