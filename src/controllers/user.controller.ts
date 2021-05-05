@@ -966,7 +966,7 @@ export class UserController {
             let privateKey = '';
             let publicKey = '';
             if (verifyAnswersData.returnKeys) {
-              const resultKeys = await recoveryKeypair(answers, userData.pbkdf, userData.email);
+              const resultKeys = await recoveryKeypair(answers, userData.pbkdf, 'user');
 
               privateKey = resultKeys.user.keypair.public_key;
               publicKey = resultKeys.user.keypair.public_key;
