@@ -8,7 +8,7 @@ import { UserProfile } from '@loopback/security';
 import _ from 'lodash';
 import { PasswordHasherBindings, TokenServiceBindings, UserServiceBindings } from '../authorization/keys';
 import { v4 as uuidv4 } from 'uuid';
-import { createPBKDF, sanitizeAnswers, verifyAnswers } from 'keypair-lib';
+import { createPBKDF, sanitizeAnswers, verifyAnswers, recoveryKeypair } from 'keypair-lib';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { UserTypeKeys } from '../authorization/user-type-keys';
@@ -66,6 +66,14 @@ interface VerifyAnswersData {
   answer3: string;
   answer4: string;
   answer5: string;
+  returnKeys: boolean;
+}
+
+interface VerifyAnswersOutcome {
+  code: string;
+  message: string;
+  publicKey: string;
+  privateKey: string;
 }
 
 interface ConfirmationTokenData {
@@ -917,10 +925,12 @@ export class UserController {
   async verifyAnswers(
     @requestBody()
     verifyAnswersData: VerifyAnswersData,
-  ): Promise<{ verifyAnswersOutcome: OperationOutcome }> {
-    let response : OperationOutcome = {
+  ): Promise<{ verifyAnswersOutcome: VerifyAnswersOutcome }> {
+    let response : VerifyAnswersOutcome = {
       code: '0',
-      message: ''
+      message: '',
+      publicKey: '',
+      privateKey: ''
     };
 
     if (verifyAnswersData.email) {
@@ -948,30 +958,49 @@ export class UserController {
           if (!resultVerify) {
             response = {
               code: '50',
-              message: 'Answers not correct'
+              message: 'Answers not correct',
+              publicKey: '',
+              privateKey: ''
             };
           } else {
+            let privateKey = '';
+            let publicKey = '';
+            if (verifyAnswersData.returnKeys) {
+              const resultKeys = await recoveryKeypair(answers, userData.pbkdf, userData.email);
+
+              privateKey = resultKeys.user.keypair.public_key;
+              publicKey = resultKeys.user.keypair.public_key;
+            }
+            
             response = {
               code: '202',
-              message: 'Answers correct'
+              message: 'Answers correct',
+              publicKey: publicKey,
+              privateKey: privateKey
             };
           }
         } else {
           response = {
             code: '51',
-            message: 'Specify the answers'
+            message: 'Specify the answers',
+            publicKey: '',
+            privateKey: ''
           };
         }
       } else {
         response = {
           code: '10',
-          message: 'Email not exists'
+          message: 'Email not exists',
+          publicKey: '',
+          privateKey: ''
         };
       }
     } else {
       response = {
         code: '11',
-        message: 'Specify an email'
+        message: 'Specify an email',
+        publicKey: '',
+        privateKey: ''
       };
     }
 
