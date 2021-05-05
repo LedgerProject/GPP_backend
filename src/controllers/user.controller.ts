@@ -49,12 +49,23 @@ interface Permissions {
 }
 
 interface ResetPasswordData {
+  userType: string;
   email: string;
   answer1: string;  // Only from frontend, not from app
   answer2: string;  // Only from frontend, not from app
   answer3: string;  // Only from frontend, not from app
   answer4: string;  // Only from frontend, not from app
   answer5: string;  // Only from frontend, not from app
+}
+
+interface VerifyAnswersData {
+  userType: string;
+  email: string;
+  answer1: string;
+  answer2: string;
+  answer3: string;
+  answer4: string;
+  answer5: string;
 }
 
 interface ConfirmationTokenData {
@@ -560,7 +571,7 @@ export class UserController {
 
     if (resetPasswordData.email) {
       // Check if an user with this email exists
-      const usrFilter: Filter = { where: { "email": resetPasswordData.email }};
+      const usrFilter: Filter = { where: { "email": resetPasswordData.email, "userType": resetPasswordData.userType }};
       const userData = await this.userRepository.findOne(usrFilter);
 
       if (userData) {
@@ -787,7 +798,7 @@ export class UserController {
             schema: {
               type: 'object',
               properties: {
-                resetPassword: {
+                changePassword: {
                   type: 'object',
                 },
               },
@@ -881,6 +892,90 @@ export class UserController {
     }
 
     return Promise.resolve({ changePasswordOutcome: response });
+  }
+
+  //*** VERIFY ANSWERS ***/
+  @post('/user/verify-answers', {
+    responses: {
+      '200': {
+        description: 'Verify Answers',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                verifyAnswers: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async verifyAnswers(
+    @requestBody()
+    verifyAnswersData: VerifyAnswersData,
+  ): Promise<{ verifyAnswersOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    if (verifyAnswersData.email) {
+      // Check if an user with this email exists
+      const usrFilter: Filter = { where: { "email": verifyAnswersData.email, "userType": verifyAnswersData.userType }};
+      const userData = await this.userRepository.findOne(usrFilter);
+
+      if (userData) {
+        let resultVerify = false;
+
+        // If passed the answers, check if the generated public key is equal to the public key in the database
+        if (verifyAnswersData.answer1 && verifyAnswersData.answer2 && verifyAnswersData.answer3 && verifyAnswersData.answer4 && verifyAnswersData.answer5) {
+          let answers = {
+            question1: verifyAnswersData.answer1,
+            question2: verifyAnswersData.answer2,
+            question3: verifyAnswersData.answer3,
+            question4: verifyAnswersData.answer4,
+            question5: verifyAnswersData.answer5
+          };
+        
+          answers = sanitizeAnswers(answers);
+
+          resultVerify = await verifyAnswers(answers, userData.pbkdf, userData.email, userData.publicKey);
+
+          if (!resultVerify) {
+            response = {
+              code: '50',
+              message: 'Answers not correct'
+            };
+          } else {
+            response = {
+              code: '202',
+              message: 'Answers correct'
+            };
+          }
+        } else {
+          response = {
+            code: '51',
+            message: 'Specify the answers'
+          };
+        }
+      } else {
+        response = {
+          code: '10',
+          message: 'Email not exists'
+        };
+      }
+    } else {
+      response = {
+        code: '11',
+        message: 'Specify an email'
+      };
+    }
+
+    return Promise.resolve({ verifyAnswersOutcome: response });
   }
 
   //*** LIST ***/
