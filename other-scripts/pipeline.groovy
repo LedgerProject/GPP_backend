@@ -42,7 +42,7 @@ pipeline {
         script {
 
         sh 'docker ps -q --filter ancestor="${REPO_NAME}:latest" | xargs -r docker stop'
-        sh 'sudo docker run --network="host" ${REPOSITORY_URL}'
+        sh 'docker run --network="host" ${REPOSITORY_URL}'
 
         }
       }
