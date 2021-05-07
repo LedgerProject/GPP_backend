@@ -35,10 +35,27 @@ export class UserToken extends Entity {
 
   @property({
     type: 'string',
-    required: true,
     postgresql: { columnName: 'key', dataType: 'character varying', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   key: string;
+
+  @property({
+    type: 'string',
+    postgresql: { columnName: 'checksum', dataType: 'character varying', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
+  })
+  checksum: string;
+
+  @property({
+    type: 'string',
+    postgresql: { columnName: 'header', dataType: 'character varying', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
+  })
+  header: string;
+
+  @property({
+    type: 'string',
+    postgresql: { columnName: 'iv', dataType: 'character varying', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
+  })
+  iv: string;
 
   // Define well-known properties here
 

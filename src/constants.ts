@@ -21,7 +21,7 @@ export const ALPHABET_CHARS : string = '0123456789';
 /**
  * User token LENGTH
  */
-export const USER_TOKEN_LENGTH : number = 10;
+export const USER_TOKEN_LENGTH : number = 6;
 
 /**
  * Milliseconds needed to have a minute

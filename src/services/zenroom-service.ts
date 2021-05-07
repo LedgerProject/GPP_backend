@@ -1,9 +1,10 @@
 import { DocumentEncryptedChunk } from '../models';
-import { ENCRYPT, DECRYPT } from '../scenarios/zenroom-scenarios'
+import { ENCRYPT, DECRYPT, ENCRYPT_STRING } from '../scenarios/zenroom-scenarios'
 import { retrieveStringFromIPFS } from '../services/ipfs-service';
 import { retrieveJsonFromBlockchain } from './sawroom-service';
 const zenroom = require('zenroom');
 const saltedMd5 = require('salted-md5');
+
 /* 
   This function is using zenroom to encrypt a given string with the password
 */
@@ -33,6 +34,7 @@ export function encrypt(stringToEncrypt: string, password:string) {
   
   return JSON.parse(savedLines);
 }
+
 /* 
   This function is using zenroom to decrypt a specific chunk
 */
@@ -78,6 +80,33 @@ export async function decrypt(chunk: DocumentEncryptedChunk, password:string) {
   zenroom
     .print(printFunction)
     .script(DECRYPT)
+    .keys(keys)
+    .data(data)
+    .zencode_exec()
+  
+  return JSON.parse(savedLines);
+}
+
+export function encryptString(stringToEncrypt: string, password:string) {
+  const savedLines: any = []
+
+  const printFunction = (text: any) => {
+    savedLines.push(text)
+  }
+
+  const md5Password = saltedMd5(password, process.env.SALT);
+
+  const keys: any = {
+    "password": md5Password
+  }
+
+  const data: any = {
+    "message": stringToEncrypt
+  }
+
+  zenroom
+    .print(printFunction)
+    .script(ENCRYPT_STRING)
     .keys(keys)
     .data(data)
     .zencode_exec()

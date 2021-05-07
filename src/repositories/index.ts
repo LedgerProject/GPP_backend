@@ -20,3 +20,4 @@ export * from './structure-language.repository';
 export * from './structures-view.repository';
 export * from './user.repository';
 export * from './user-token.repository';
+export * from './user-token-document.repository';
