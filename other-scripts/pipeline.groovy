@@ -22,8 +22,8 @@ pipeline {
 
         sh "docker build -t ${REPO_NAME} ."
 
-        def REPOSITORY_URL =  "${REPO_NAME}" + ":build-" + "${BUILD_NUMBER}"
-        sh "docker tag ${REPO_NAME}:latest ${REPOSITORY_URL}"
+        //def REPOSITORY_URL =  "${REPO_NAME}" + ":build-" + "${BUILD_NUMBER}"
+        //sh "docker tag ${REPO_NAME}:latest ${REPOSITORY_URL}"
 
         }
       }
@@ -41,7 +41,7 @@ pipeline {
       steps {
         script {
 
-        sh 'docker rm $(docker stop $(docker ps -a -q --filter ancestor=gpp-backend --format="{{.ID}}"))'
+        sh 'docker rm $(docker stop $(docker ps -a -q --filter ancestor=${REPO_NAME} --format="{{.ID}}"))'
         sh 'sudo docker run --network="host" ${REPOSITORY_URL}'
 
         }
