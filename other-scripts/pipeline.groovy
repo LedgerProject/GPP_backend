@@ -10,8 +10,10 @@ pipeline {
   stages {
     stage('Preparation') {
       agent any
-      steps { sh 'echo Use Branch: ${SELECTED_BRANCH}' }
-      steps { sh 'whoami' }
+      steps { 
+        sh 'echo Use Branch: ${SELECTED_BRANCH}' 
+        sh 'whoami'
+      }
     }
 
     stage('Build') {
