@@ -41,7 +41,7 @@ pipeline {
       steps {
         script {
 
-        sh 'docker rm $(docker stop $(docker ps -a -q --filter ancestor=${REPO_NAME} --format="{{.ID}}"))'
+        sh 'docker ps -q --filter ancestor="${REPO_NAME}:latest" | xargs -r docker stop'
         sh 'sudo docker run --network="host" ${REPOSITORY_URL}'
 
         }
