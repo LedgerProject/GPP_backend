@@ -12,7 +12,6 @@ pipeline {
       agent any
       steps { 
         sh 'echo Use Branch: ${SELECTED_BRANCH}' 
-        sh 'whoami'
       }
     }
 
@@ -40,13 +39,11 @@ pipeline {
     stage ('Production Deploy') {
       agent any
       steps {
-        dir("${BUILD_DIRECTORY}") {
-          script {
+        script {
 
-            sh 'docker rm $(docker stop $(docker ps -a -q --filter ancestor=gpp-backend --format="{{.ID}}"))'
-            sh 'sudo docker run --network="host" ${REPOSITORY_URL}'
+        sh 'docker rm $(docker stop $(docker ps -a -q --filter ancestor=gpp-backend --format="{{.ID}}"))'
+        sh 'sudo docker run --network="host" ${REPOSITORY_URL}'
 
-          }
         }
       }
     }
