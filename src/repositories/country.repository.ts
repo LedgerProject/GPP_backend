@@ -7,25 +7,15 @@ import { Country, CountryLanguage, CountryRelations, CountryTopic } from '../mod
 import { CountryLanguageRepository } from './country-language.repository';
 import { CountryTopicRepository } from './country-topic.repository';
 
-export class CountryRepository extends DefaultCrudRepository<
-  Country,
-  typeof Country.prototype.idCountry,
-  CountryRelations
-> {
-  public readonly countryLanguage: HasManyRepositoryFactory<
-  CountryLanguage,
-  typeof Country.prototype.idCountry
-  >;
-  public readonly countryTopic: HasManyRepositoryFactory<
-  CountryTopic,
-  typeof Country.prototype.idCountry
-  >;
+export class CountryRepository extends DefaultCrudRepository
+  <Country, typeof Country.prototype.idCountry, CountryRelations> {
+  public readonly countryLanguage: HasManyRepositoryFactory<CountryLanguage, typeof Country.prototype.idCountry>;
+  public readonly countryTopic: HasManyRepositoryFactory<CountryTopic, typeof Country.prototype.idCountry>;
+
   constructor(
     @inject('datasources.GppDataSource') dataSource: GppDataSource,
-    @repository.getter('CountryLanguageRepository')
-    countryLanguageRepositoryGetter: Getter<CountryLanguageRepository>,
-    @repository.getter('CountryTopicRepository')
-    countryTopicRepositoryGetter: Getter<CountryTopicRepository>,
+    @repository.getter('CountryLanguageRepository') countryLanguageRepositoryGetter: Getter<CountryLanguageRepository>,
+    @repository.getter('CountryTopicRepository') countryTopicRepositoryGetter: Getter<CountryTopicRepository>,
   ) {
     super(Country, dataSource);
     this.countryLanguage = this.createHasManyRepositoryFactoryFor('countryLanguage', countryLanguageRepositoryGetter);

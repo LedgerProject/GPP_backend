@@ -7,25 +7,15 @@ import { Category, CategoryLanguage, CategoryRelations, StructureCategory } from
 import { CategoryLanguageRepository } from './category-language.repository';
 import { StructureCategoryRepository } from './structure-category.repository';
 
-export class CategoryRepository extends DefaultCrudRepository<
-  Category,
-  typeof Category.prototype.idCategory,
-  CategoryRelations
-> {
-  public readonly structureCategory: HasManyRepositoryFactory<
-  StructureCategory,
-  typeof Category.prototype.idCategory
-  >;
-  public readonly categoryLanguage: HasManyRepositoryFactory<
-  CategoryLanguage,
-  typeof Category.prototype.idCategory
-  >;
+export class CategoryRepository extends DefaultCrudRepository
+  <Category, typeof Category.prototype.idCategory, CategoryRelations> {
+  public readonly structureCategory: HasManyRepositoryFactory<StructureCategory, typeof Category.prototype.idCategory>;
+  public readonly categoryLanguage: HasManyRepositoryFactory<CategoryLanguage, typeof Category.prototype.idCategory>;
+
   constructor(
     @inject('datasources.GppDataSource') dataSource: GppDataSource,
-    @repository.getter('StructureCategoryRepository')
-    structureCategoryRepositoryGetter: Getter<StructureCategoryRepository>,
-    @repository.getter('CategoryLanguageRepository')
-    categoryLanguageRepositoryGetter: Getter<CategoryLanguageRepository>,
+    @repository.getter('StructureCategoryRepository') structureCategoryRepositoryGetter: Getter<StructureCategoryRepository>,
+    @repository.getter('CategoryLanguageRepository') categoryLanguageRepositoryGetter: Getter<CategoryLanguageRepository>,
   ) {
     super(Category, dataSource);
     this.structureCategory = this.createHasManyRepositoryFactoryFor('structureCategory', structureCategoryRepositoryGetter);

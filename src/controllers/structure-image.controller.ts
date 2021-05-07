@@ -27,14 +27,10 @@ const galleriesStructuresPath = path.join(__dirname, '..', '..', 'public', 'gall
 
 export class StructureImageController {
   constructor(
-    @inject(FILE_UPLOAD_SERVICE)
-    private fileUploadHandler: FileUploadHandler,
-    @repository(StructureImageRepository)
-    public structureImageRepository : StructureImageRepository,
-    @repository(StructureRepository)
-    public structureRepository : StructureRepository,
-    @inject(SecurityBindings.USER)
-    public user: UserProfile
+    @inject(FILE_UPLOAD_SERVICE) private fileUploadHandler: FileUploadHandler,
+    @repository(StructureImageRepository) public structureImageRepository : StructureImageRepository,
+    @repository(StructureRepository) public structureRepository : StructureRepository,
+    @inject(SecurityBindings.USER) public user: UserProfile
   ) {}
 
   //*** INSERT (UPLOAD) ***/
@@ -49,8 +45,7 @@ export class StructureImageController {
   @authenticate('jwt', { required: [PermissionKeys.StructureCreation, PermissionKeys.GeneralStructuresManagement] })
   async fileUpload(
     @param.path.string('idStructure') idStructure: string,
-    @requestBody.file()
-    request: Request,
+    @requestBody.file() request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<StructureImage> {
     // If operator, check if it is an owned structure

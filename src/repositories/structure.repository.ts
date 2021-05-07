@@ -9,37 +9,19 @@ import { StructureCategoryRepository } from './structure-category.repository';
 import { StructureImageRepository } from './structure-image.repository';
 import { StructureLanguageRepository } from './structure-language.repository';
 
-export class StructureRepository extends DefaultCrudRepository<
-  Structure,
-  typeof Structure.prototype.idStructure,
-  StructureRelations
-  > {
-  public readonly icon: BelongsToAccessor<
-  Icon,
-  typeof Structure.prototype.idIcon
-  >;
-  public readonly structureCategory: HasManyRepositoryFactory<
-  StructureCategory,
-    typeof Structure.prototype.idStructure
-  >;
-  public readonly structureImage: HasManyRepositoryFactory<
-  StructureImage,
-    typeof Structure.prototype.idStructure
-  >;
-  public readonly structureLanguage: HasManyRepositoryFactory<
-  StructureLanguage,
-    typeof Structure.prototype.idStructure
-  >;
+export class StructureRepository extends DefaultCrudRepository
+  <Structure, typeof Structure.prototype.idStructure, StructureRelations> {
+  public readonly icon: BelongsToAccessor<Icon, typeof Structure.prototype.idIcon>;
+  public readonly structureCategory: HasManyRepositoryFactory<StructureCategory, typeof Structure.prototype.idStructure>;
+  public readonly structureImage: HasManyRepositoryFactory<StructureImage, typeof Structure.prototype.idStructure>;
+  public readonly structureLanguage: HasManyRepositoryFactory<StructureLanguage, typeof Structure.prototype.idStructure>;
+
   constructor(
     @inject('datasources.GppDataSource') dataSource: GppDataSource,
-    @repository.getter('IconRepository')
-    protected iconRepositoryGetter: Getter<IconRepository>,
-    @repository.getter('StructureCategoryRepository')
-    structureCategoryRepositoryGetter: Getter<StructureCategoryRepository>,
-    @repository.getter('StructureImageRepository')
-    structureImageRepositoryGetter: Getter<StructureImageRepository>,
-    @repository.getter('StructureLanguageRepository')
-    structureLanguageRepositoryGetter: Getter<StructureLanguageRepository>,
+    @repository.getter('IconRepository') protected iconRepositoryGetter: Getter<IconRepository>,
+    @repository.getter('StructureCategoryRepository') structureCategoryRepositoryGetter: Getter<StructureCategoryRepository>,
+    @repository.getter('StructureImageRepository') structureImageRepositoryGetter: Getter<StructureImageRepository>,
+    @repository.getter('StructureLanguageRepository') structureLanguageRepositoryGetter: Getter<StructureLanguageRepository>,
   ) {
     super(Structure, dataSource);
     this.icon = this.createBelongsToAccessorFor('icon_join', iconRepositoryGetter);

@@ -14,10 +14,8 @@ export class UserTokenDocumentRepository extends DefaultCrudRepository
 
   constructor(
     @inject('datasources.GppDataSource') dataSource: GppDataSource,
-    @repository.getter('UserTokenRepository')
-    protected userTokenRepositoryGetter: Getter<UserTokenRepository>,
-    @repository.getter('DocumentRepository')
-    protected documentRepositoryGetter: Getter<DocumentRepository>,
+    @repository.getter('UserTokenRepository') protected userTokenRepositoryGetter: Getter<UserTokenRepository>,
+    @repository.getter('DocumentRepository') protected documentRepositoryGetter: Getter<DocumentRepository>,
   ) {
     super(UserTokenDocument, dataSource);
     this.userToken = this.createBelongsToAccessorFor('user_token_join', userTokenRepositoryGetter);

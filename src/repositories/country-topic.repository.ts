@@ -7,25 +7,15 @@ import { Country, CountryTopic, CountryTopicLanguage, CountryTopicRelations } fr
 import { CountryTopicLanguageRepository } from './country-topic-language.repository';
 import { CountryRepository } from './country.repository';
 
-export class CountryTopicRepository extends DefaultCrudRepository<
-  CountryTopic,
-  typeof CountryTopic.prototype.idCountryTopic,
-  CountryTopicRelations
-  > {
-  public readonly country: BelongsToAccessor<
-  Country,
-  typeof CountryTopic.prototype.idCountry
-  >;
-  public readonly countryTopicLanguage: HasManyRepositoryFactory<
-  CountryTopicLanguage,
-  typeof CountryTopic.prototype.idCountryTopic
-  >;
+export class CountryTopicRepository extends DefaultCrudRepository
+  <CountryTopic, typeof CountryTopic.prototype.idCountryTopic, CountryTopicRelations> {
+  public readonly country: BelongsToAccessor<Country, typeof CountryTopic.prototype.idCountry>;
+  public readonly countryTopicLanguage: HasManyRepositoryFactory<CountryTopicLanguage, typeof CountryTopic.prototype.idCountryTopic>;
+
   constructor(
     @inject('datasources.GppDataSource') dataSource: GppDataSource,
-    @repository.getter('CountryRepository')
-    protected countryRepositoryGetter: Getter<CountryRepository>,
-    @repository.getter('CountryTopicLanguageRepository')
-    countryTopicLanguageRepositoryGetter: Getter<CountryTopicLanguageRepository>,
+    @repository.getter('CountryRepository') protected countryRepositoryGetter: Getter<CountryRepository>,
+    @repository.getter('CountryTopicLanguageRepository') countryTopicLanguageRepositoryGetter: Getter<CountryTopicLanguageRepository>,
   ) {
     super(CountryTopic, dataSource);
     this.country = this.createBelongsToAccessorFor('country_join', countryRepositoryGetter);

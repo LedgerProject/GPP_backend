@@ -113,3 +113,37 @@ export function encryptString(stringToEncrypt: string, password:string) {
   
   return JSON.parse(savedLines);
 }
+
+/* 
+  This function is using zenroom to decrypt a specific string
+*/
+export async function decryptString(stringToDerypt: string, checksum: string, header: string, iv: string, password:string) {
+  const savedLines: any = []
+  const printFunction = (text: any) => {
+    savedLines.push(text)
+  }
+
+  const md5Password = saltedMd5(password, process.env.SALT);
+
+  const keys: any = {
+    "password": md5Password
+  }
+
+  const data: any = {
+    "secret_message": {
+      "checksum": checksum,
+      "header": header,
+      "iv": iv,
+      "text": stringToDerypt
+    }
+  }
+
+  zenroom
+    .print(printFunction)
+    .script(DECRYPT)
+    .keys(keys)
+    .data(data)
+    .zencode_exec()
+  
+  return JSON.parse(savedLines);
+}

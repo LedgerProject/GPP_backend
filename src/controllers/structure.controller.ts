@@ -71,20 +71,13 @@ const galleriesStructuresPath = path.join(__dirname, '..', '..', 'public', 'gall
 
 export class StructureController {
   constructor(
-    @repository(StructureRepository)
-    public structureRepository: StructureRepository,
-    @repository(StructureLanguageRepository)
-    public structureLanguageRepository: StructureLanguageRepository,
-    @repository(StructuresViewRepository)
-    public structuresViewRepository: StructuresViewRepository,
-    @repository(StructuresCategoriesViewRepository)
-    public structuresCategoriesViewRepository: StructuresCategoriesViewRepository,
-    @repository(StructureImageRepository)
-    public structureImageRepository: StructureImageRepository,
-    @repository(IconRepository)
-    public iconRepository: IconRepository,
-    @inject(SecurityBindings.USER)
-    public user: UserProfile
+    @repository(StructureRepository) public structureRepository: StructureRepository,
+    @repository(StructureLanguageRepository) public structureLanguageRepository: StructureLanguageRepository,
+    @repository(StructuresViewRepository) public structuresViewRepository: StructuresViewRepository,
+    @repository(StructuresCategoriesViewRepository) public structuresCategoriesViewRepository: StructuresCategoriesViewRepository,
+    @repository(StructureImageRepository) public structureImageRepository: StructureImageRepository,
+    @repository(IconRepository) public iconRepository: IconRepository,
+    @inject(SecurityBindings.USER) public user: UserProfile
   ) { }
 
   //*** INSERT ***/
@@ -343,10 +336,8 @@ export class StructureController {
   })
   async sendMessage(
     @param.path.string('id') id: string,
-    @requestBody()
-    structureMessage: StructureMessage,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @requestBody() structureMessage: StructureMessage,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<{ messageOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
@@ -509,8 +500,7 @@ export class StructureController {
   })
   @authenticate('jwt', { required: [PermissionKeys.GeneralStructuresManagement] })
   async importExcel(
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<{ operationOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
@@ -559,8 +549,7 @@ export class StructureController {
   })
   @authenticate('jwt', { required: [PermissionKeys.GeneralStructuresManagement] })
   async exportExcel(
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<{ operationOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',

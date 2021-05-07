@@ -23,22 +23,14 @@ interface UserTokenData {
 
 export class UserTokenController {
   constructor(
-    @repository(UserRepository)
-    public userRepository: UserRepository,
-    @repository(UserTokenRepository)
-    public userTokenRepository: UserTokenRepository,
-    @repository(UserTokenDocumentRepository)
-    public userTokenDocumentRepository: UserTokenDocumentRepository,
-    @repository(OrganizationsUsersViewRepository)
-    public organizationsUsersViewRepository: OrganizationsUsersViewRepository,
-    @repository(OrganizationUserRepository)
-    public organizationUserRepository: OrganizationUserRepository,
-    @inject(PasswordHasherBindings.PASSWORD_HASHER)
-    public hasher: BcryptHasher,
-    @inject(UserServiceBindings.USER_SERVICE)
-    public userService: MyUserService,
-    @inject(TokenServiceBindings.TOKEN_SERVICE)
-    public jwtService: JWTService,
+    @repository(UserRepository) public userRepository: UserRepository,
+    @repository(UserTokenRepository) public userTokenRepository: UserTokenRepository,
+    @repository(UserTokenDocumentRepository) public userTokenDocumentRepository: UserTokenDocumentRepository,
+    @repository(OrganizationsUsersViewRepository) public organizationsUsersViewRepository: OrganizationsUsersViewRepository,
+    @repository(OrganizationUserRepository) public organizationUserRepository: OrganizationUserRepository,
+    @inject(PasswordHasherBindings.PASSWORD_HASHER) public hasher: BcryptHasher,
+    @inject(UserServiceBindings.USER_SERVICE) public userService: MyUserService,
+    @inject(TokenServiceBindings.TOKEN_SERVICE) public jwtService: JWTService,
   ) { }
 
   //*** USER TOKEN GENERATION ***/

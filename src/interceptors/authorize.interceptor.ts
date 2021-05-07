@@ -19,12 +19,9 @@ import { OrganizationUserRepository } from '../repositories';
 @globalInterceptor('', { tags: { name: 'authorize' } })
 export class AuthorizeInterceptor implements Provider<Interceptor> {
   constructor(
-    @inject(AuthenticationBindings.METADATA)
-    public metadata: AuthenticationMetadata,
-    @inject.getter(AuthenticationBindings.CURRENT_USER)
-    public getCurrentUser: Getter<MyUserProfile>,
-    @repository(OrganizationUserRepository)
-    public organizationUserRepository: OrganizationUserRepository,
+    @inject(AuthenticationBindings.METADATA) public metadata: AuthenticationMetadata,
+    @inject.getter(AuthenticationBindings.CURRENT_USER) public getCurrentUser: Getter<MyUserProfile>,
+    @repository(OrganizationUserRepository) public organizationUserRepository: OrganizationUserRepository,
   ) { }
 
   /**
