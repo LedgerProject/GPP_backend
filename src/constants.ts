@@ -16,12 +16,12 @@ export const BASE64_ENCODING : string = 'base64';
 /**
  * Alphabet chars
  */
-export const ALPHABET_CHARS : string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+export const ALPHABET_CHARS : string = '0123456789';
 
 /**
  * User token LENGTH
  */
-export const USER_TOKEN_LENGTH : number = 6;
+export const USER_TOKEN_LENGTH : number = 10;
 
 /**
  * Milliseconds needed to have a minute

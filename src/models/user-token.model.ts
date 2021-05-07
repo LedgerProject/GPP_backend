@@ -33,6 +33,13 @@ export class UserToken extends Entity {
   })
   validUntil: number;
 
+  @property({
+    type: 'string',
+    required: true,
+    postgresql: { columnName: 'key', dataType: 'character varying', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
+  })
+  key: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

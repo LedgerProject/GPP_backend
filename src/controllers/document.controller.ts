@@ -20,23 +20,23 @@ import { TokenServiceBindings } from '../authorization/keys';
 import { JWTService } from '../services/jwt-service';
 import { ATTACHMENT_FILENAME, BASE64_ENCODING, CHUNK_MAX_CHAR_SIZE } from '../constants';
 
+interface DownloadDocumentData {
+  idDocument: string;
+  privateKey: string;
+}
+
 export class DocumentController {
   constructor(
-    @repository(DocumentRepository)
-    public documentRepository : DocumentRepository,
-    @repository(DocumentEncryptedChunksRepository)
-    public documentEncryptedChunkRepository : DocumentEncryptedChunksRepository,
-    @repository(UserTokenRepository)
-    public userTokenRepository : UserTokenRepository,
-    @inject(SecurityBindings.USER)
-    public user: UserProfile,
-    @inject(TokenServiceBindings.TOKEN_SERVICE)
-    public jwtService: JWTService,
+    @repository(DocumentRepository) public documentRepository : DocumentRepository,
+    @repository(DocumentEncryptedChunksRepository) public documentEncryptedChunkRepository : DocumentEncryptedChunksRepository,
+    @repository(UserTokenRepository) public userTokenRepository : UserTokenRepository,
+    @inject(SecurityBindings.USER) public user: UserProfile,
+    @inject(TokenServiceBindings.TOKEN_SERVICE) public jwtService: JWTService,
     @inject(MEMORY_UPLOAD_SERVICE) private memoryUploadHandler: MemoryUploadHandler,
   ) {}
   
   //*** UPLOAD DOCUMENT ***/
-  @post('/documents/{title}', {
+  @post('/documents/upload', {
     responses: {
       200: {
         content: {'application/json': {schema: {type: 'object'}}},
@@ -46,9 +46,7 @@ export class DocumentController {
   })
   @authenticate('jwt', { required: [PermissionKeys.DocWalletManagement] })
   async fileUpload(
-    @param.path.string('title') title: string,
-    @requestBody.file()
-    request: Request,
+    @requestBody.file() request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile
@@ -71,11 +69,11 @@ export class DocumentController {
             let indexId = 0;
             
             // Save the document
-            this.saveDocument(currentUser.idUser, title, fileUploaded).then((createdDocument:Document) => {
+            this.saveDocument(currentUser.idUser, filesAndFields.fields.title, fileUploaded).then((createdDocument:Document) => {
               // Generate chunk files
               const stringChunks : RegExpMatchArray | null = chunkString(contents, CHUNK_MAX_CHAR_SIZE);    
               stringChunks!.forEach((element: string) => {
-                const encryptedObject = encrypt(element, currentUser.idUser);     
+                const encryptedObject = encrypt(element, filesAndFields.fields.privateKey);     
                 encryptedObject.indexId = indexId;
                 indexId++;
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -192,13 +190,19 @@ export class DocumentController {
   }
 
   //*** DOWNLOAD ***/
-  @get('/documents/{id}')
+  @post('/documents/download', {
+    responses: {
+      200: {
+        content: {'application/json': {schema: {type: 'object'}}},
+        description: 'User document download',
+      },
+    },
+  })
   @authenticate('jwt', { required: [PermissionKeys.DocWalletManagement] })
   async download(
-    @param.path.string('id') id: string,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile,
+    @requestBody() downloadDocumentData: DownloadDocumentData,
     @inject(RestBindings.Http.RESPONSE) response: Response,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
     @param.query.object('filter', getFilterSchemaFor(Document)) filter?: Filter<Document>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
@@ -209,7 +213,7 @@ export class DocumentController {
       filter.where = {};
     }
     const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
-    const where = queryFilters.impose({ idDocument: id, idUser: currentUser.idUser }).build();
+    const where = queryFilters.impose({ idDocument: downloadDocumentData.idDocument, idUser: currentUser.idUser }).build();
     filter.where = where;
 
     const documents = await this.documentRepository.find(filter);
@@ -222,7 +226,7 @@ export class DocumentController {
     const contentType : string = document.mimeType;
 
     const chunksFilter: Filter = { where: { 
-        "idDocument": id
+        "idDocument": downloadDocumentData.idDocument
       },
       order: ['chunkIndexId ASC']
     };
@@ -230,7 +234,7 @@ export class DocumentController {
     let textDecrypted = "";
 
     for await (const chunk of encryptedChunks) {
-      const result = await decrypt(chunk, currentUser.idUser);
+      const result = await decrypt(chunk, downloadDocumentData.privateKey);
       textDecrypted = textDecrypted + result.textDecrypted;
     }
  
@@ -244,12 +248,18 @@ export class DocumentController {
   }
 
   //*** DOWNLOAD ***/
-  @get('/documents-base64/{id}')
+  @post('/documents/download-base64', {
+    responses: {
+      200: {
+        content: {'application/json': {schema: {type: 'object'}}},
+        description: 'User document base64 download',
+      },
+    },
+  })
   @authenticate('jwt', { required: [PermissionKeys.DocWalletManagement] })
   async downloadBase64(
-    @param.path.string('id') id: string,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile,
+    @requestBody() downloadDocumentData: DownloadDocumentData,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
     @inject(RestBindings.Http.RESPONSE) response: Response,
     @param.query.object('filter', getFilterSchemaFor(Document)) filter?: Filter<Document>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -261,7 +271,7 @@ export class DocumentController {
       filter.where = {};
     }
     const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
-    const where = queryFilters.impose({ idDocument: id, idUser: currentUser.idUser }).build();
+    const where = queryFilters.impose({ idDocument: downloadDocumentData.idDocument, idUser: currentUser.idUser }).build();
     filter.where = where;
 
     const documents = await this.documentRepository.find(filter);
@@ -274,7 +284,7 @@ export class DocumentController {
     const contentType : string = document.mimeType;
 
     const chunksFilter: Filter = { where: { 
-        "idDocument": id
+        "idDocument": downloadDocumentData.idDocument
       },
       order: ['chunkIndexId ASC']
     };
@@ -282,7 +292,7 @@ export class DocumentController {
     let textDecrypted = "";
 
     for await (const chunk of encryptedChunks) {
-      const result = await decrypt(chunk, currentUser.idUser);
+      const result = await decrypt(chunk, downloadDocumentData.privateKey);
       textDecrypted = textDecrypted + result.textDecrypted;
     }
 
