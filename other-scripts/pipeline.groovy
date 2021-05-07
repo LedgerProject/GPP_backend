@@ -10,10 +10,12 @@ pipeline {
 
   stages {
     stage('Preparation') {
+      agent any
       steps { sh 'echo Use Branch: ${SELECTED_BRANCH}' }
     }
 
     stage('Build') {
+      agent any
       steps {
         dir("${BUILD_DIRECTORY}") {
           script {
@@ -29,12 +31,14 @@ pipeline {
     }
 
     stage ('Approve Production Deploy') {
+      agent any
       steps {
         timeout(time:env.DEPLOY_PROD_APPROVAL_TIME.toInteger(), unit: 'HOURS') { input 'Do you approve PRODUCTION deployment?' }
       }
     }
 
     stage ('Production Deploy') {
+      agent any
       steps {
         dir("${BUILD_DIRECTORY}") {
           script {
