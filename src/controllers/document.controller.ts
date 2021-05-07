@@ -18,6 +18,8 @@ import { uploadStringToIPFS } from '../services/ipfs-service';
 import { writeIntoBlockchain } from '../services/sawroom-service';
 import { TokenServiceBindings } from '../authorization/keys';
 import { JWTService } from '../services/jwt-service';
+import { retrieveJsonFromBlockchain } from '../services/sawroom-service';
+import { retrieveStringFromIPFS } from '../services/ipfs-service';
 import { ATTACHMENT_FILENAME, BASE64_ENCODING, CHUNK_MAX_CHAR_SIZE } from '../constants';
 
 export class DocumentController {
@@ -178,7 +180,22 @@ export class DocumentController {
     let textDecrypted = "";
 
     for await (const chunk of encryptedChunks) {
-      const result = await decrypt(chunk, userToken.idUser);
+
+      let chunkObject = JSON.parse(JSON.stringify(chunk));
+
+      if (chunkObject.status === 'COMMITTED' && chunkObject.transactionId) {
+        let json = await retrieveJsonFromBlockchain(chunkObject.transactionId);
+        chunkObject.checksum = json.checksum;
+        chunkObject.header = json.header;
+        chunkObject.iv = json.iv;
+        chunkObject.ipfsPath = json.ipfsPath ? json.ipfsPath : chunkObject.ipfsPath;
+      }
+    
+      if (chunkObject.ipfsPath){
+        chunkObject.text = await retrieveStringFromIPFS(chunkObject.ipfsPath);
+      }
+
+      const result = await decrypt(chunkObject, userToken.idUser);
       textDecrypted = textDecrypted + result.textDecrypted;
     }
  
