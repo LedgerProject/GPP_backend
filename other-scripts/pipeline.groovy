@@ -3,7 +3,6 @@ pipeline {
 
   environment {
     REPO_NAME="gpp-backend"
-    BUILD_DIRECTORY="gpp-backend"
     DEPLOY_PROD_APPROVAL_TIME=48
     SERVICE_PROD_TIMEOUT=600
   }
@@ -17,15 +16,13 @@ pipeline {
     stage('Build') {
       agent any
       steps {
-        dir("${BUILD_DIRECTORY}") {
-          script {
+        script {
 
-            sh "docker build -t ${REPO_NAME} ."
+        sh "docker build -t ${REPO_NAME} ."
 
-            def REPOSITORY_URL =  "${REPO_NAME}" + ":build-" + "${BUILD_NUMBER}"
-            sh "docker tag ${REPO_NAME}:latest ${REPOSITORY_URL}"
+        def REPOSITORY_URL =  "${REPO_NAME}" + ":build-" + "${BUILD_NUMBER}"
+        sh "docker tag ${REPO_NAME}:latest ${REPOSITORY_URL}"
 
-          }
         }
       }
     }
