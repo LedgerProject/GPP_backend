@@ -5,7 +5,7 @@ import { retrieveJsonFromBlockchain } from './sawroom-service';
 export async function movePendingToCommitted(documentEncryptedChunksRepository: DocumentEncryptedChunksRepository): Promise<void> {
     const statusPendingFilter: Filter = { where: { "status": "PENDING"} };
     const allChunksinPendingState = await documentEncryptedChunksRepository.find(statusPendingFilter);
-    console.log(".movePendingToCommitted blockchain-checker started: it found {} chunks in PENDING", allChunksinPendingState.length);
+    console.log(".movePendingToCommitted gpp-cronjobs started: it found", allChunksinPendingState.length, "chunks in PENDING");
     allChunksinPendingState.forEach(async chunk => {
         //Cerca se il chunk ora è scritto sulla blockchain
         let json = await retrieveJsonFromBlockchain(chunk.transactionId!);
@@ -14,8 +14,8 @@ export async function movePendingToCommitted(documentEncryptedChunksRepository: 
             chunk.status = 'COMMITTED';
             documentEncryptedChunksRepository.save(chunk);
         } else {
-            console.error(".movePendingToCommitted Something went wrong with chunk id: {}. Please check", chunk.idDocumentEncryptedChunk)
+            console.error(".movePendingToCommitted Something went wrong with chunk id:", chunk.idDocumentEncryptedChunk, ". Please check")
         }
     });
-    console.log(".movePendingToCommitted blockchain-checker ended");
+    console.log(".movePendingToCommitted gpp-cronjobs ended");
 }
