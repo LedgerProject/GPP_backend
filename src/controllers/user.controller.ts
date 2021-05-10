@@ -1922,6 +1922,7 @@ export class UserController {
   }
 
   //*** REMOVE ALL USER DATA ***/
+  @authenticate('jwt', { required: [PermissionKeys.ProfileEdit] })
   @del('/users', {
     responses: {
       '204': {
