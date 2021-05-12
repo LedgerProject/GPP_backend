@@ -2,19 +2,26 @@
 import { authenticate, AuthenticationBindings } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { AnyObject, Filter, repository, WhereBuilder } from '@loopback/repository';
-import { del, get, getFilterSchemaFor, getModelSchemaRef, HttpErrors, param, patch, post, requestBody } from '@loopback/rest';
+import { del, get, getFilterSchemaFor, getModelSchemaRef, HttpErrors, param, patch, post, requestBody, Request, Response, RestBindings } from '@loopback/rest';
 import { SecurityBindings, UserProfile } from '@loopback/security';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { Structure, StructuresCategoriesView, StructureLanguage, StructuresView, StructureImage } from '../models';
 import { StructureRepository, StructuresCategoriesViewRepository, StructureLanguageRepository, StructuresViewRepository, StructureImageRepository, IconRepository } from '../repositories';
 import { checkStructureOwner } from '../services/structure.service';
+import { slugify } from '../services/string-util';
+import { getFilesAndFields } from '../services/file-upload.service';
 import { ImporterFactory } from 'xlsx-import/lib/ImporterFactory';
+import { FileUploadHandler } from '../types';
+import { FILE_UPLOAD_SERVICE } from '../keys';
 
 const exportToExcel = require('export-to-excel');
 const loopback = require('loopback');
 const fs = require('fs');
 const path = require('path');
+
+// Set the path to the sandbox folder
+const sandboxPath = path.join(__dirname, '..', '..', '.sandbox');
 
 interface StructureMessage {
   structureMessage: string;
@@ -23,6 +30,12 @@ interface StructureMessage {
 interface OperationOutcome {
   code: string;
   message: string;
+}
+
+interface ExcelExportOutcome {
+  code: string;
+  message: string;
+  filename: string;
 }
 
 interface ExcelStructureRow {
@@ -77,6 +90,7 @@ export class StructureController {
     @repository(StructuresCategoriesViewRepository) public structuresCategoriesViewRepository: StructuresCategoriesViewRepository,
     @repository(StructureImageRepository) public structureImageRepository: StructureImageRepository,
     @repository(IconRepository) public iconRepository: IconRepository,
+    @inject(FILE_UPLOAD_SERVICE) private fileUploadHandler: FileUploadHandler,
     @inject(SecurityBindings.USER) public user: UserProfile
   ) { }
 
@@ -500,31 +514,226 @@ export class StructureController {
   })
   @authenticate('jwt', { required: [PermissionKeys.GeneralStructuresManagement] })
   async importExcel(
-    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
-  ): Promise<{ operationOutcome: OperationOutcome }> {
-    let response : OperationOutcome = {
-      code: '0',
-      message: ''
-    };
-    const config = excelConfig();
+    @requestBody.file() request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response
+  ): Promise<OperationOutcome> {
+    let responseImp = new Promise<OperationOutcome>((resolve, reject) => {
+      this.fileUploadHandler(request, response, async (err) => {
+        if (err) {
+          // Multer error
+          resolve(err);
+        } else {
+          let resp : OperationOutcome = {
+            code : '0',
+            message : ''
+          }
 
-    const factory = new ImporterFactory();
-    
-    const importer = await factory.from('public/temp/test2.xlsx');
+          // Get the first file informations
+          const filesAndFields = getFilesAndFields(request);
+          const fileUploaded = filesAndFields.files[0];
 
-    const items = importer.getAllItems<ExcelStructureRow>(config.items);
+          // Check if the file is xlsx
+          if (fileUploaded.mimetype !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+            fs.unlinkSync(sandboxPath + "/" + fileUploaded.tempfilename); // Remove the temporary file
+            reject(new HttpErrors.BadRequest('Please select an excel (xlsx) file'));
+            return;
+          }
 
-    let currentRow = 0;
-    let importErrors = '';
+          const config = excelConfig();
+          const factory = new ImporterFactory();
+          const importer = await factory.from(sandboxPath + "/" + fileUploaded.tempfilename);
 
-    for (const item of items) {
-      // Check if alias is specified that is correct
-      
-      // Check if name is specified
+          const items = importer.getAllItems<ExcelStructureRow>(config.items);
 
-    }
+          let currentRow = 1;
+          let importErrors = '';
 
-    return Promise.resolve({ operationOutcome: response });
+          // First cycle: check errors
+          for (const item of items) {
+            currentRow++;
+
+            // Check if alias is specified that is correct
+            let aliasAssigned = false;
+            let aliasExtension = 0;
+            while (!aliasAssigned) {
+              let alias = slugify(item.name);
+
+              if (aliasExtension !== 0) {
+                alias += '_' + aliasExtension;
+              }
+
+              // Check if the alias is already assigned
+              const filterAlias: Filter = { where: { alias : alias }};
+              const aliasExists = await this.structureRepository.findOne(filterAlias);
+
+              if (aliasExists === null) {
+                aliasAssigned = true;
+              } else {
+                aliasExtension++;
+              }
+            }
+
+            // Check if name is specified
+            if (!item.name) {
+              importErrors += ' - Row: ' + currentRow + ': specify the name';
+            } else {
+              if (item.name.trim().length < 3) {
+                importErrors += ' - Row: ' + currentRow + ': the name must be at least 3 characters long';
+              }
+            }
+
+            // Check if latitude is numeric
+            if (typeof(item.latitude) !== 'number') {
+              importErrors += ' - Row: ' + currentRow + ': specify a numeric latitude';
+            }
+
+            // Check if longitude is numeric
+            if (typeof(item.longitude) !== 'number') {
+              importErrors += ' - Row: ' + currentRow + ': specify a numeric longitude';
+            }
+
+            // Check if icon exists
+            if (item.icon) {
+              const filterIcon: Filter = { where: { name : item.icon.trim() }};
+              const iconExists = await this.iconRepository.findOne(filterIcon);
+
+              if (!iconExists) {
+                importErrors += ' - Row: ' + currentRow + ': the specified icon does not exist';
+              }
+            } else {
+              importErrors += ' - Row: ' + currentRow + ': specify an icon';
+            }
+          }
+
+          // Second cycle: get the values if no errors
+          if (!importErrors) {
+            let totalRows = 0;
+
+            for (const item of items) {
+              totalRows++;
+
+              // Set the alias
+              let alias = '';
+              let aliasAssigned = false;
+              let aliasExtension = 0;
+              while (!aliasAssigned) {
+                alias = slugify(item.name);
+        
+                if (aliasExtension !== 0) {
+                  alias += '_' + aliasExtension;
+                }
+        
+                // Check if the alias is already assigned
+                const filterAlias: Filter = { where: { alias : alias }};
+                const aliasExists = await this.structureRepository.findOne(filterAlias);
+        
+                if (aliasExists === null) {
+                  aliasAssigned = true;
+                } else {
+                  aliasExtension++;
+                }
+              }
+        
+              // Set the name
+              let name = item.name;
+
+              // Set the address
+              let address = item.address;
+
+              // Set the city
+              let city = item.city;
+
+              // Set the latitude
+              let latitude = item.latitude;
+
+              // Set the longitude
+              let longitude = item.longitude;
+
+              // Set the email
+              let email = item.email;
+
+              // Set the phone number prefix
+              let phoneNumberPrefix = item.phoneNumberPrefix;
+
+              // Set the phone number
+              let phoneNumber = item.phoneNumber;
+
+              // Set the website
+              let website = item.website;
+
+              // Set the icon
+              let idIcon = null;
+              if (item.icon) {
+                const filterIcon: Filter = { where: { name : item.icon.trim() }};
+                const iconExists = await this.iconRepository.findOne(filterIcon);
+        
+                if (iconExists) {
+                  idIcon = iconExists.idIcon;
+                }
+              }
+
+              // Save the structure into db
+              let structure : Omit<Structure, 'idStructure'> = {
+                alias: alias,
+                name: name,
+                address : address,
+                city : city,
+                latitude : latitude,
+                longitude : longitude,
+                email : email,
+                phoneNumberPrefix : phoneNumberPrefix,
+                phoneNumber : phoneNumber,
+                website : website,
+                idIcon : idIcon
+              };
+
+              const createdStructure = await this.structureRepository.create(structure);
+
+              // Set the english description
+              let descriptionEng = item.descriptionEng;
+
+              // Save the english language into db
+              let structureLangEng : Omit<StructureLanguage, 'idStructureLanguage'> = {
+                idStructure: createdStructure.idStructure,
+                description: descriptionEng,
+                language : 'en'
+              };
+
+              await this.structureLanguageRepository.create(structureLangEng);
+
+              // Set the french description
+              let descriptionFra = item.descriptionFra;
+        
+              // Save the french language into db
+              let structureLangFra : Omit<StructureLanguage, 'idStructureLanguage'> = {
+                idStructure: createdStructure.idStructure,
+                description: descriptionFra,
+                language : 'fr'
+              };
+
+              await this.structureLanguageRepository.create(structureLangFra);
+            }
+
+            resp = {
+              code: '202',
+              message: totalRows + ' structures imported from the excel file'
+            };
+          } else {
+            resp = {
+              code: '10',
+              message: importErrors
+            };
+          }
+
+          // Remove the temporary file
+          fs.unlinkSync(sandboxPath + "/" + fileUploaded.tempfilename);
+
+          resolve(resp);
+        }
+      });
+    });
+
+    return responseImp;
   }
 
   //*** EXPORT FILE EXCEL ***/
@@ -550,10 +759,11 @@ export class StructureController {
   @authenticate('jwt', { required: [PermissionKeys.GeneralStructuresManagement] })
   async exportExcel(
     @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
-  ): Promise<{ operationOutcome: OperationOutcome }> {
-    let response : OperationOutcome = {
+  ): Promise<{ excelExportOutcome: ExcelExportOutcome }> {
+    let response : ExcelExportOutcome = {
       code: '0',
-      message: ''
+      message: '',
+      filename: ''
     };
 
     let exportStructures : ExcelStructureRow[] = [];
@@ -592,8 +802,10 @@ export class StructureController {
       exportStructures.push(exportStructure);
     }
 
+    const filename = 'public/export/gpp-structures-' + Date.now();
+
     exportToExcel.exportXLSX({
-      filename: 'public/export/gpp-structures-' + Date.now(),
+      filename: filename,
       sheetname: 'structures',
       title: [
           {
@@ -665,6 +877,12 @@ export class StructureController {
       data: exportStructures
     })
 
-    return Promise.resolve({ operationOutcome: response });
+    response = {
+      code: '202',
+      message: 'Export completed',
+      filename: filename + '.xlsx'
+    };
+
+    return Promise.resolve({ excelExportOutcome: response });
   }
 }
