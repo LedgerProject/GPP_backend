@@ -2605,7 +2605,7 @@
 					"response": []
 				},
 				{
-					"name": "import-excel",
+					"name": "structures/import-excel",
 					"protocolProfileBehavior": {
 						"disabledSystemHeaders": {}
 					},
@@ -2640,21 +2640,22 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}import-excel",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/import-excel",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"{{path}}import-excel"
+								"{{path}}structures",
+								"import-excel"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "export-excel",
+					"name": "structures/export-excel",
 					"protocolProfileBehavior": {
 						"disabledSystemHeaders": {
 							"content-type": true
@@ -2684,14 +2685,15 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}export-excel",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/export-excel",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"{{path}}export-excel"
+								"{{path}}structures",
+								"export-excel"
 							]
 						}
 					},

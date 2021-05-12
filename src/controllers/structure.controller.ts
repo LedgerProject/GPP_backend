@@ -493,7 +493,7 @@ export class StructureController {
   }
 
   //*** IMPORT FILE EXCEL ***/
-  @post('/import-excel', {
+  @post('/structures/import-excel', {
     responses: {
       '200': {
         description: 'Import structures from Excel file',
@@ -737,7 +737,7 @@ export class StructureController {
   }
 
   //*** EXPORT FILE EXCEL ***/
-  @post('/export-excel', {
+  @post('/structures/export-excel', {
     responses: {
       '200': {
         description: 'Export structures from Excel file',
