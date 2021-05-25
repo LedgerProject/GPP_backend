@@ -182,12 +182,49 @@ export class ContentController {
     });
   }
 
+  //*** FILES LIST ***/
+  @get('/contents/{id}/media', {
+    responses: {
+      '200': {
+        description: 'Array of Content Media model instances',
+        content: {'application/json': {schema: {type: 'array', items: getModelSchemaRef(ContentMedia, {includeRelations: true})}}}
+      },
+    },
+  })
+  @authenticate('jwt', { required: [PermissionKeys.GeneralContentManagement, PermissionKeys.ContentsList] })
+  async findMedia(
+    @param.path.string('id') id: string,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
+    @param.query.object('filter', getFilterSchemaFor(ContentMedia)) filter?: Filter<ContentMedia>,
+  ): Promise<ContentMedia[]> {
+    if (currentUser.userType === 'user') {
+      // Check if content is owned by the logged user
+      const contentOwned = await checkContentOwner(id, currentUser.idUser, this.contentRepository);
+
+      if (!contentOwned) {
+        throw new HttpErrors.Forbidden("Content not owned");
+      }
+    }
+    
+    if (filter === undefined) {
+      filter = {};
+    }
+    if (filter.where === undefined) {
+      filter.where = {};
+    }
+    const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
+    const where = queryFilters.impose({ idContent: id }).build();
+    filter.where = where;
+    //
+    return this.contentMediaRepository.find(filter);
+  }
+
   //*** DOWNLOAD ***/
-  /*@post('/contents/download/{id}', {
+  /*@post('/contents/download/{id}/{idMedia}', {
     responses: {
       200: {
         content: {'application/json': {schema: {type: 'object'}}},
-        description: 'User content photo download',
+        description: 'User content file download',
       },
     },
   })
@@ -237,7 +274,7 @@ export class ContentController {
       'Content-Length': fileContents.length
     });
     response.end(fileContents);
-  }*/
+  }
 
   //*** DOWNLOAD ***/
   /*@post('/documents/download-base64', {
