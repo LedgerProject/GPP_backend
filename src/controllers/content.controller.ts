@@ -13,7 +13,7 @@ import { getFilesAndFields } from '../services/file-upload.service';
 import { MEMORY_UPLOAD_SERVICE } from '../keys';
 import { MemoryUploadHandler, TempFile } from '../types';
 import { chunkString, generateFixedLengthRandomString } from '../services/string-util';
-import { decrypt, encrypt, decryptString } from '../services/zenroom-service';
+import { decryptContentMedia, encrypt, decryptString } from '../services/zenroom-service';
 import { uploadStringToIPFS } from '../services/ipfs-service';
 import { writeIntoBlockchain } from '../services/sawroom-service';
 import { TokenServiceBindings } from '../authorization/keys';
@@ -119,7 +119,7 @@ export class ContentController {
   }
   
   //*** UPLOAD FILE ***/
-  @post('/contents/upload/{id}', {
+  @post('/contents/{id}/upload', {
     responses: {
       200: {
         content: {'application/json': {schema: {type: 'object'}}},
@@ -205,7 +205,7 @@ export class ContentController {
         throw new HttpErrors.Forbidden("Content not owned");
       }
     }
-    
+
     if (filter === undefined) {
       filter = {};
     }
@@ -220,7 +220,7 @@ export class ContentController {
   }
 
   //*** DOWNLOAD ***/
-  /*@post('/contents/download/{id}/{idMedia}', {
+  @post('/contents/{id}/download/{idMedia}', {
     responses: {
       200: {
         content: {'application/json': {schema: {type: 'object'}}},
@@ -231,11 +231,21 @@ export class ContentController {
   @authenticate('jwt', { required: [PermissionKeys.ContentDetail, PermissionKeys.GeneralContentManagement] })
   async download(
     @param.path.string('id') id: string,
+    @param.path.string('idMedia') idMedia: string,
     @inject(RestBindings.Http.RESPONSE) response: Response,
     @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
-    @param.query.object('filter', getFilterSchemaFor(Content)) filter?: Filter<Content>,
+    @param.query.object('filter', getFilterSchemaFor(ContentMedia)) filter?: Filter<ContentMedia>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
+    if (currentUser.userType === 'user') {
+      // Check if content is owned by the logged user
+      const contentOwned = await checkContentOwner(id, currentUser.idUser, this.contentRepository);
+
+      if (!contentOwned) {
+        throw new HttpErrors.Forbidden("Content not owned");
+      }
+    }
+
     if (filter === undefined) {
       filter = {};
     }
@@ -243,37 +253,40 @@ export class ContentController {
       filter.where = {};
     }
     const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
-    const where = queryFilters.impose({ idContent: id, idUser: currentUser.idUser }).build();
+    const where = queryFilters.impose({ idContent: id, idContentMedia: idMedia }).build();
     filter.where = where;
 
-    const contents = await this.contentRepository.findOne(filter);
-    if(!contents){
-      throw new HttpErrors.NotFound("No contents found for that id and idUser");
+    const contentMedia = await this.contentMediaRepository.findOne()
+
+    if (contentMedia) {
+      const fileName : string = contentMedia.filename;
+      let mimeType : string = '';
+
+      if (contentMedia.mimeType) {
+        mimeType = contentMedia.mimeType;
+      }
+
+      const chunksFilter: Filter = { where: { 
+          "idContentMedia": idMedia
+        },
+        order: ['chunkIndexId ASC']
+      };
+      const encryptedChunks : ContentMediaEncryptedChunk[] = await this.contentMediaEncryptedChunkRepository.find(chunksFilter);
+      let textDecrypted = "";
+
+      for await (const chunk of encryptedChunks) {
+        const result = await decryptContentMedia(chunk, contentMedia.key);
+        textDecrypted = textDecrypted + result.textDecrypted;
+      }
+  
+      const fileContents = Buffer.from(textDecrypted, BASE64_ENCODING);
+      response.writeHead(200, {
+        'Content-disposition': ATTACHMENT_FILENAME + fileName,
+        'Content-Type': mimeType,
+        'Content-Length': fileContents.length
+      });
+      response.end(fileContents);
     }
-
-    const fileName : string = document.filename;
-    const contentType : string = document.mimeType;
-
-    const chunksFilter: Filter = { where: { 
-        "idDocument": downloadDocumentData.idDocument
-      },
-      order: ['chunkIndexId ASC']
-    };
-    const encryptedChunks : DocumentEncryptedChunk[] = await this.documentEncryptedChunkRepository.find(chunksFilter);
-    let textDecrypted = "";
-
-    for await (const chunk of encryptedChunks) {
-      const result = await decrypt(chunk, downloadDocumentData.privateKey);
-      textDecrypted = textDecrypted + result.textDecrypted;
-    }
- 
-    const fileContents = Buffer.from(textDecrypted, BASE64_ENCODING);
-    response.writeHead(200, {
-      'Content-disposition': ATTACHMENT_FILENAME + fileName,
-      'Content-Type': contentType,
-      'Content-Length': fileContents.length
-    });
-    response.end(fileContents);
   }
 
   //*** DOWNLOAD ***/
