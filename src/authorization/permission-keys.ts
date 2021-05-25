@@ -3,6 +3,7 @@ export const enum PermissionKeys {
     GeneralOrganizationManagement = 'GeneralOrganizationManagement',
     GeneralUsersManagement = 'GeneralUsersManagement',
     GeneralStructuresManagement = 'GeneralStructuresManagement',
+    GeneralContentManagement = 'GeneralContentManagement',
     GeneralCountriesManagement = 'GeneralCountriesManagement',
     GeneralIconsManagement = 'GeneralIconsManagement',
     GeneralCategoriesManagement = 'GeneralCategoriesManagement',
@@ -26,6 +27,10 @@ export const enum PermissionKeys {
 
     // User permissions
     DocWalletManagement = 'DocWalletManagement',
+    ContentCreation = 'ContentCreation',
+    ContentUpdate = 'ContentUpdate',
+    ContentDetail = 'ContentDetail',
+    ContentsList = 'ContentsList',
     CategoriesList = 'CategoriesList',
     CountriesList = 'CountriesList',
     CountryDetail = 'CountryDetail',

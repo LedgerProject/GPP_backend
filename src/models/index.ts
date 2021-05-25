@@ -1,5 +1,7 @@
 export * from './category-language.model';
 export * from './category.model';
+export * from './content.model';
+export * from './content-encrypted-chunk.model';
 export * from './country-language.model';
 export * from './country-topic.model';
 export * from './country-topic-language.model';

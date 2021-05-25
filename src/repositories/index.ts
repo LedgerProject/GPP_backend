@@ -1,5 +1,7 @@
 export * from './category-language.repository';
 export * from './category.repository';
+export * from './content.repository';
+export * from './content-encrypted-chunk.repository';
 export * from './country.repository';
 export * from './country-language.repository';
 export * from './country-topic.repository';

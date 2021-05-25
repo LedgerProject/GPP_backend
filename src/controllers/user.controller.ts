@@ -444,6 +444,7 @@ export class UserController {
           PermissionKeys.GeneralOrganizationManagement,
           PermissionKeys.GeneralUsersManagement,
           PermissionKeys.GeneralStructuresManagement,
+          PermissionKeys.GeneralContentManagement,
           PermissionKeys.GeneralCountriesManagement,
           PermissionKeys.GeneralIconsManagement,
           PermissionKeys.GeneralCategoriesManagement,
@@ -472,6 +473,10 @@ export class UserController {
       default:
         userProfile.permissions = [
           PermissionKeys.DocWalletManagement,
+          PermissionKeys.ContentCreation,
+          PermissionKeys.ContentUpdate,
+          PermissionKeys.ContentDetail,
+          PermissionKeys.ContentsList,
           PermissionKeys.StructureList,
           PermissionKeys.StructureDetail,
           PermissionKeys.CountriesList,
@@ -1983,6 +1988,7 @@ export class UserController {
           PermissionKeys.GeneralOrganizationManagement,
           PermissionKeys.GeneralUsersManagement,
           PermissionKeys.GeneralStructuresManagement,
+          PermissionKeys.GeneralContentManagement,
           PermissionKeys.GeneralCountriesManagement,
           PermissionKeys.GeneralIconsManagement,
           PermissionKeys.GeneralCategoriesManagement,
