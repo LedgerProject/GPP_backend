@@ -171,7 +171,7 @@ export class ContentController {
                 encryptedObject.indexId = indexId;
                 indexId++;
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                this.saveContentMediaChunk(encryptedObject, id);
+                this.saveContentMediaChunk(encryptedObject, createdContentMedia.idContentMedia);
               }); 
               
               resolve(createdContentMedia);
@@ -388,7 +388,7 @@ export class ContentController {
     contentMediaEncryptedChunk.text = objectToSave.secret_message.text;
     contentMediaEncryptedChunk.checksum = objectToSave.secret_message.checksum;
     contentMediaEncryptedChunk.iv = objectToSave.secret_message.iv;
-    contentMediaEncryptedChunk.idContent = contentMediaUUIDReference;
+    contentMediaEncryptedChunk.idContentMedia = contentMediaUUIDReference;
     contentMediaEncryptedChunk.chunkIndexId = objectToSave.indexId;
     contentMediaEncryptedChunk.ipfsPath = await uploadStringToIPFS(contentMediaEncryptedChunk.text!);
 
