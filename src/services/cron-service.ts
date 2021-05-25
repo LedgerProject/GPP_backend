@@ -1,13 +1,14 @@
 import { CronJob, cronJob } from '@loopback/cron';
-import { movePendingToCommitted } from './blockchain-checker.service';
+import { movePendingToCommitted, movePendingToCommittedContentMedia } from './blockchain-checker.service';
 import { checkExpiredTokens } from './token.service';
-import { DocumentEncryptedChunksRepository, UserTokenRepository } from '../repositories';
+import { DocumentEncryptedChunksRepository, ContentMediaEncryptedChunksRepository, UserTokenRepository } from '../repositories';
 import { repository } from '@loopback/repository';
 
 @cronJob()
 export class MyCronJob extends CronJob {
   constructor(    
     @repository(DocumentEncryptedChunksRepository) public documentEncryptedChunkRepository : DocumentEncryptedChunksRepository,
+    @repository(ContentMediaEncryptedChunksRepository) public contentMediaEncryptedChunkRepository : ContentMediaEncryptedChunksRepository,
     @repository(UserTokenRepository) public userTokenRepository : UserTokenRepository
   ) {
     super({
@@ -23,6 +24,7 @@ export class MyCronJob extends CronJob {
 
   performMyJob() {
     movePendingToCommitted(this.documentEncryptedChunkRepository);
+    movePendingToCommittedContentMedia(this.contentMediaEncryptedChunkRepository);
     checkExpiredTokens(this.userTokenRepository);
   }
 }
