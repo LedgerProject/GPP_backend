@@ -5,9 +5,9 @@ import { AnyObject, Filter, repository, WhereBuilder } from '@loopback/repositor
 import { post, patch, param, Request, Response, get, getFilterSchemaFor, getModelSchemaRef, del, requestBody, RestBindings, HttpErrors } from '@loopback/rest';
 import { SecurityBindings, UserProfile } from '@loopback/security';
 // GPP imports
-import { ContentRepository, ContentEncryptedChunksRepository, UserRepository } from '../repositories';
+import { ContentRepository, ContentMediaRepository, ContentMediaEncryptedChunksRepository, UserRepository } from '../repositories';
 import { PermissionKeys } from '../authorization/permission-keys';
-import { Content, ContentEncryptedChunk, User, UserToken} from '../models';
+import { Content, ContentMedia, ContentMediaEncryptedChunk, User} from '../models';
 import { checkContentOwner } from '../services/content.service';
 import { getFilesAndFields } from '../services/file-upload.service';
 import { MEMORY_UPLOAD_SERVICE } from '../keys';
@@ -23,7 +23,8 @@ import { ATTACHMENT_FILENAME, BASE64_ENCODING, CHUNK_MAX_CHAR_SIZE } from '../co
 export class ContentController {
   constructor(
     @repository(ContentRepository) public contentRepository : ContentRepository,
-    @repository(ContentEncryptedChunksRepository) public contentEncryptedChunkRepository : ContentEncryptedChunksRepository,
+    @repository(ContentMediaRepository) public contentMediaRepository : ContentMediaRepository,
+    @repository(ContentMediaEncryptedChunksRepository) public contentMediaEncryptedChunkRepository : ContentMediaEncryptedChunksRepository,
     @repository(UserRepository) public userRepository : UserRepository,
     @inject(SecurityBindings.USER) public user: UserProfile,
     @inject(TokenServiceBindings.TOKEN_SERVICE) public jwtService: JWTService,
@@ -117,12 +118,12 @@ export class ContentController {
     return this.contentRepository.find(filter);
   }
   
-  //*** UPLOAD PHOTO ***/
+  //*** UPLOAD FILE ***/
   @post('/contents/upload/{id}', {
     responses: {
       200: {
         content: {'application/json': {schema: {type: 'object'}}},
-        description: 'User content photo upload',
+        description: 'User content file upload',
       },
     },
   })
@@ -157,18 +158,12 @@ export class ContentController {
             // Generate a random string
             const randomString = generateFixedLengthRandomString('0123456789abcdefghijklmnopqrstuvwxyz', 10);
 
-            // Save the random string in the content
-            const filterContent: Filter = { where: { "idContent": id} };
-            const content = await this.contentRepository.findOne(filterContent);
+            // Apply the base64 encoding to the file
+            const contents : string = fileUploaded.buffer.toString(BASE64_ENCODING);
+            let indexId = 0;
 
-            if (content) {
-              content.key = randomString;
-              await this.contentRepository.updateById(id, content);
-
-              // Apply the base64 encoding to the file
-              const contents : string = fileUploaded.buffer.toString(BASE64_ENCODING);
-              let indexId = 0;
-
+            // Save the content
+            this.saveContentMedia(id, randomString, fileUploaded).then((createdContentMedia:ContentMedia) => {
               // Generate chunk files
               const stringChunks : RegExpMatchArray | null = chunkString(contents, CHUNK_MAX_CHAR_SIZE);    
               stringChunks!.forEach((element: string) => {
@@ -176,11 +171,11 @@ export class ContentController {
                 encryptedObject.indexId = indexId;
                 indexId++;
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                this.saveContentChunk(encryptedObject, id);
+                this.saveContentMediaChunk(encryptedObject, id);
               }); 
               
-              resolve(content);
-            }
+              resolve(createdContentMedia);
+            }).catch(errDocument => console.log(errDocument));
           }
         }
       });
@@ -375,29 +370,40 @@ export class ContentController {
     }
   }*/
 
+  private async saveContentMedia(idContent: string, key: string, fileUploaded: TempFile) : Promise<ContentMedia>{
+    const newContentMedia: ContentMedia = new ContentMedia();
+    newContentMedia.idContent = idContent;
+    newContentMedia.filename = fileUploaded.originalname;
+    newContentMedia.mimeType = fileUploaded.mimetype;
+    newContentMedia.size = fileUploaded.size;
+    newContentMedia.mimeType = fileUploaded.mimetype;
+    newContentMedia.key = key;
+    return this.contentMediaRepository.save(newContentMedia);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async saveContentChunk(objectToSave: any, contentUUIDReference: string) : Promise<ContentEncryptedChunk> {
-    const contentEncryptedChunk: ContentEncryptedChunk = new ContentEncryptedChunk();
-    contentEncryptedChunk.header = objectToSave.secret_message.header;
-    contentEncryptedChunk.text = objectToSave.secret_message.text;
-    contentEncryptedChunk.checksum = objectToSave.secret_message.checksum;
-    contentEncryptedChunk.iv = objectToSave.secret_message.iv;
-    contentEncryptedChunk.idContent = contentUUIDReference;
-    contentEncryptedChunk.chunkIndexId = objectToSave.indexId;
-    contentEncryptedChunk.ipfsPath = await uploadStringToIPFS(contentEncryptedChunk.text!);
+  private async saveContentMediaChunk(objectToSave: any, contentMediaUUIDReference: string) : Promise<ContentMediaEncryptedChunk> {
+    const contentMediaEncryptedChunk: ContentMediaEncryptedChunk = new ContentMediaEncryptedChunk();
+    contentMediaEncryptedChunk.header = objectToSave.secret_message.header;
+    contentMediaEncryptedChunk.text = objectToSave.secret_message.text;
+    contentMediaEncryptedChunk.checksum = objectToSave.secret_message.checksum;
+    contentMediaEncryptedChunk.iv = objectToSave.secret_message.iv;
+    contentMediaEncryptedChunk.idContent = contentMediaUUIDReference;
+    contentMediaEncryptedChunk.chunkIndexId = objectToSave.indexId;
+    contentMediaEncryptedChunk.ipfsPath = await uploadStringToIPFS(contentMediaEncryptedChunk.text!);
 
     let jsonToSave = {
-      "header": contentEncryptedChunk.header,
-      "checksum": contentEncryptedChunk.checksum,
-      "iv": contentEncryptedChunk.iv,
-      "ipfsPath": contentEncryptedChunk.ipfsPath
+      "header": contentMediaEncryptedChunk.header,
+      "checksum": contentMediaEncryptedChunk.checksum,
+      "iv": contentMediaEncryptedChunk.iv,
+      "ipfsPath": contentMediaEncryptedChunk.ipfsPath
     }
 
-    contentEncryptedChunk.transactionId = await writeIntoBlockchain(jsonToSave);
-    if(contentEncryptedChunk.transactionId){
-      contentEncryptedChunk.status = 'PENDING';
+    contentMediaEncryptedChunk.transactionId = await writeIntoBlockchain(jsonToSave);
+    if(contentMediaEncryptedChunk.transactionId){
+      contentMediaEncryptedChunk.status = 'PENDING';
     }
 
-    return this.contentEncryptedChunkRepository.save(contentEncryptedChunk);
+    return this.contentMediaEncryptedChunkRepository.save(contentMediaEncryptedChunk);
   }
 }

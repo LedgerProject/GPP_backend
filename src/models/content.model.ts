@@ -31,7 +31,7 @@ export class Content extends Entity {
     type: 'string',
     postgresql: { columnName: 'description', dataType: 'text', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
-  description: string;
+  description?: string;
 
   @property({
     type: 'boolean',
@@ -45,14 +45,14 @@ export class Content extends Entity {
     precision: 53,
     postgresql: { columnName: 'positionLatitude', dataType: 'float', dataLength: null, dataPrecision: 53, dataScale: null, nullable: 'YES' },
   })
-  positionLatitude: number;
+  positionLatitude?: number;
 
   @property({
     type: 'number',
     precision: 53,
     postgresql: { columnName: 'positionLongitude', dataType: 'float', dataLength: null, dataPrecision: 53, dataScale: null, nullable: 'YES' },
   })
-  positionLongitude: number;
+  positionLongitude?: number;
 
   @property({
     type: 'boolean',
@@ -63,31 +63,11 @@ export class Content extends Entity {
 
   @property({
     type: 'string',
-    postgresql: { columnName: 'transactionId', dataType: 'character varying', dataLength: 128, dataPrecision: null, dataScale: null, nullable: 'YES' },
-  })
-  transactionId: string;
-  
-  @property({
-    type: 'string',
-    length: 50,
-    postgresql: {columnName: 'status', dataType: 'character varying', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
-  })
-  status?: string;
-
-  @property({
-    type: 'string',
     required: true,
     length: 30,
     postgresql: {columnName: 'contentType', dataType: 'character varying', dataLength: 30, dataPrecision: null, dataScale: null, nullable: 'NO'},
   })
   contentType: string;
-
-  @property({
-    type: 'string',
-    length: 10,
-    postgresql: {columnName: 'key', dataType: 'character varying', dataLength: 10, dataPrecision: null, dataScale: null, nullable: 'YES'},
-  })
-  key: string;
 
   @property({
     type: 'date',

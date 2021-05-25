@@ -3,23 +3,23 @@ import {Entity, model, property} from '@loopback/repository';
 @model({
   settings: {
     idInjection: false,
-    postgresql: {schema: 'public', table: 'contentsEncryptedChunks'}
+    postgresql: {schema: 'public', table: 'contentsMediaEncryptedChunks'}
   }
 })
-export class ContentEncryptedChunk extends Entity {
+export class ContentMediaEncryptedChunk extends Entity {
   @property({
     type: 'string',
     id: true,
-    postgresql: {columnName: 'idContentEncryptedChunk', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: {columnName: 'idContentMediaEncryptedChunk', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
   })
-  idContentEncryptedChunk: string;
+  idContentMediaEncryptedChunk: string;
 
   @property({
     type: 'string',
     required: true,
-    postgresql: {columnName: 'idContent', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    postgresql: {columnName: 'idContentMedia', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'NO'},
   })
-  idContent: string;
+  idContentMedia: string;
 
   @property({
     type: 'number',
@@ -82,13 +82,13 @@ export class ContentEncryptedChunk extends Entity {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
-  constructor(data?: Partial<ContentEncryptedChunk>) {
+  constructor(data?: Partial<ContentMediaEncryptedChunk>) {
     super(data);
   }
 }
 
-export interface ContentEncryptedChunkRelations {
+export interface ContentMediaEncryptedChunkRelations {
   // describe navigational properties here
 }
 
-export type ContentsEncryptedChunksWithRelations = ContentEncryptedChunk & ContentEncryptedChunkRelations;
+export type ContentsMediaEncryptedChunksWithRelations = ContentMediaEncryptedChunk & ContentMediaEncryptedChunkRelations;
