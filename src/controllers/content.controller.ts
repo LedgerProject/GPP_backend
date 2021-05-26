@@ -229,7 +229,7 @@ export class ContentController {
     },
   })
   @authenticate('jwt', { required: [PermissionKeys.ContentDetail, PermissionKeys.GeneralContentManagement] })
-  async download(
+  async fileDownload(
     @param.path.string('id') id: string,
     @param.path.string('idMedia') idMedia: string,
     @inject(RestBindings.Http.RESPONSE) response: Response,
@@ -289,23 +289,33 @@ export class ContentController {
     }
   }
 
-  //*** DOWNLOAD ***/
-  /*@post('/documents/download-base64', {
+  //*** DOWNLOAD BASE64 ***/
+  @post('/contents/{id}/download-base64/{idMedia}', {
     responses: {
       200: {
         content: {'application/json': {schema: {type: 'object'}}},
-        description: 'User document base64 download',
+        description: 'User content file base64 download',
       },
     },
   })
-  @authenticate('jwt', { required: [PermissionKeys.DocWalletManagement] })
-  async downloadBase64(
-    @requestBody() downloadDocumentData: DownloadDocumentData,
-    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
+  @authenticate('jwt', { required: [PermissionKeys.ContentDetail, PermissionKeys.GeneralContentManagement] })
+  async fileDownloadBase64(
+    @param.path.string('id') id: string,
+    @param.path.string('idMedia') idMedia: string,
     @inject(RestBindings.Http.RESPONSE) response: Response,
-    @param.query.object('filter', getFilterSchemaFor(Document)) filter?: Filter<Document>,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
+    @param.query.object('filter', getFilterSchemaFor(ContentMedia)) filter?: Filter<ContentMedia>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
+    if (currentUser.userType === 'user') {
+      // Check if content is owned by the logged user
+      const contentOwned = await checkContentOwner(id, currentUser.idUser, this.contentRepository);
+
+      if (!contentOwned) {
+        throw new HttpErrors.Forbidden("Content not owned");
+      }
+    }
+
     if (filter === undefined) {
       filter = {};
     }
@@ -313,33 +323,35 @@ export class ContentController {
       filter.where = {};
     }
     const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
-    const where = queryFilters.impose({ idDocument: downloadDocumentData.idDocument, idUser: currentUser.idUser }).build();
+    const where = queryFilters.impose({ idContent: id, idContentMedia: idMedia }).build();
     filter.where = where;
 
-    const documents = await this.documentRepository.find(filter);
-    if(documents.length !== 1){
-      throw new HttpErrors.NotFound("No documents found for that id and idUser");
+    const contentMedia = await this.contentMediaRepository.findOne()
+
+    if (contentMedia) {
+      const fileName : string = contentMedia.filename;
+      let mimeType : string = '';
+
+      if (contentMedia.mimeType) {
+        mimeType = contentMedia.mimeType;
+      }
+
+      const chunksFilter: Filter = { where: { 
+          "idContentMedia": idMedia
+        },
+        order: ['chunkIndexId ASC']
+      };
+      const encryptedChunks : ContentMediaEncryptedChunk[] = await this.contentMediaEncryptedChunkRepository.find(chunksFilter);
+      let textDecrypted = "";
+
+      for await (const chunk of encryptedChunks) {
+        const result = await decryptContentMedia(chunk, contentMedia.key);
+        textDecrypted = textDecrypted + result.textDecrypted;
+      }
+  
+      response.end(textDecrypted);
     }
-    const document = documents[0];
-
-    const fileName : string = document.filename;
-    const contentType : string = document.mimeType;
-
-    const chunksFilter: Filter = { where: { 
-        "idDocument": downloadDocumentData.idDocument
-      },
-      order: ['chunkIndexId ASC']
-    };
-    const encryptedChunks : DocumentEncryptedChunk[] = await this.documentEncryptedChunkRepository.find(chunksFilter);
-    let textDecrypted = "";
-
-    for await (const chunk of encryptedChunks) {
-      const result = await decrypt(chunk, downloadDocumentData.privateKey);
-      textDecrypted = textDecrypted + result.textDecrypted;
-    }
-
-    response.end(textDecrypted);
-  }*/
+  }
 
   //*** DELETE ***/
   /*@del('/documents/{id}', {
@@ -391,32 +403,6 @@ export class ContentController {
       }
     } else {
       return false;
-    }
-  }
-
-  private async updateCheckTokenUserAttempts(currentUser : UserProfile, attemps : number) {
-    const userFilter: Filter = { where: { "idUser": currentUser.idUser } };
-    const foundUser = await this.userRepository.findOne(userFilter);
-
-    if (foundUser) {
-      let tokenAttempts = foundUser.tokenAttempts;
-
-      if (!tokenAttempts) {
-        tokenAttempts = 0;
-      }
-
-      if (attemps > 0) {
-        foundUser.tokenAttempts = tokenAttempts + attemps;
-      } else {
-        foundUser.tokenAttempts = 0;
-      }
-
-      if (tokenAttempts >= 4) {
-        foundUser.tokenAttempts = 0;
-        foundUser.tokenCheckBlockedUntil = new Date(new Date().getTime() + USER_BLOCK_REQUEST_TOKEN_DEFAULT_VALIDITY_IN_MINS * MINUTES_IN_MILLISECONDS).getTime();
-      }
-
-      await this.userRepository.updateById(foundUser.idUser, foundUser);
     }
   }*/
 
