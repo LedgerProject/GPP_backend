@@ -477,6 +477,7 @@ export class UserController {
           PermissionKeys.ContentUpdate,
           PermissionKeys.ContentDetail,
           PermissionKeys.ContentsList,
+          PermissionKeys.ContentDelete,
           PermissionKeys.StructureList,
           PermissionKeys.StructureDetail,
           PermissionKeys.CountriesList,

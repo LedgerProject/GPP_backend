@@ -219,7 +219,7 @@ export class ContentController {
     return this.contentMediaRepository.find(filter);
   }
 
-  //*** DOWNLOAD ***/
+  //*** DOWNLOAD FILE ***/
   @post('/contents/{id}/download/{idMedia}', {
     responses: {
       200: {
@@ -286,10 +286,12 @@ export class ContentController {
         'Content-Length': fileContents.length
       });
       response.end(fileContents);
+    } else {
+      throw new HttpErrors.Forbidden("Content not related");
     }
   }
 
-  //*** DOWNLOAD BASE64 ***/
+  //*** DOWNLOAD BASE64 FILE ***/
   @post('/contents/{id}/download-base64/{idMedia}', {
     responses: {
       200: {
@@ -350,61 +352,68 @@ export class ContentController {
       }
   
       response.end(textDecrypted);
+    } else {
+      throw new HttpErrors.Forbidden("Content not related");
     }
   }
 
   //*** DELETE ***/
-  /*@del('/documents/{id}', {
+  @del('/contents/{id}', {
     responses: {
       '204': {
-        description: 'Document DELETE success',
+        description: 'Content DELETE success',
       },
     },
   })
-  @authenticate('jwt', { required: [PermissionKeys.DocWalletManagement] })
-  async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.documentRepository.deleteById(id);
-  }
+  @authenticate('jwt', { required: [PermissionKeys.ContentDelete, PermissionKeys.GeneralContentManagement] })
+  async deleteById(
+    @param.path.string('id') id: string,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
+  ): Promise<void> {
+    if (currentUser.userType === 'user') {
+      // Check if content is owned by the logged user
+      const contentOwned = await checkContentOwner(id, currentUser.idUser, this.contentRepository);
 
-  private checkAndExtractUserToken(foundToken: UserToken) {
-    const currentDate = new Date();
-
-    const userToken: UserToken = foundToken;
-    if (!userToken.validUntil) {
-      throw new HttpErrors.NotFound("Invalid token");
-    }
-
-    const validUntilDate = new Date(userToken.validUntil);
-
-    if (currentDate > validUntilDate) {
-      throw new HttpErrors.NotFound("Token is expired");
-    }
-    return userToken;
-  }
-
-  private async verifyUserCheckTokenAllowed(currentUser : UserProfile) : Promise<boolean> {
-    const userFilter: Filter = { where: { "idUser": currentUser.idUser } };
-    const foundUser = await this.userRepository.findOne(userFilter);
-
-    if (foundUser) {
-      const tokenCheckBlockedUntil = foundUser.tokenCheckBlockedUntil;
-
-      if (tokenCheckBlockedUntil) {
-        const currentDate = new Date();
-        const tokenCheckBlockedUntilDate = new Date(tokenCheckBlockedUntil);
-
-        if (currentDate < tokenCheckBlockedUntilDate) {
-          return false;
-        } else {
-          return true;
-        }
-      } else {
-        return true;
+      if (!contentOwned) {
+        throw new HttpErrors.Forbidden("Content not owned");
       }
-    } else {
-      return false;
     }
-  }*/
+
+    await this.contentRepository.deleteById(id);
+  }
+
+  //*** DELETE FILE ***/
+  @del('/contents/{id}/delete/{idMedia}', {
+    responses: {
+      '204': {
+        description: 'Content file DELETE success',
+      },
+    },
+  })
+  @authenticate('jwt', { required: [PermissionKeys.ContentDelete, PermissionKeys.GeneralContentManagement] })
+  async deleteFileById(
+    @param.path.string('id') id: string,
+    @param.path.string('idMedia') idMedia: string,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
+  ): Promise<void> {
+    if (currentUser.userType === 'user') {
+      // Check if content is owned by the logged user
+      const contentOwned = await checkContentOwner(id, currentUser.idUser, this.contentRepository);
+
+      if (!contentOwned) {
+        throw new HttpErrors.Forbidden("Content not owned");
+      }
+
+      // Check if file is related to the content
+      const filterRelated: Filter = { where: { "idContent": id, "idContentMedia": idMedia} };
+      const contentRelated = await this.contentMediaRepository.findOne(filterRelated);
+      if (!contentRelated) {
+          throw new HttpErrors.Forbidden("Content not related");
+      }
+    }
+
+    await this.contentMediaRepository.deleteById(idMedia);
+  }
 
   private async saveContentMedia(idContent: string, key: string, fileUploaded: TempFile) : Promise<ContentMedia>{
     const newContentMedia: ContentMedia = new ContentMedia();

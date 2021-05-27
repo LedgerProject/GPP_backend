@@ -31,6 +31,7 @@ export const enum PermissionKeys {
     ContentUpdate = 'ContentUpdate',
     ContentDetail = 'ContentDetail',
     ContentsList = 'ContentsList',
+    ContentDelete = 'ContentDelete',
     CategoriesList = 'CategoriesList',
     CountriesList = 'CountriesList',
     CountryDetail = 'CountryDetail',
