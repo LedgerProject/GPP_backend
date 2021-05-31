@@ -2735,6 +2735,106 @@
 					"response": []
 				},
 				{
+					"name": "structures/:id/request-publication",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/:id/request-publication",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}structures",
+								":id",
+								"request-publication"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "structures/:id/publication",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"publicationStatus\": \"string\",\n  \"rejectionMessage\": \"string\"\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/:id/publication",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}structures",
+								":id",
+								"publication"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "structures",
 					"request": {
 						"auth": {
@@ -3930,7 +4030,7 @@
 					"response": []
 				},
 				{
-					"name": "/user/{id}/change-permissions",
+					"name": "user/:id/change-permissions",
 					"request": {
 						"auth": {
 							"type": "bearer",

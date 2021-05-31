@@ -7,7 +7,7 @@ import { SecurityBindings, UserProfile } from '@loopback/security';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { Structure, StructuresCategoriesView, StructureLanguage, StructuresView, StructureImage } from '../models';
-import { StructureRepository, StructuresCategoriesViewRepository, StructureLanguageRepository, StructuresViewRepository, StructureImageRepository, IconRepository } from '../repositories';
+import { StructureRepository, StructuresCategoriesViewRepository, StructureLanguageRepository, StructuresViewRepository, StructureImageRepository, IconRepository, OrganizationUserRepository, UserRepository } from '../repositories';
 import { checkStructureOwner } from '../services/structure.service';
 import { slugify } from '../services/string-util';
 import { getFilesAndFields } from '../services/file-upload.service';
@@ -25,6 +25,11 @@ const sandboxPath = path.join(__dirname, '..', '..', '.sandbox');
 
 interface StructureMessage {
   structureMessage: string;
+}
+
+interface PublicationOperation {
+  publicationStatus: string;
+  rejectionMessage: string;
 }
 
 interface OperationOutcome {
@@ -90,6 +95,8 @@ export class StructureController {
     @repository(StructuresCategoriesViewRepository) public structuresCategoriesViewRepository: StructuresCategoriesViewRepository,
     @repository(StructureImageRepository) public structureImageRepository: StructureImageRepository,
     @repository(IconRepository) public iconRepository: IconRepository,
+    @repository(OrganizationUserRepository) public organizationUserRepository: OrganizationUserRepository,
+    @repository(UserRepository) public userRepository: UserRepository,
     @inject(FILE_UPLOAD_SERVICE) private fileUploadHandler: FileUploadHandler,
     @inject(SecurityBindings.USER) public user: UserProfile
   ) { }
@@ -130,6 +137,13 @@ export class StructureController {
       throw new HttpErrors.Conflict("The alias specified is already assigned, please change it");
     }
 
+    // Set the publication status based on logged user type
+    if (this.user.userType === 'gppOperator') {
+      structure.publicationStatus = 'published';
+    } else if (this.user.userType === 'operator') {
+      structure.publicationStatus = 'modification';
+    }
+
     return this.structureRepository.create(structure);
   }
 
@@ -164,6 +178,11 @@ export class StructureController {
       throw new HttpErrors.Conflict("The alias specified is already assigned, please change it");
     }
 
+    // Set the publication status based on logged user type
+    if (this.user.userType === 'operator') {
+      structure.publicationStatus = 'modification';
+    }
+
     await this.structureRepository.updateById(id, structure);
   }
 
@@ -191,9 +210,14 @@ export class StructureController {
         filter.where = {};
       }
       const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
-      const where = queryFilters.impose({ idOrganization: this.user.idOrganization }).build();
 
-      filter.where = where;
+      if (this.user.userType === 'user') {
+        const whereUser = queryFilters.impose({ publicationStatus: 'published' }).build();
+        filter.where = whereUser;
+      } else if (this.user.userType === 'operator') {
+        const whereOperator = queryFilters.impose({ idOrganization: this.user.idOrganization }).build();
+        filter.where = whereOperator;
+      }
     }
 
     let categoryFilter = false;
@@ -884,5 +908,243 @@ export class StructureController {
     };
 
     return Promise.resolve({ excelExportOutcome: response });
+  }
+
+  //*** REQUEST PUBLICATION ***/
+  @authenticate('jwt', { required: [PermissionKeys.StructureUpdate, PermissionKeys.GeneralStructuresManagement] })
+  @post('/structures/{id}/request-publication', {
+    responses: {
+      '200': {
+        description: 'Send request publication of the structure',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                messageOutcome: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async requestPublication(
+    @param.path.string('id') id: string,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
+  ): Promise<{ messageOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    // If operator, check if it is an owned structure
+    if (this.user.userType !== 'gppOperator') {
+      await checkStructureOwner(id, this.user.idOrganization, this.structureRepository);
+    }
+
+    // Get the structure information
+    const structure = await this.structureRepository.findById(id);
+
+    if (structure) {
+      structure.publicationStatus = 'requestPublication';
+      await this.structureRepository.updateById(id, structure);
+
+      const sgMail = require('@sendgrid/mail');
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+      let emailSubject = process.env.STRUCTURE_REQUEST_PUBLICATION_EMAIL_SUBJECT;
+      emailSubject = emailSubject?.replace(/%structureName%/g, structure.name!);
+
+      let emailText = process.env.STRUCTURE_REQUEST_PUBLICATION_EMAIL_TEXT;
+      emailText = emailText?.replace(/%structureName%/g, structure.name!);
+
+      let htmlText = process.env.STRUCTURE_REQUEST_PUBLICATION_EMAIL_HTML;
+      htmlText = htmlText?.replace(/%structureName%/g, structure.name!);
+
+      const msg = {
+        to: process.env.ADMIN_EMAILS,
+        from: process.env.STRUCTURE_REQUEST_PUBLICATION_EMAIL_FROM_EMAIL,
+        replyTo: currentUser.email!,
+        fromname: process.env.STRUCTURE_REQUEST_PUBLICATION_EMAIL_FROM_NAME,
+        subject: emailSubject,
+        text: emailText,
+        html: htmlText,
+      }
+
+      await sgMail
+        .send(msg)
+        .then(() => {
+          response = {
+            code: '202',
+            message: 'Request publication confirmed and message sent'
+          };
+        })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .catch((error: any) => {
+          console.error(error)
+          response = {
+            code: '201',
+            message: 'Request publication confirmed but message not sent'
+          };
+        })
+    } else {
+      response = {
+        code: '10',
+        message: 'Structure not exists'
+      };
+    }
+
+    return Promise.resolve({ messageOutcome: response });
+  }
+
+  //*** STRUCTURE PUBLICATION ***/
+  @authenticate('jwt', { required: [PermissionKeys.GeneralStructuresManagement] })
+  @post('/structures/{id}/publication', {
+    responses: {
+      '200': {
+        description: 'Send publication or rejection of the structure',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                messageOutcome: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async publication(
+    @param.path.string('id') id: string,
+    @requestBody() publicationOperation: PublicationOperation,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
+  ): Promise<{ messageOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    // Get the structure information
+    const structure = await this.structureRepository.findById(id);
+
+    if (structure) {
+      structure.publicationStatus = publicationOperation.publicationStatus;
+      structure.rejectionDescription = publicationOperation.rejectionMessage;
+      await this.structureRepository.updateById(id, structure);
+
+      const sgMail = require('@sendgrid/mail');
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+      // Get the structure administrator email
+      let toEmails = [];
+      const filterAdmins: Filter = { where: { "idOrganization": structure.idOrganization} };
+      const organizationUsers = await this.organizationUserRepository.find(filterAdmins);
+
+      for (let key in organizationUsers) {
+        if (organizationUsers[key]['idUser']) {
+          const filterUser: Filter = { where: { "idUser": organizationUsers[key]['idUser']} };
+          const user = await this.userRepository.findOne(filterUser);
+          if (user) {
+            toEmails.push(user.email);
+          }
+        }
+      }
+
+      if (toEmails.length > 0) {
+        switch (publicationOperation.publicationStatus) {
+          case 'published':
+            let emailSubject = process.env.STRUCTURE_PUBLISHED_EMAIL_SUBJECT;
+            emailSubject = emailSubject?.replace(/%structureName%/g, structure.name!);
+          
+            let emailText = process.env.STRUCTURE_PUBLISHED_EMAIL_TEXT;
+            emailText = emailText?.replace(/%structureName%/g, structure.name!);
+          
+            let htmlText = process.env.STRUCTURE_PUBLISHED_EMAIL_HTML;
+            htmlText = htmlText?.replace(/%structureName%/g, structure.name!);
+
+            const msg = {
+              to: toEmails,
+              from: process.env.STRUCTURE_PUBLISHED_EMAIL_FROM_EMAIL,
+              replyTo: process.env.ADMIN_EMAILS,
+              fromname: process.env.STRUCTURE_PUBLISHED_EMAIL_FROM_NAME,
+              subject: emailSubject,
+              text: emailText,
+              html: htmlText,
+            }
+
+            await sgMail
+              .send(msg)
+              .then(() => {
+                response = {
+                  code: '202',
+                  message: 'Publication confirmed and message sent'
+                };
+              })
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              .catch((error: any) => {
+                console.error(error)
+                response = {
+                  code: '201',
+                  message: 'Publication confirmed but message not sent'
+                };
+              })
+          break;
+
+          case 'rejected':
+            let emailSubject2 = process.env.STRUCTURE_REJECTED_EMAIL_SUBJECT;
+            emailSubject2 = emailSubject2?.replace(/%structureName%/g, structure.name!);
+      
+            let emailText2 = process.env.STRUCTURE_REJECTED_EMAIL_TEXT;
+            emailText2 = emailText2?.replace(/%structureName%/g, structure.name!);
+            emailText2 = emailText2?.replace(/%rejectionReason%/g, publicationOperation.rejectionMessage!);
+      
+            let htmlText2 = process.env.STRUCTURE_REJECTED_EMAIL_HTML;
+            htmlText2 = htmlText2?.replace(/%structureName%/g, structure.name!);
+            htmlText2 = htmlText2?.replace(/%rejectionReason%/g, publicationOperation.rejectionMessage!);
+
+            const msg2 = {
+              to: toEmails,
+              from: process.env.STRUCTURE_REJECTED_EMAIL_FROM_EMAIL,
+              replyTo: process.env.ADMIN_EMAILS,
+              fromname: process.env.STRUCTURE_REJECTED_EMAIL_FROM_NAME,
+              subject: emailSubject,
+              text: emailText,
+              html: htmlText,
+            }
+
+            await sgMail
+              .send(msg2)
+              .then(() => {
+                response = {
+                  code: '202',
+                  message: 'Rejection confirmed and message sent'
+                };
+              })
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              .catch((error: any) => {
+                console.error(error)
+                response = {
+                  code: '201',
+                  message: 'Rejection confirmed but message not sent'
+                };
+              })
+          break;
+        }
+      }
+    } else {
+      response = {
+        code: '10',
+        message: 'Structure not exists'
+      };
+    }
+
+    return Promise.resolve({ messageOutcome: response });
   }
 }

@@ -31,6 +31,29 @@ SENDGRID_API_KEY=<sendgrid api key>
 # PORTAL
 PORTAL_URL=<portal url>
 
+# SAWROOM CONFIGURATION
+SAWROOM_WRITE_URI=<sawroom write url>
+SAWROOM_READ_URI=<sawroom read url>
+APIROOM_BASE_URI=<apiroom base url>
+APIROOM_WRITE_DICTIONARY_PATH=<apiroom write dictionary path>
+APIROOM_READ_PATH=<apiroom read path>
+
+# BACKEND CREDENTIALS
+BACKEND_PRIVATE_KEY=<backend private key>
+BACKEND_PUBLIC_KEY=<backend public key>
+BACKEND_PASSWORD=<backend password>
+
+# CHANGE HERE TO OVERRIDE THE CONTRACTS
+# SERVER_SIDE_CONTRACT=<zenroom server side contract>
+# CLIENT_SIDE_CONTRACT=<zenroom client side contract>
+
+# CHANGE HERE TO OVERRIDE FOLDER OR FILENAME default: prop/questions-en_GB.json
+QUESTION_FOLDER=<question folder>
+QUESTION_FILE_PREPEND=<question file prepend>
+
+# ADMINISTRATOR E-MAILS
+ADMIN_EMAILS=[]
+
 # CONFIRM ACCOUNT E-MAIL
 CONFIRM_ACCOUNT_EMAIL_FROM_EMAIL=<sender e-mail>
 CONFIRM_ACCOUNT_EMAIL_FROM_NAME=<sender name>
@@ -87,9 +110,37 @@ ADMIN_CONFIRMED_EMAIL_SUBJECT=<set as admin email subject>  | params: %firstName
 ADMIN_CONFIRMED_EMAIL_TEXT=<set as admin email plain text>  | params: %firstName%, %lastName%
 ADMIN_CONFIRMED_EMAIL_HTML=<set as admin email html text>   | params: %firstName%, %lastName%
 
-# SET AS ADMIN E-MAIL
+# REMOVE AS ADMIN E-MAIL
 ADMIN_REMOVED_EMAIL_FROM_EMAIL=<sender e-mail>
 ADMIN_REMOVED_EMAIL_FROM_NAME=<sender name>
 ADMIN_REMOVED_EMAIL_SUBJECT=<remove as admin email subject>  | params: %firstName%, %lastName%
 ADMIN_REMOVED_EMAIL_TEXT=<remove as admin email plain text>  | params: %firstName%, %lastName%, %organizationName%
 ADMIN_REMOVED_EMAIL_HTML=<remove as admin email html text>   | params: %firstName%, %lastName%
+
+# SEND MESSAGE TO STRUCTURE E-MAIL
+STRUCTURE_MESSAGE_EMAIL_FROM_EMAIL=<sender e-mail>
+STRUCTURE_MESSAGE_EMAIL_FROM_NAME=<sender name>
+STRUCTURE_MESSAGE_EMAIL_SUBJECT=<send message to structure email subject>  | params: %userEMail%
+STRUCTURE_MESSAGE_EMAIL_TEXT=<send message to structure email plain text>  | params: %userEMail%, %message%
+STRUCTURE_MESSAGE_EMAIL_HTML=<send message to structure email html text>   | params: %userEMail%, %message%
+
+# SEND STRUCTURE REQUEST PUBLICATION E-MAIL
+STRUCTURE_REQUEST_PUBLICATION_EMAIL_FROM_EMAIL=<sender e-mail>
+STRUCTURE_REQUEST_PUBLICATION_EMAIL_FROM_NAME=<sender name>
+STRUCTURE_REQUEST_PUBLICATION_EMAIL_SUBJECT=<send structure request publication email subject>  | params: %structureName%
+STRUCTURE_REQUEST_PUBLICATION_EMAIL_TEXT=<send structure request publication email plain text>  | params: %structureName%
+STRUCTURE_REQUEST_PUBLICATION_EMAIL_HTML=<send structure request publication email html text>   | params: %structureName%
+
+# SEND STRUCTURE PUBLISHED E-MAIL
+STRUCTURE_PUBLISHED_EMAIL_FROM_EMAIL=<sender e-mail>
+STRUCTURE_PUBLISHED_EMAIL_FROM_NAME=<sender name>
+STRUCTURE_PUBLISHED_EMAIL_SUBJECT=<send structure published email subject>  | params: %structureName%
+STRUCTURE_PUBLISHED_EMAIL_TEXT=<send structure published email plain text>  | params: %structureName%
+STRUCTURE_PUBLISHED_EMAIL_HTML=<send structure published email html text>   | params: %structureName%
+
+# SEND STRUCTURE REJETED E-MAIL
+STRUCTURE_REJECTED_EMAIL_FROM_EMAIL=<sender e-mail>
+STRUCTURE_REJECTED_EMAIL_FROM_NAME=<sender name>
+STRUCTURE_REJECTED_EMAIL_SUBJECT=<send structure rejected email subject>  | params: %structureName%
+STRUCTURE_REJECTED_EMAIL_TEXT=<send structure rejected email plain text>  | params: %structureName%, %rejectionReason%
+STRUCTURE_REJECTED_EMAIL_HTML=<send structure rejected email html text>   | params: %structureName%, %rejectionReason%

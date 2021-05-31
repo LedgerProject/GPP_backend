@@ -253,7 +253,12 @@ export class ContentController {
       filter.where = {};
     }
     const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
-    const where = queryFilters.impose({ idContent: id, idContentMedia: idMedia }).build();
+    const where = queryFilters.impose({
+      and : [{
+        idContent: id, 
+        idContentMedia : idMedia
+      }]
+    }).build();
     filter.where = where;
 
     const contentMedia = await this.contentMediaRepository.findOne()
