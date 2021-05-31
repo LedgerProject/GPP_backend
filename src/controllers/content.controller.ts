@@ -261,7 +261,7 @@ export class ContentController {
     }).build();
     filter.where = where;
 
-    const contentMedia = await this.contentMediaRepository.findOne()
+    const contentMedia = await this.contentMediaRepository.findOne(filter)
 
     if (contentMedia) {
       const fileName : string = contentMedia.filename;
