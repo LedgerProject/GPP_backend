@@ -5,40 +5,40 @@ import { AnyObject, Filter, repository, WhereBuilder } from '@loopback/repositor
 import { post, param, Request, Response, get, getFilterSchemaFor, getModelSchemaRef, del, requestBody, RestBindings, HttpErrors } from '@loopback/rest';
 import { SecurityBindings, UserProfile } from '@loopback/security';
 // GPP imports
-import { DocumentRepository, DocumentEncryptedChunksRepository, UserTokenRepository } from '../repositories';
+import { DocumentRepository, DocumentEncryptedChunksRepository, UserTokenRepository, UserTokenDocumentRepository, UserRepository } from '../repositories';
 import { PermissionKeys } from '../authorization/permission-keys';
-import { DocumentEncryptedChunk, UserToken} from '../models';
+import { DocumentEncryptedChunk, User, UserToken} from '../models';
 import { Document } from '../models'
 import { getFilesAndFields } from '../services/file-upload.service';
 import { MEMORY_UPLOAD_SERVICE } from '../keys';
 import { MemoryUploadHandler, TempFile } from '../types';
 import { chunkString } from '../services/string-util';
-import { decrypt, encrypt } from '../services/zenroom-service';
+import { decrypt, encrypt, decryptString } from '../services/zenroom-service';
 import { uploadStringToIPFS } from '../services/ipfs-service';
 import { writeIntoBlockchain } from '../services/sawroom-service';
 import { TokenServiceBindings } from '../authorization/keys';
 import { JWTService } from '../services/jwt-service';
-import { retrieveJsonFromBlockchain } from '../services/sawroom-service';
-import { retrieveStringFromIPFS } from '../services/ipfs-service';
-import { ATTACHMENT_FILENAME, BASE64_ENCODING, CHUNK_MAX_CHAR_SIZE } from '../constants';
+import { ATTACHMENT_FILENAME, BASE64_ENCODING, CHUNK_MAX_CHAR_SIZE, USER_BLOCK_REQUEST_TOKEN_DEFAULT_VALIDITY_IN_MINS, MINUTES_IN_MILLISECONDS } from '../constants';
+
+interface DownloadDocumentData {
+  idDocument: string;
+  privateKey: string;
+}
 
 export class DocumentController {
   constructor(
-    @repository(DocumentRepository)
-    public documentRepository : DocumentRepository,
-    @repository(DocumentEncryptedChunksRepository)
-    public documentEncryptedChunkRepository : DocumentEncryptedChunksRepository,
-    @repository(UserTokenRepository)
-    public userTokenRepository : UserTokenRepository,
-    @inject(SecurityBindings.USER)
-    public user: UserProfile,
-    @inject(TokenServiceBindings.TOKEN_SERVICE)
-    public jwtService: JWTService,
+    @repository(DocumentRepository) public documentRepository : DocumentRepository,
+    @repository(DocumentEncryptedChunksRepository) public documentEncryptedChunkRepository : DocumentEncryptedChunksRepository,
+    @repository(UserTokenRepository) public userTokenRepository : UserTokenRepository,
+    @repository(UserTokenDocumentRepository) public userTokenDocumentRepository : UserTokenDocumentRepository,
+    @repository(UserRepository) public userRepository : UserRepository,
+    @inject(SecurityBindings.USER) public user: UserProfile,
+    @inject(TokenServiceBindings.TOKEN_SERVICE) public jwtService: JWTService,
     @inject(MEMORY_UPLOAD_SERVICE) private memoryUploadHandler: MemoryUploadHandler,
   ) {}
   
   //*** UPLOAD DOCUMENT ***/
-  @post('/documents/{title}', {
+  @post('/documents/upload', {
     responses: {
       200: {
         content: {'application/json': {schema: {type: 'object'}}},
@@ -48,12 +48,9 @@ export class DocumentController {
   })
   @authenticate('jwt', { required: [PermissionKeys.DocWalletManagement] })
   async fileUpload(
-    @param.path.string('title') title: string,
-    @requestBody.file()
-    request: Request,
+    @requestBody.file() request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<object> {
     // File upload
     return new Promise<object>((resolve, reject) => {
@@ -73,11 +70,11 @@ export class DocumentController {
             let indexId = 0;
             
             // Save the document
-            this.saveDocument(currentUser.idUser, title, fileUploaded).then((createdDocument:Document) => {
+            this.saveDocument(currentUser.idUser, filesAndFields.fields.title, fileUploaded).then((createdDocument:Document) => {
               // Generate chunk files
               const stringChunks : RegExpMatchArray | null = chunkString(contents, CHUNK_MAX_CHAR_SIZE);    
               stringChunks!.forEach((element: string) => {
-                const encryptedObject = encrypt(element, currentUser.idUser);     
+                const encryptedObject = encrypt(element, filesAndFields.fields.privateKey);     
                 encryptedObject.indexId = indexId;
                 indexId++;
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -102,8 +99,7 @@ export class DocumentController {
   })
   @authenticate('jwt', { required: [PermissionKeys.DocWalletManagement] })
   async find(
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
     @param.query.object('filter', getFilterSchemaFor(Document)) filter?: Filter<Document>,
   ): Promise<Document[]> {
     if (filter === undefined) {
@@ -130,11 +126,49 @@ export class DocumentController {
   @authenticate('jwt', { required: [PermissionKeys.CheckTokenDocWallet] })
   async findByToken(
     @param.path.string('token') token: string,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<Document[]> {
-    const userTokenFilter: Filter = { where: { "token": token } };
-    const foundTokenList = await this.userTokenRepository.find(userTokenFilter);
-    const userToken: UserToken = this.checkAndExtractUserToken(foundTokenList);
-    return this.documentRepository.find({ where: { "idUser": userToken.idUser }});
+    // Check if the user is blocked
+    const userAllowed: boolean = await this.verifyUserCheckTokenAllowed(currentUser);
+
+    if (userAllowed) {
+      // Get the specified token
+      const userTokenFilter: Filter = { where: { "token": token } };
+      const foundToken = await this.userTokenRepository.findOne(userTokenFilter);
+
+      if (foundToken) {
+        const userToken: UserToken = this.checkAndExtractUserToken(foundToken);
+
+        // Reset the user attempts
+        this.updateCheckTokenUserAttempts(currentUser, 0);
+
+        let documentsList: Document[] = [];
+
+        // Get the documents relative to the token
+        const userTokenDocumentFilter: Filter = { where: { "idUserToken": userToken.idUserToken }};
+        const userTokenDocuments = await this.userTokenDocumentRepository.find(userTokenDocumentFilter);
+        
+        for (const key in userTokenDocuments) {
+          const idDocument : string = userTokenDocuments[key]['idDocument'];
+
+          // Get the current document information
+          const documentFilter: Filter = { where: { "idDocument": idDocument }};
+          const document = await this.documentRepository.findOne(documentFilter);
+
+          if (document) {
+            documentsList.push(document);
+          }
+        }
+
+        return documentsList;
+      } else {
+        // Update the user attempts
+        this.updateCheckTokenUserAttempts(currentUser, 1);
+        throw new HttpErrors.NotFound("Invalid token");
+      }
+    } else {
+      throw new HttpErrors.TooManyRequests("Too many wrong requests");
+    }
   }
 
   //*** DOWNLOAD FILE BY TOKEN ***/
@@ -144,78 +178,95 @@ export class DocumentController {
     @param.path.string('token') token: string,
     @param.path.string('id') id: string,
     @inject(RestBindings.Http.RESPONSE) response: Response,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
     @param.query.object('filter', getFilterSchemaFor(Document)) filter?: Filter<Document>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
-    const userTokenFilter: Filter = { where: { "token": token } };
-    const foundTokenList = await this.userTokenRepository.find(userTokenFilter);
+    // Check if the user is blocked
+    const userAllowed: boolean = await this.verifyUserCheckTokenAllowed(currentUser);
 
-    const userToken: UserToken = this.checkAndExtractUserToken(foundTokenList);
-    if (filter === undefined) {
-      filter = {};
-    }
-    if (filter.where === undefined) {
-      filter.where = {};
-    }
-    const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
-    const where = queryFilters.impose({ idDocument: id, idUser: userToken.idUser }).build();
-    filter.where = where;
+    if (userAllowed) {
+      const userTokenFilter: Filter = { where: { "token": token } };
+      const foundToken = await this.userTokenRepository.findOne(userTokenFilter);
 
-    const documents = await this.documentRepository.find(filter);
-    if(documents.length !== 1){
-      throw new HttpErrors.NotFound("No documents found for that id and idUser");
-    }
-    const document = documents[0];
+      if (foundToken) {
+        const userToken: UserToken = this.checkAndExtractUserToken(foundToken);
 
-    const fileName : string = document.filename;
-    const contentType : string = document.mimeType;
+        // Check if document id is associated to the token
+        const userTokenDocumentFilter: Filter = { where: { "idUserToken": foundToken.idUserToken, "idDocument": id}};
+        const foundUserTokenDocument = await this.userTokenDocumentRepository.find(userTokenDocumentFilter);
 
-    const chunksFilter: Filter = { where: { 
-        "idDocument": id
-      },
-      order: ['chunkIndexId ASC']
-    };
+        if (foundUserTokenDocument.length > 0) {
+          if (filter === undefined) {
+            filter = {};
+          }
+          if (filter.where === undefined) {
+            filter.where = {};
+          }
+          const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
+          const where = queryFilters.impose({ idDocument: id, idUser: userToken.idUser }).build();
+          filter.where = where;
 
-    const encryptedChunks : DocumentEncryptedChunk[] = await this.documentEncryptedChunkRepository.find(chunksFilter);
-    let textDecrypted = "";
+          const documents = await this.documentRepository.find(filter);
+          if(documents.length !== 1){
+            throw new HttpErrors.NotFound("No documents found for that id and idUser");
+          }
 
-    for await (const chunk of encryptedChunks) {
+          // Decrypt the privateKey
+          const privateKey = await decryptString(userToken.key, userToken.checksum, userToken.header, userToken.iv, userToken.idUserToken);
 
-      let chunkObject = JSON.parse(JSON.stringify(chunk));
+          const document = documents[0];
+          const fileName : string = document.filename;
+          const contentType : string = document.mimeType;
 
-      if (chunkObject.status === 'COMMITTED' && chunkObject.transactionId) {
-        let json = await retrieveJsonFromBlockchain(chunkObject.transactionId);
-        chunkObject.checksum = json.checksum;
-        chunkObject.header = json.header;
-        chunkObject.iv = json.iv;
-        chunkObject.ipfsPath = json.ipfsPath ? json.ipfsPath : chunkObject.ipfsPath;
+          const chunksFilter: Filter = { where: { 
+              "idDocument": id
+            },
+            order: ['chunkIndexId ASC']
+          };
+
+          const encryptedChunks : DocumentEncryptedChunk[] = await this.documentEncryptedChunkRepository.find(chunksFilter);
+          let textDecrypted = "";
+
+          for await (const chunk of encryptedChunks) {
+            const result = await decrypt(chunk, privateKey.textDecrypted);
+            textDecrypted = textDecrypted + result.textDecrypted;
+          }
+      
+          const fileContents = Buffer.from(textDecrypted, BASE64_ENCODING);
+          response.writeHead(200, {
+            'Content-disposition': ATTACHMENT_FILENAME + fileName,
+            'Content-Type': contentType,
+            'Content-Length': fileContents.length
+          });
+          response.end(fileContents);
+        } else {
+          // Update the user attempts
+          this.updateCheckTokenUserAttempts(currentUser, 1);
+          throw new HttpErrors.Unauthorized("Token not associated to document");
+        }
+      } else {
+        throw new HttpErrors.NotFound("Invalid token");
       }
-    
-      if (chunkObject.ipfsPath){
-        chunkObject.text = await retrieveStringFromIPFS(chunkObject.ipfsPath);
-      }
-
-      const result = await decrypt(chunkObject, userToken.idUser);
-      textDecrypted = textDecrypted + result.textDecrypted;
+    } else {
+      throw new HttpErrors.TooManyRequests("Too many wrong requests");
     }
- 
-    const fileContents = Buffer.from(textDecrypted, BASE64_ENCODING);
-    response.writeHead(200, {
-      'Content-disposition': ATTACHMENT_FILENAME + fileName,
-      'Content-Type': contentType,
-      'Content-Length': fileContents.length
-    });
-    response.end(fileContents);
   }
 
   //*** DOWNLOAD ***/
-  @get('/documents/{id}')
+  @post('/documents/download', {
+    responses: {
+      200: {
+        content: {'application/json': {schema: {type: 'object'}}},
+        description: 'User document download',
+      },
+    },
+  })
   @authenticate('jwt', { required: [PermissionKeys.DocWalletManagement] })
   async download(
-    @param.path.string('id') id: string,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile,
+    @requestBody() downloadDocumentData: DownloadDocumentData,
     @inject(RestBindings.Http.RESPONSE) response: Response,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
     @param.query.object('filter', getFilterSchemaFor(Document)) filter?: Filter<Document>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
@@ -226,7 +277,7 @@ export class DocumentController {
       filter.where = {};
     }
     const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
-    const where = queryFilters.impose({ idDocument: id, idUser: currentUser.idUser }).build();
+    const where = queryFilters.impose({ idDocument: downloadDocumentData.idDocument, idUser: currentUser.idUser }).build();
     filter.where = where;
 
     const documents = await this.documentRepository.find(filter);
@@ -239,7 +290,7 @@ export class DocumentController {
     const contentType : string = document.mimeType;
 
     const chunksFilter: Filter = { where: { 
-        "idDocument": id
+        "idDocument": downloadDocumentData.idDocument
       },
       order: ['chunkIndexId ASC']
     };
@@ -247,7 +298,7 @@ export class DocumentController {
     let textDecrypted = "";
 
     for await (const chunk of encryptedChunks) {
-      const result = await decrypt(chunk, currentUser.idUser);
+      const result = await decrypt(chunk, downloadDocumentData.privateKey);
       textDecrypted = textDecrypted + result.textDecrypted;
     }
  
@@ -261,12 +312,18 @@ export class DocumentController {
   }
 
   //*** DOWNLOAD ***/
-  @get('/documents-base64/{id}')
+  @post('/documents/download-base64', {
+    responses: {
+      200: {
+        content: {'application/json': {schema: {type: 'object'}}},
+        description: 'User document base64 download',
+      },
+    },
+  })
   @authenticate('jwt', { required: [PermissionKeys.DocWalletManagement] })
   async downloadBase64(
-    @param.path.string('id') id: string,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile,
+    @requestBody() downloadDocumentData: DownloadDocumentData,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
     @inject(RestBindings.Http.RESPONSE) response: Response,
     @param.query.object('filter', getFilterSchemaFor(Document)) filter?: Filter<Document>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -278,7 +335,7 @@ export class DocumentController {
       filter.where = {};
     }
     const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
-    const where = queryFilters.impose({ idDocument: id, idUser: currentUser.idUser }).build();
+    const where = queryFilters.impose({ idDocument: downloadDocumentData.idDocument, idUser: currentUser.idUser }).build();
     filter.where = where;
 
     const documents = await this.documentRepository.find(filter);
@@ -291,7 +348,7 @@ export class DocumentController {
     const contentType : string = document.mimeType;
 
     const chunksFilter: Filter = { where: { 
-        "idDocument": id
+        "idDocument": downloadDocumentData.idDocument
       },
       order: ['chunkIndexId ASC']
     };
@@ -299,7 +356,7 @@ export class DocumentController {
     let textDecrypted = "";
 
     for await (const chunk of encryptedChunks) {
-      const result = await decrypt(chunk, currentUser.idUser);
+      const result = await decrypt(chunk, downloadDocumentData.privateKey);
       textDecrypted = textDecrypted + result.textDecrypted;
     }
 
@@ -356,13 +413,10 @@ export class DocumentController {
     return this.documentEncryptedChunkRepository.save(documentsEncryptedChunk);
   }
 
-  private checkAndExtractUserToken(foundTokenList: UserToken[]) {
+  private checkAndExtractUserToken(foundToken: UserToken) {
     const currentDate = new Date();
-    if (foundTokenList.length !== 1) {
-      throw new HttpErrors.NotFound("Invalid token");
-    }
 
-    const userToken: UserToken = foundTokenList[0];
+    const userToken: UserToken = foundToken;
     if (!userToken.validUntil) {
       throw new HttpErrors.NotFound("Invalid token");
     }
@@ -373,5 +427,55 @@ export class DocumentController {
       throw new HttpErrors.NotFound("Token is expired");
     }
     return userToken;
+  }
+
+  private async verifyUserCheckTokenAllowed(currentUser : UserProfile) : Promise<boolean> {
+    const userFilter: Filter = { where: { "idUser": currentUser.idUser } };
+    const foundUser = await this.userRepository.findOne(userFilter);
+
+    if (foundUser) {
+      const tokenCheckBlockedUntil = foundUser.tokenCheckBlockedUntil;
+
+      if (tokenCheckBlockedUntil) {
+        const currentDate = new Date();
+        const tokenCheckBlockedUntilDate = new Date(tokenCheckBlockedUntil);
+
+        if (currentDate < tokenCheckBlockedUntilDate) {
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  private async updateCheckTokenUserAttempts(currentUser : UserProfile, attemps : number) {
+    const userFilter: Filter = { where: { "idUser": currentUser.idUser } };
+    const foundUser = await this.userRepository.findOne(userFilter);
+
+    if (foundUser) {
+      let tokenAttempts = foundUser.tokenAttempts;
+
+      if (!tokenAttempts) {
+        tokenAttempts = 0;
+      }
+
+      if (attemps > 0) {
+        foundUser.tokenAttempts = tokenAttempts + attemps;
+      } else {
+        foundUser.tokenAttempts = 0;
+      }
+
+      if (tokenAttempts >= 4) {
+        foundUser.tokenAttempts = 0;
+        foundUser.tokenCheckBlockedUntil = new Date(new Date().getTime() + USER_BLOCK_REQUEST_TOKEN_DEFAULT_VALIDITY_IN_MINS * MINUTES_IN_MILLISECONDS).getTime();
+      }
+
+      await this.userRepository.updateById(foundUser.idUser, foundUser);
+    }
   }
 }

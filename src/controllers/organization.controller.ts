@@ -12,12 +12,9 @@ import { checkOrganizationOwner } from '../services/organization.service';
 
 export class OrganizationController {
   constructor(
-    @repository(OrganizationRepository)
-    public organizationRepository: OrganizationRepository,
-    @repository(OrganizationUserRepository)
-    public organizationUserRepository: OrganizationUserRepository,
-    @inject(SecurityBindings.USER)
-    public user: UserProfile
+    @repository(OrganizationRepository) public organizationRepository: OrganizationRepository,
+    @repository(OrganizationUserRepository) public organizationUserRepository: OrganizationUserRepository,
+    @inject(SecurityBindings.USER) public user: UserProfile
   ) { }
 
   /*** INSERT ***/

@@ -9,10 +9,8 @@ import { NationalityRepository, NationalityLanguageRepository } from '../reposit
 
 export class NationalityController {
   constructor(
-    @repository(NationalityRepository)
-    public nationalityRepository : NationalityRepository,
-    @repository(NationalityLanguageRepository)
-    public nationalityLanguageRepository : NationalityLanguageRepository,
+    @repository(NationalityRepository) public nationalityRepository : NationalityRepository,
+    @repository(NationalityLanguageRepository) public nationalityLanguageRepository : NationalityLanguageRepository,
   ) {}
 
   //*** INSERT ***/

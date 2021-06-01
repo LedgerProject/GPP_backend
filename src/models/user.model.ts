@@ -107,6 +107,18 @@ export class User extends Entity {
   })
   publicKey: string;
 
+  @property({
+    type: 'string',
+    postgresql: { columnName: 'tokenAttempts', dataType: 'integer', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
+  })
+  tokenAttempts: number;
+
+  @property({
+    type: 'date',
+    postgresql: { columnName: 'tokenCheckBlockedUntil', dataType: 'timestamp without time zone', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES' },
+  })
+  tokenCheckBlockedUntil: number;
+
   @hasMany(() => OrganizationUser, {keyTo: 'idUser'})
   organizationUser?: OrganizationUser[];
 

@@ -356,6 +356,416 @@
 			]
 		},
 		{
+			"name": "contents",
+			"item": [
+				{
+					"name": "contents",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idUser\": \"string\",\n  \"title\": \"string\",\n  \"description\": \"string\",\n  \"sharePosition\": false,\n  \"positionLatitude\": 0,\n  \"positionLongitude\": 0,\n  \"shareName\": false,\n  \"contentType\": \"string\",\n  \"insertDate\": \"2021-05-25T12:53:00.000Z\"\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}contents",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}contents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "contents",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}contents?filter={\n  \"where\": {},\n  \"fields\": {\n    \"idContent\": true,\n    \"idUser\": true,\n    \"title\": true,\n    \"description\": true,\n    \"sharePosition\": true,\n    \"positionLatitude\": true,\n    \"positionLongitude\": true,\n    \"shareName\": true,\n    \"contentType\": true,\n    \"insertDate\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"insertDate DESC\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}contents"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {},\n  \"fields\": {\n    \"idContent\": true,\n    \"idUser\": true,\n    \"title\": true,\n    \"description\": true,\n    \"sharePosition\": true,\n    \"positionLatitude\": true,\n    \"positionLongitude\": true,\n    \"shareName\": true,\n    \"contentType\": true,\n    \"insertDate\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"insertDate DESC\"\n  ]\n}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "contents/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"string\",\n  \"description\": \"string\",\n  \"sharePosition\": false,\n  \"positionLatitude\": 0,\n  \"positionLongitude\": 0,\n  \"shareName\": false\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}contents/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}contents",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "contents/:id/upload",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}contents/:id/upload",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}contents",
+								":id",
+								"upload"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "contents/:id/media",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}contents/:id/media?filter={\n  \"where\": {},\n  \"fields\": {\n    \"idContentMedia\": true,\n    \"idContent\": true,\n    \"filename\": true,\n    \"mimeType\": true,\n    \"size\": true,\n    \"widthPixel\": true,\n    \"heightPixel\": true,\n    \"key\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"filename\"\n  ]\n}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}contents",
+								":id",
+								"media"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {},\n  \"fields\": {\n    \"idContentMedia\": true,\n    \"idContent\": true,\n    \"filename\": true,\n    \"mimeType\": true,\n    \"size\": true,\n    \"widthPixel\": true,\n    \"heightPixel\": true,\n    \"key\": true\n  },\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"order\": [\n    \"filename\"\n  ]\n}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "contents/:id/download/:idMedia",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}contents/:id/download/:idMedia",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}contents",
+								":id",
+								"download",
+								":idMedia"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								},
+								{
+									"key": "idMedia",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "contents/:id/download-base64/:idMedia",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}contents/:id/download-base64/:idMedia",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}contents",
+								":id",
+								"download-base64",
+								":idMedia"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								},
+								{
+									"key": "idMedia",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "contents/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}contents/:id",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}contents",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "contents/:id/delete/:idMedia",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}contents/:id/delete/:idMedia",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}contents",
+								":id",
+								"delete",
+								":idMedia"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "idMedia",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "countries",
 			"item": [
 				{
@@ -1059,7 +1469,7 @@
 			"name": "documents",
 			"item": [
 				{
-					"name": "documents",
+					"name": "documents/upload",
 					"protocolProfileBehavior": {
 						"disabledSystemHeaders": {}
 					},
@@ -1083,11 +1493,21 @@
 									"key": "file",
 									"type": "file",
 									"src": []
+								},
+								{
+									"key": "title",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "privateKey",
+									"value": "",
+									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}documents/:title",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}documents/upload",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
@@ -1095,14 +1515,92 @@
 							"port": "{{port}}",
 							"path": [
 								"{{path}}documents",
-								":title"
-							],
-							"variable": [
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "documents/download",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "title",
+									"key": "token",
 									"value": "",
 									"type": "string"
 								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idDocument\": \"\",\n  \"privateKey\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}documents/download",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}documents",
+								"download"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "documents/download-base64",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idDocument\": \"\",\n  \"privateKey\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}documents/download-base64",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}documents",
+								"download-base64"
 							]
 						}
 					},
@@ -1142,92 +1640,6 @@
 								{
 									"key": "filter",
 									"value": "{\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idDocument\": true,\n    \"idUser\": true,\n    \"title\": true,\n    \"filename\": true,\n    \"mimeType\": true,\n    \"size\": true,\n    \"widthPixel\": true,\n    \"heightPixel\": true\n  }\n}"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "documents/:id",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}documents/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idDocument\": true,\n    \"idUser\": true,\n    \"title\": true,\n    \"filename\": true,\n    \"mimeType\": true,\n    \"size\": true,\n    \"widthPixel\": true,\n    \"heightPixel\": true\n  }\n}",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"{{path}}documents",
-								":id"
-							],
-							"query": [
-								{
-									"key": "filter",
-									"value": "{\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idDocument\": true,\n    \"idUser\": true,\n    \"title\": true,\n    \"filename\": true,\n    \"mimeType\": true,\n    \"size\": true,\n    \"widthPixel\": true,\n    \"heightPixel\": true\n  }\n}"
-								}
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "",
-									"type": "string"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "documents-base64/:id",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}documents/:id?filter={\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idDocument\": true,\n    \"idUser\": true,\n    \"title\": true,\n    \"filename\": true,\n    \"mimeType\": true,\n    \"size\": true,\n    \"widthPixel\": true,\n    \"heightPixel\": true\n  }\n}",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"{{path}}documents",
-								":id"
-							],
-							"query": [
-								{
-									"key": "filter",
-									"value": "{\n  \"offset\": 0,\n  \"limit\": 100,\n  \"skip\": 0,\n  \"where\": {\n    \"additionalProp1\": {}\n  },\n  \"fields\": {\n    \"idDocument\": true,\n    \"idUser\": true,\n    \"title\": true,\n    \"filename\": true,\n    \"mimeType\": true,\n    \"size\": true,\n    \"widthPixel\": true,\n    \"heightPixel\": true\n  }\n}"
-								}
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "",
-									"type": "string"
 								}
 							]
 						}
@@ -2323,6 +2735,106 @@
 					"response": []
 				},
 				{
+					"name": "structures/:id/request-publication",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/:id/request-publication",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}structures",
+								":id",
+								"request-publication"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "structures/:id/publication",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"publicationStatus\": \"string\",\n  \"rejectionMessage\": \"string\"\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/:id/publication",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}structures",
+								":id",
+								"publication"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "structures",
 					"request": {
 						"auth": {
@@ -2597,6 +3109,101 @@
 									"value": "",
 									"type": "string"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "structures/import-excel",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/import-excel",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}structures",
+								"import-excel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "structures/export-excel",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}structures/export-excel",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}structures",
+								"export-excel"
 							]
 						}
 					},
@@ -2918,6 +3525,82 @@
 					"response": []
 				},
 				{
+					"name": "users/pbkdf",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"user@example.com\"\r\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users/pbkdf",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}users",
+								"pbkdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "users/get-pbkdf-publickey",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"user@example.com\"\r\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users/get-pbkdf-publickey",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}users",
+								"get-pbkdf-publickey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "users/signup?secretKey",
 					"protocolProfileBehavior": {
 						"disabledSystemHeaders": {
@@ -2935,7 +3618,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"userType\": \"string\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"email\": \"string\",\n  \"password\": \"string\",\n  \"idNationality\": \"string\",\n  \"gender\": \"string\",\n  \"birthday\": \"2020-11-03T12:03:58.201Z\"\n}"
+							"raw": "{\n  \"userType\": \"string\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"email\": \"string\",\n  \"password\": \"string\",\n  \"pbkdf\": \"string (only for user)\",\n  \"publicKey\": \"string (only for user)\",\n  \"idNationality\": \"string\",\n  \"gender\": \"string\",\n  \"birthday\": \"2020-11-03T12:03:58.201Z\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users/signup?secretKey",
@@ -3125,14 +3808,7 @@
 					"name": "user/reset-password",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
+							"type": "noauth"
 						},
 						"method": "POST",
 						"header": [
@@ -3144,7 +3820,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"\"\r\n}"
+							"raw": "{\r\n  \"userType\": \"\",\r\n  \"email\": \"\",\r\n  \"answer1\": \"only frontend, no from app\",\r\n  \"answer2\": \"only frontend, no from app\",\r\n  \"answer3\": \"only frontend, no from app\",\r\n  \"answer4\": \"only frontend, no from app\",\r\n  \"answer5\": \"only frontend, no from app\"\r\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}/user/reset-password",
@@ -3163,17 +3839,44 @@
 					"response": []
 				},
 				{
+					"name": "user/verify-answers",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userType\": \"\",\r\n  \"email\": \"\",\r\n  \"answer1\": \"null\",\r\n  \"answer2\": \"null\",\r\n  \"answer3\": \"null\",\r\n  \"answer4\": \"null\",\r\n  \"answer5\": \"null\",\r\n  \"returnKeys\": true\r\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}/user/verify-answers",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}",
+								"user",
+								"verify-answers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "user/confirm-reset-password",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
+							"type": "noauth"
 						},
 						"method": "POST",
 						"header": [
@@ -3327,7 +4030,7 @@
 					"response": []
 				},
 				{
-					"name": "/user/{id}/change-permissions",
+					"name": "user/:id/change-permissions",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -3636,6 +4339,39 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{path}}users"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -3664,7 +4400,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": ""
+							"raw": "{\n    \"privateKey\": \"\",\n    \"idDocuments\": []\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{host}}:{{port}}/{{path}}users-token",

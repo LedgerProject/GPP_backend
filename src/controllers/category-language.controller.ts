@@ -9,8 +9,7 @@ import {CategoryLanguageRepository} from '../repositories';
 
 export class CategoryLanguageController {
   constructor(
-    @repository(CategoryLanguageRepository)
-    public categoryLanguageRepository : CategoryLanguageRepository,
+    @repository(CategoryLanguageRepository) public categoryLanguageRepository : CategoryLanguageRepository,
   ) {}
   
   //*** INSERT/UPDATE ***/

@@ -16,7 +16,7 @@ export const BASE64_ENCODING : string = 'base64';
 /**
  * Alphabet chars
  */
-export const ALPHABET_CHARS : string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+export const ALPHABET_CHARS : string = '0123456789';
 
 /**
  * User token LENGTH
@@ -31,7 +31,12 @@ export const MINUTES_IN_MILLISECONDS : number = 60000;
 /**
  * Default value for user token validity
  */
-export const USER_TOKEN_DEFAULT_VALIDITY_IN_MINS = 5;
+export const USER_TOKEN_DEFAULT_VALIDITY_IN_MINS = 30;
+
+/**
+ * Default value for user block check token validity
+ */
+export const USER_BLOCK_REQUEST_TOKEN_DEFAULT_VALIDITY_IN_MINS = 60;
 
 /**
  * Attachment filename

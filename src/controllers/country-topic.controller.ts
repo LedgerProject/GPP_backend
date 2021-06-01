@@ -9,10 +9,8 @@ import { CountryTopicRepository, CountryTopicLanguageRepository } from '../repos
 
 export class CountryTopicController {
   constructor(
-    @repository(CountryTopicRepository)
-    public countryTopicRepository : CountryTopicRepository,
-    @repository(CountryTopicLanguageRepository)
-    public countryTopicLanguageRepository : CountryTopicLanguageRepository,
+    @repository(CountryTopicRepository) public countryTopicRepository : CountryTopicRepository,
+    @repository(CountryTopicLanguageRepository) public countryTopicLanguageRepository : CountryTopicLanguageRepository,
   ) {}
 
   //*** INSERT ***/

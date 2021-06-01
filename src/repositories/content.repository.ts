@@ -1,14 +1,14 @@
 import {DefaultCrudRepository} from '@loopback/repository';
-import {Document, DocumentRelations} from '../models';
+import {Content, ContentRelations} from '../models';
 import {GppDataSource} from '../datasources';
 import {inject} from '@loopback/core';
 
-export class DocumentRepository extends DefaultCrudRepository
-  <Document, typeof Document.prototype.idDocument, DocumentRelations> {
+export class ContentRepository extends DefaultCrudRepository
+  <Content, typeof Content.prototype.idContent, ContentRelations> {
 
   constructor(
     @inject('datasources.GppDataSource') dataSource: GppDataSource,
   ) {
-    super(Document, dataSource);
+    super(Content, dataSource);
   }
 }

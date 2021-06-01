@@ -9,10 +9,8 @@ import { CategoryRepository, CategoryLanguageRepository } from '../repositories'
 
 export class CategoryController {
   constructor(
-    @repository(CategoryRepository)
-    public categoryRepository : CategoryRepository,
-    @repository(CategoryLanguageRepository)
-    public categoryLanguageRepository : CategoryLanguageRepository,
+    @repository(CategoryRepository) public categoryRepository : CategoryRepository,
+    @repository(CategoryLanguageRepository) public categoryLanguageRepository : CategoryLanguageRepository,
   ) {}
 
   //*** LIST ***/

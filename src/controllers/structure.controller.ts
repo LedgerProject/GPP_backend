@@ -2,27 +2,45 @@
 import { authenticate, AuthenticationBindings } from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { AnyObject, Filter, repository, WhereBuilder } from '@loopback/repository';
-import { del, get, getFilterSchemaFor, getModelSchemaRef, HttpErrors, param, patch, post, requestBody } from '@loopback/rest';
+import { del, get, getFilterSchemaFor, getModelSchemaRef, HttpErrors, param, patch, post, requestBody, Request, Response, RestBindings } from '@loopback/rest';
 import { SecurityBindings, UserProfile } from '@loopback/security';
 //GPP imports
 import { PermissionKeys } from '../authorization/permission-keys';
 import { Structure, StructuresCategoriesView, StructureLanguage, StructuresView, StructureImage } from '../models';
-import { StructureRepository, StructuresCategoriesViewRepository, StructureLanguageRepository, StructuresViewRepository, StructureImageRepository, IconRepository } from '../repositories';
+import { StructureRepository, StructuresCategoriesViewRepository, StructureLanguageRepository, StructuresViewRepository, StructureImageRepository, IconRepository, OrganizationUserRepository, UserRepository } from '../repositories';
 import { checkStructureOwner } from '../services/structure.service';
+import { slugify } from '../services/string-util';
+import { getFilesAndFields } from '../services/file-upload.service';
 import { ImporterFactory } from 'xlsx-import/lib/ImporterFactory';
+import { FileUploadHandler } from '../types';
+import { FILE_UPLOAD_SERVICE } from '../keys';
 
 const exportToExcel = require('export-to-excel');
 const loopback = require('loopback');
 const fs = require('fs');
 const path = require('path');
 
+// Set the path to the sandbox folder
+const sandboxPath = path.join(__dirname, '..', '..', '.sandbox');
+
 interface StructureMessage {
   structureMessage: string;
+}
+
+interface PublicationOperation {
+  publicationStatus: string;
+  rejectionMessage: string;
 }
 
 interface OperationOutcome {
   code: string;
   message: string;
+}
+
+interface ExcelExportOutcome {
+  code: string;
+  message: string;
+  filename: string;
 }
 
 interface ExcelStructureRow {
@@ -71,20 +89,16 @@ const galleriesStructuresPath = path.join(__dirname, '..', '..', 'public', 'gall
 
 export class StructureController {
   constructor(
-    @repository(StructureRepository)
-    public structureRepository: StructureRepository,
-    @repository(StructureLanguageRepository)
-    public structureLanguageRepository: StructureLanguageRepository,
-    @repository(StructuresViewRepository)
-    public structuresViewRepository: StructuresViewRepository,
-    @repository(StructuresCategoriesViewRepository)
-    public structuresCategoriesViewRepository: StructuresCategoriesViewRepository,
-    @repository(StructureImageRepository)
-    public structureImageRepository: StructureImageRepository,
-    @repository(IconRepository)
-    public iconRepository: IconRepository,
-    @inject(SecurityBindings.USER)
-    public user: UserProfile
+    @repository(StructureRepository) public structureRepository: StructureRepository,
+    @repository(StructureLanguageRepository) public structureLanguageRepository: StructureLanguageRepository,
+    @repository(StructuresViewRepository) public structuresViewRepository: StructuresViewRepository,
+    @repository(StructuresCategoriesViewRepository) public structuresCategoriesViewRepository: StructuresCategoriesViewRepository,
+    @repository(StructureImageRepository) public structureImageRepository: StructureImageRepository,
+    @repository(IconRepository) public iconRepository: IconRepository,
+    @repository(OrganizationUserRepository) public organizationUserRepository: OrganizationUserRepository,
+    @repository(UserRepository) public userRepository: UserRepository,
+    @inject(FILE_UPLOAD_SERVICE) private fileUploadHandler: FileUploadHandler,
+    @inject(SecurityBindings.USER) public user: UserProfile
   ) { }
 
   //*** INSERT ***/
@@ -123,6 +137,13 @@ export class StructureController {
       throw new HttpErrors.Conflict("The alias specified is already assigned, please change it");
     }
 
+    // Set the publication status based on logged user type
+    if (this.user.userType === 'gppOperator') {
+      structure.publicationStatus = 'published';
+    } else if (this.user.userType === 'operator') {
+      structure.publicationStatus = 'modification';
+    }
+
     return this.structureRepository.create(structure);
   }
 
@@ -157,6 +178,11 @@ export class StructureController {
       throw new HttpErrors.Conflict("The alias specified is already assigned, please change it");
     }
 
+    // Set the publication status based on logged user type
+    if (this.user.userType === 'operator') {
+      structure.publicationStatus = 'modification';
+    }
+
     await this.structureRepository.updateById(id, structure);
   }
 
@@ -184,9 +210,14 @@ export class StructureController {
         filter.where = {};
       }
       const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
-      const where = queryFilters.impose({ idOrganization: this.user.idOrganization }).build();
 
-      filter.where = where;
+      if (this.user.userType === 'user') {
+        const whereUser = queryFilters.impose({ publicationStatus: 'published' }).build();
+        filter.where = whereUser;
+      } else if (this.user.userType === 'operator') {
+        const whereOperator = queryFilters.impose({ idOrganization: this.user.idOrganization }).build();
+        filter.where = whereOperator;
+      }
     }
 
     let categoryFilter = false;
@@ -343,10 +374,8 @@ export class StructureController {
   })
   async sendMessage(
     @param.path.string('id') id: string,
-    @requestBody()
-    structureMessage: StructureMessage,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @requestBody() structureMessage: StructureMessage,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<{ messageOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
@@ -488,7 +517,7 @@ export class StructureController {
   }
 
   //*** IMPORT FILE EXCEL ***/
-  @post('/import-excel', {
+  @post('/structures/import-excel', {
     responses: {
       '200': {
         description: 'Import structures from Excel file',
@@ -509,36 +538,230 @@ export class StructureController {
   })
   @authenticate('jwt', { required: [PermissionKeys.GeneralStructuresManagement] })
   async importExcel(
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
-  ): Promise<{ operationOutcome: OperationOutcome }> {
-    let response : OperationOutcome = {
-      code: '0',
-      message: ''
-    };
-    const config = excelConfig();
+    @requestBody.file() request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response
+  ): Promise<OperationOutcome> {
+    let responseImp = new Promise<OperationOutcome>((resolve, reject) => {
+      this.fileUploadHandler(request, response, async (err) => {
+        if (err) {
+          // Multer error
+          resolve(err);
+        } else {
+          let resp : OperationOutcome = {
+            code : '0',
+            message : ''
+          }
 
-    const factory = new ImporterFactory();
-    
-    const importer = await factory.from('public/temp/test2.xlsx');
+          // Get the first file informations
+          const filesAndFields = getFilesAndFields(request);
+          const fileUploaded = filesAndFields.files[0];
 
-    const items = importer.getAllItems<ExcelStructureRow>(config.items);
+          // Check if the file is xlsx
+          if (fileUploaded.mimetype !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+            fs.unlinkSync(sandboxPath + "/" + fileUploaded.tempfilename); // Remove the temporary file
+            reject(new HttpErrors.BadRequest('Please select an excel (xlsx) file'));
+            return;
+          }
 
-    let currentRow = 0;
-    let importErrors = '';
+          const config = excelConfig();
+          const factory = new ImporterFactory();
+          const importer = await factory.from(sandboxPath + "/" + fileUploaded.tempfilename);
 
-    for (const item of items) {
-      // Check if alias is specified that is correct
-      
-      // Check if name is specified
+          const items = importer.getAllItems<ExcelStructureRow>(config.items);
 
-    }
+          let currentRow = 1;
+          let importErrors = '';
 
-    return Promise.resolve({ operationOutcome: response });
+          // First cycle: check errors
+          for (const item of items) {
+            currentRow++;
+
+            // Check if alias is specified that is correct
+            let aliasAssigned = false;
+            let aliasExtension = 0;
+            while (!aliasAssigned) {
+              let alias = slugify(item.name);
+
+              if (aliasExtension !== 0) {
+                alias += '_' + aliasExtension;
+              }
+
+              // Check if the alias is already assigned
+              const filterAlias: Filter = { where: { alias : alias }};
+              const aliasExists = await this.structureRepository.findOne(filterAlias);
+
+              if (aliasExists === null) {
+                aliasAssigned = true;
+              } else {
+                aliasExtension++;
+              }
+            }
+
+            // Check if name is specified
+            if (!item.name) {
+              importErrors += ' - Row: ' + currentRow + ': specify the name';
+            } else {
+              if (item.name.trim().length < 3) {
+                importErrors += ' - Row: ' + currentRow + ': the name must be at least 3 characters long';
+              }
+            }
+
+            // Check if latitude is numeric
+            if (typeof(item.latitude) !== 'number') {
+              importErrors += ' - Row: ' + currentRow + ': specify a numeric latitude';
+            }
+
+            // Check if longitude is numeric
+            if (typeof(item.longitude) !== 'number') {
+              importErrors += ' - Row: ' + currentRow + ': specify a numeric longitude';
+            }
+
+            // Check if icon exists
+            if (item.icon) {
+              const filterIcon: Filter = { where: { name : item.icon.trim() }};
+              const iconExists = await this.iconRepository.findOne(filterIcon);
+
+              if (!iconExists) {
+                importErrors += ' - Row: ' + currentRow + ': the specified icon does not exist';
+              }
+            } else {
+              importErrors += ' - Row: ' + currentRow + ': specify an icon';
+            }
+          }
+
+          // Second cycle: get the values if no errors
+          if (!importErrors) {
+            let totalRows = 0;
+
+            for (const item of items) {
+              totalRows++;
+
+              // Set the alias
+              let alias = '';
+              let aliasAssigned = false;
+              let aliasExtension = 0;
+              while (!aliasAssigned) {
+                alias = slugify(item.name);
+        
+                if (aliasExtension !== 0) {
+                  alias += '_' + aliasExtension;
+                }
+        
+                // Check if the alias is already assigned
+                const filterAlias: Filter = { where: { alias : alias }};
+                const aliasExists = await this.structureRepository.findOne(filterAlias);
+        
+                if (aliasExists === null) {
+                  aliasAssigned = true;
+                } else {
+                  aliasExtension++;
+                }
+              }
+        
+              // Set the name
+              let name = item.name;
+
+              // Set the address
+              let address = item.address;
+
+              // Set the city
+              let city = item.city;
+
+              // Set the latitude
+              let latitude = item.latitude;
+
+              // Set the longitude
+              let longitude = item.longitude;
+
+              // Set the email
+              let email = item.email;
+
+              // Set the phone number prefix
+              let phoneNumberPrefix = item.phoneNumberPrefix;
+
+              // Set the phone number
+              let phoneNumber = item.phoneNumber;
+
+              // Set the website
+              let website = item.website;
+
+              // Set the icon
+              let idIcon = null;
+              if (item.icon) {
+                const filterIcon: Filter = { where: { name : item.icon.trim() }};
+                const iconExists = await this.iconRepository.findOne(filterIcon);
+        
+                if (iconExists) {
+                  idIcon = iconExists.idIcon;
+                }
+              }
+
+              // Save the structure into db
+              let structure : Omit<Structure, 'idStructure'> = {
+                alias: alias,
+                name: name,
+                address : address,
+                city : city,
+                latitude : latitude,
+                longitude : longitude,
+                email : email,
+                phoneNumberPrefix : phoneNumberPrefix,
+                phoneNumber : phoneNumber,
+                website : website,
+                idIcon : idIcon
+              };
+
+              const createdStructure = await this.structureRepository.create(structure);
+
+              // Set the english description
+              let descriptionEng = item.descriptionEng;
+
+              // Save the english language into db
+              let structureLangEng : Omit<StructureLanguage, 'idStructureLanguage'> = {
+                idStructure: createdStructure.idStructure,
+                description: descriptionEng,
+                language : 'en'
+              };
+
+              await this.structureLanguageRepository.create(structureLangEng);
+
+              // Set the french description
+              let descriptionFra = item.descriptionFra;
+        
+              // Save the french language into db
+              let structureLangFra : Omit<StructureLanguage, 'idStructureLanguage'> = {
+                idStructure: createdStructure.idStructure,
+                description: descriptionFra,
+                language : 'fr'
+              };
+
+              await this.structureLanguageRepository.create(structureLangFra);
+            }
+
+            resp = {
+              code: '202',
+              message: totalRows + ' structures imported from the excel file'
+            };
+          } else {
+            resp = {
+              code: '10',
+              message: importErrors
+            };
+          }
+
+          // Remove the temporary file
+          fs.unlinkSync(sandboxPath + "/" + fileUploaded.tempfilename);
+
+          resolve(resp);
+        }
+      });
+    });
+
+    return responseImp;
   }
 
   //*** EXPORT FILE EXCEL ***/
-  @post('/export-excel', {
+  @post('/structures/export-excel', {
     responses: {
       '200': {
         description: 'Export structures from Excel file',
@@ -559,12 +782,12 @@ export class StructureController {
   })
   @authenticate('jwt', { required: [PermissionKeys.GeneralStructuresManagement] })
   async exportExcel(
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
-  ): Promise<{ operationOutcome: OperationOutcome }> {
-    let response : OperationOutcome = {
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
+  ): Promise<{ excelExportOutcome: ExcelExportOutcome }> {
+    let response : ExcelExportOutcome = {
       code: '0',
-      message: ''
+      message: '',
+      filename: ''
     };
 
     let exportStructures : ExcelStructureRow[] = [];
@@ -603,8 +826,10 @@ export class StructureController {
       exportStructures.push(exportStructure);
     }
 
+    const filename = 'public/export/gpp-structures-' + Date.now();
+
     exportToExcel.exportXLSX({
-      filename: 'public/export/gpp-structures-' + Date.now(),
+      filename: filename,
       sheetname: 'structures',
       title: [
           {
@@ -676,6 +901,250 @@ export class StructureController {
       data: exportStructures
     })
 
-    return Promise.resolve({ operationOutcome: response });
+    response = {
+      code: '202',
+      message: 'Export completed',
+      filename: filename + '.xlsx'
+    };
+
+    return Promise.resolve({ excelExportOutcome: response });
+  }
+
+  //*** REQUEST PUBLICATION ***/
+  @authenticate('jwt', { required: [PermissionKeys.StructureUpdate, PermissionKeys.GeneralStructuresManagement] })
+  @post('/structures/{id}/request-publication', {
+    responses: {
+      '200': {
+        description: 'Send request publication of the structure',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                messageOutcome: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async requestPublication(
+    @param.path.string('id') id: string,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
+  ): Promise<{ messageOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    // If operator, check if it is an owned structure
+    if (this.user.userType !== 'gppOperator') {
+      await checkStructureOwner(id, this.user.idOrganization, this.structureRepository);
+    }
+
+    // Get the structure information
+    const structure = await this.structureRepository.findById(id);
+
+    if (structure) {
+      structure.publicationStatus = 'requestPublication';
+      await this.structureRepository.updateById(id, structure);
+
+      const sgMail = require('@sendgrid/mail');
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+      let emailSubject = process.env.STRUCTURE_REQUEST_PUBLICATION_EMAIL_SUBJECT;
+      emailSubject = emailSubject?.replace(/%structureName%/g, structure.name!);
+
+      let emailText = process.env.STRUCTURE_REQUEST_PUBLICATION_EMAIL_TEXT;
+      emailText = emailText?.replace(/%structureName%/g, structure.name!);
+
+      let htmlText = process.env.STRUCTURE_REQUEST_PUBLICATION_EMAIL_HTML;
+      htmlText = htmlText?.replace(/%structureName%/g, structure.name!);
+
+      const msg = {
+        to: process.env.ADMIN_EMAILS,
+        from: process.env.STRUCTURE_REQUEST_PUBLICATION_EMAIL_FROM_EMAIL,
+        replyTo: currentUser.email!,
+        fromname: process.env.STRUCTURE_REQUEST_PUBLICATION_EMAIL_FROM_NAME,
+        subject: emailSubject,
+        text: emailText,
+        html: htmlText,
+      }
+
+      await sgMail
+        .send(msg)
+        .then(() => {
+          response = {
+            code: '202',
+            message: 'Request publication confirmed and message sent'
+          };
+        })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .catch((error: any) => {
+          console.error(error)
+          response = {
+            code: '201',
+            message: 'Request publication confirmed but message not sent'
+          };
+        })
+    } else {
+      response = {
+        code: '10',
+        message: 'Structure not exists'
+      };
+    }
+
+    return Promise.resolve({ messageOutcome: response });
+  }
+
+  //*** STRUCTURE PUBLICATION ***/
+  @authenticate('jwt', { required: [PermissionKeys.GeneralStructuresManagement] })
+  @post('/structures/{id}/publication', {
+    responses: {
+      '200': {
+        description: 'Send publication or rejection of the structure',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                messageOutcome: {
+                  type: 'object',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async publication(
+    @param.path.string('id') id: string,
+    @requestBody() publicationOperation: PublicationOperation,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
+  ): Promise<{ messageOutcome: OperationOutcome }> {
+    let response : OperationOutcome = {
+      code: '0',
+      message: ''
+    };
+
+    // Get the structure information
+    const structure = await this.structureRepository.findById(id);
+
+    if (structure) {
+      structure.publicationStatus = publicationOperation.publicationStatus;
+      structure.rejectionDescription = publicationOperation.rejectionMessage;
+      await this.structureRepository.updateById(id, structure);
+
+      const sgMail = require('@sendgrid/mail');
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+      // Get the structure administrator email
+      let toEmails = [];
+      const filterAdmins: Filter = { where: { "idOrganization": structure.idOrganization} };
+      const organizationUsers = await this.organizationUserRepository.find(filterAdmins);
+
+      for (let key in organizationUsers) {
+        if (organizationUsers[key]['idUser']) {
+          const filterUser: Filter = { where: { "idUser": organizationUsers[key]['idUser']} };
+          const user = await this.userRepository.findOne(filterUser);
+          if (user) {
+            toEmails.push(user.email);
+          }
+        }
+      }
+
+      if (toEmails.length > 0) {
+        switch (publicationOperation.publicationStatus) {
+          case 'published':
+            let emailSubject = process.env.STRUCTURE_PUBLISHED_EMAIL_SUBJECT;
+            emailSubject = emailSubject?.replace(/%structureName%/g, structure.name!);
+          
+            let emailText = process.env.STRUCTURE_PUBLISHED_EMAIL_TEXT;
+            emailText = emailText?.replace(/%structureName%/g, structure.name!);
+          
+            let htmlText = process.env.STRUCTURE_PUBLISHED_EMAIL_HTML;
+            htmlText = htmlText?.replace(/%structureName%/g, structure.name!);
+
+            const msg = {
+              to: toEmails,
+              from: process.env.STRUCTURE_PUBLISHED_EMAIL_FROM_EMAIL,
+              replyTo: process.env.ADMIN_EMAILS,
+              fromname: process.env.STRUCTURE_PUBLISHED_EMAIL_FROM_NAME,
+              subject: emailSubject,
+              text: emailText,
+              html: htmlText,
+            }
+
+            await sgMail
+              .send(msg)
+              .then(() => {
+                response = {
+                  code: '202',
+                  message: 'Publication confirmed and message sent'
+                };
+              })
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              .catch((error: any) => {
+                console.error(error)
+                response = {
+                  code: '201',
+                  message: 'Publication confirmed but message not sent'
+                };
+              })
+          break;
+
+          case 'rejected':
+            let emailSubject2 = process.env.STRUCTURE_REJECTED_EMAIL_SUBJECT;
+            emailSubject2 = emailSubject2?.replace(/%structureName%/g, structure.name!);
+      
+            let emailText2 = process.env.STRUCTURE_REJECTED_EMAIL_TEXT;
+            emailText2 = emailText2?.replace(/%structureName%/g, structure.name!);
+            emailText2 = emailText2?.replace(/%rejectionReason%/g, publicationOperation.rejectionMessage!);
+      
+            let htmlText2 = process.env.STRUCTURE_REJECTED_EMAIL_HTML;
+            htmlText2 = htmlText2?.replace(/%structureName%/g, structure.name!);
+            htmlText2 = htmlText2?.replace(/%rejectionReason%/g, publicationOperation.rejectionMessage!);
+
+            const msg2 = {
+              to: toEmails,
+              from: process.env.STRUCTURE_REJECTED_EMAIL_FROM_EMAIL,
+              replyTo: process.env.ADMIN_EMAILS,
+              fromname: process.env.STRUCTURE_REJECTED_EMAIL_FROM_NAME,
+              subject: emailSubject,
+              text: emailText,
+              html: htmlText,
+            }
+
+            await sgMail
+              .send(msg2)
+              .then(() => {
+                response = {
+                  code: '202',
+                  message: 'Rejection confirmed and message sent'
+                };
+              })
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              .catch((error: any) => {
+                console.error(error)
+                response = {
+                  code: '201',
+                  message: 'Rejection confirmed but message not sent'
+                };
+              })
+          break;
+        }
+      }
+    } else {
+      response = {
+        code: '10',
+        message: 'Structure not exists'
+      };
+    }
+
+    return Promise.resolve({ messageOutcome: response });
   }
 }

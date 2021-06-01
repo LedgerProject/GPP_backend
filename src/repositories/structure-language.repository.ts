@@ -6,19 +6,13 @@ import { GppDataSource } from '../datasources';
 import { StructureLanguage, StructureLanguageRelations, Structure } from '../models';
 import { StructureRepository } from './structure.repository';
 
-export class StructureLanguageRepository extends DefaultCrudRepository<
-  StructureLanguage,
-  typeof StructureLanguage.prototype.idStructureLanguage,
-  StructureLanguageRelations
-> {
-  public readonly structure: BelongsToAccessor<
-  Structure,
-  typeof StructureLanguage.prototype.idStructure
-  >;
+export class StructureLanguageRepository extends DefaultCrudRepository
+  <StructureLanguage, typeof StructureLanguage.prototype.idStructureLanguage, StructureLanguageRelations> {
+  public readonly structure: BelongsToAccessor<Structure, typeof StructureLanguage.prototype.idStructure>;
+
   constructor(
     @inject('datasources.GppDataSource') dataSource: GppDataSource,
-    @repository.getter('StructureRepository')
-    protected structureRepositoryGetter: Getter<StructureRepository>,
+    @repository.getter('StructureRepository') protected structureRepositoryGetter: Getter<StructureRepository>,
   ) {
     super(StructureLanguage, dataSource);
     this.structure = this.createBelongsToAccessorFor('structure_join', structureRepositoryGetter);

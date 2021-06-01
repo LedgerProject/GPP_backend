@@ -21,10 +21,8 @@ const sandboxPath = path.join(__dirname, '..', '..', '.sandbox');
 
 export class IconController {
   constructor(
-    @inject(FILE_UPLOAD_SERVICE)
-    private fileUploadHandler: FileUploadHandler,
-    @repository(IconRepository)
-    public iconRepository: IconRepository,
+    @inject(FILE_UPLOAD_SERVICE) private fileUploadHandler: FileUploadHandler,
+    @repository(IconRepository) public iconRepository: IconRepository,
   ) { }
 
   //*** LIST ***/
@@ -62,8 +60,7 @@ export class IconController {
   @authenticate('jwt', { "required": [PermissionKeys.GeneralIconsManagement] })
   async create(
     @param.path.string('name') name: string,
-    @requestBody.file()
-    request: Request,
+    @requestBody.file() request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<Icon> {
     // Check if the name is already assigned
@@ -224,8 +221,7 @@ export class IconController {
   async updateImageIconById(
     @param.path.string('id') id: string,
     @param.path.string('type') type: string,
-    @requestBody.file()
-    request: Request,
+    @requestBody.file() request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<void> {
     // File upload

@@ -1,5 +1,8 @@
 export * from './category-language.repository';
 export * from './category.repository';
+export * from './content.repository';
+export * from './content-media.repository';
+export * from './content-media-encrypted-chunk.repository';
 export * from './country.repository';
 export * from './country-language.repository';
 export * from './country-topic.repository';
@@ -20,3 +23,4 @@ export * from './structure-language.repository';
 export * from './structures-view.repository';
 export * from './user.repository';
 export * from './user-token.repository';
+export * from './user-token-document.repository';

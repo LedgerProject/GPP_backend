@@ -1,5 +1,8 @@
 export * from './category-language.model';
 export * from './category.model';
+export * from './content.model';
+export * from './content-media.model';
+export * from './content-media-encrypted-chunk.model';
 export * from './country-language.model';
 export * from './country-topic.model';
 export * from './country-topic-language.model';
@@ -20,4 +23,5 @@ export * from './structure.model';
 export * from './structures-view.model';
 export * from './user-invitation.model';
 export * from './user-token.model';
+export * from './user-token-document.model';
 export * from './user.model';

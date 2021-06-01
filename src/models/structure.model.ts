@@ -81,7 +81,7 @@ export class Structure extends Entity {
   @property({
     type: 'string',
     length: 3,
-    postgresql: { columnName: 'phoneNumberPrefix', dataType: 'character', dataLength: 3, dataPrecision: null, dataScale: null, nullable: 'YES' },
+    postgresql: { columnName: 'phoneNumberPrefix', dataType: 'character varying', dataLength: 10, dataPrecision: null, dataScale: null, nullable: 'YES' },
   })
   phoneNumberPrefix?: string;
 
@@ -104,6 +104,19 @@ export class Structure extends Entity {
     postgresql: {columnName: 'idIcon', dataType: 'uuid', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES'
   }})
   idIcon: string;
+
+  @property({
+    type: 'string',
+    length: 30,
+    postgresql: {columnName: 'publicationStatus', dataType: 'character varying', dataLength: 30, dataPrecision: null, dataScale: null, nullable: 'YES'},
+  })
+  publicationStatus?: string;
+
+  @property({
+    type: 'string',
+    postgresql: {columnName: 'rejectionDescription', dataType: 'text', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES'},
+  })
+  rejectionDescription?: string;
 
   @hasMany(() => StructureCategory, {keyTo: 'idStructure'})
   structureCategory?: StructureCategory[];

@@ -12,12 +12,9 @@ import { checkStructureOwner } from '../services/structure.service';
 
 export class StructureLanguageController {
   constructor(
-    @repository(StructureLanguageRepository)
-    public structureLanguageRepository : StructureLanguageRepository,
-    @repository(StructureRepository)
-    public structureRepository : StructureRepository,
-    @inject(SecurityBindings.USER)
-    public user: UserProfile
+    @repository(StructureLanguageRepository) public structureLanguageRepository : StructureLanguageRepository,
+    @repository(StructureRepository) public structureRepository : StructureRepository,
+    @inject(SecurityBindings.USER) public user: UserProfile
   ) {}
 
   //*** INSERT/UPDATE ***/

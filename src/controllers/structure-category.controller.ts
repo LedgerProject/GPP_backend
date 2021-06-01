@@ -12,12 +12,9 @@ import { checkStructureOwner } from '../services/structure.service';
 
 export class StructureCategoryController {
   constructor(
-    @repository(StructureCategoryRepository)
-    public structureCategoryRepository : StructureCategoryRepository,
-    @repository(StructureRepository)
-    public structureRepository : StructureRepository,
-    @inject(SecurityBindings.USER)
-    public user: UserProfile
+    @repository(StructureCategoryRepository) public structureCategoryRepository : StructureCategoryRepository,
+    @repository(StructureRepository) public structureRepository : StructureRepository,
+    @inject(SecurityBindings.USER) public user: UserProfile
   ) {}
 
   //*** INSERT ***/

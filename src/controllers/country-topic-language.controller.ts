@@ -9,8 +9,7 @@ import { CountryTopicLanguageRepository } from '../repositories';
 
 export class CountryTopicLanguageController {
   constructor(
-    @repository(CountryTopicLanguageRepository)
-    public countryTopicLanguageRepository : CountryTopicLanguageRepository,
+    @repository(CountryTopicLanguageRepository) public countryTopicLanguageRepository : CountryTopicLanguageRepository,
   ) {}
 
   //*** INSERT/UPDATE ***/

@@ -112,20 +112,13 @@ interface OrganizationUserData {
 
 export class UserController {
   constructor(
-    @repository(UserRepository)
-    public userRepository: UserRepository,
-    @repository(OrganizationsUsersViewRepository)
-    public organizationsUsersViewRepository: OrganizationsUsersViewRepository,
-    @repository(OrganizationUserRepository)
-    public organizationUserRepository: OrganizationUserRepository,
-    @repository(OrganizationRepository)
-    public organizationRepository: OrganizationRepository,
-    @inject(PasswordHasherBindings.PASSWORD_HASHER)
-    public hasher: BcryptHasher,
-    @inject(UserServiceBindings.USER_SERVICE)
-    public userService: MyUserService,
-    @inject(TokenServiceBindings.TOKEN_SERVICE)
-    public jwtService: JWTService
+    @repository(UserRepository) public userRepository: UserRepository,
+    @repository(OrganizationsUsersViewRepository) public organizationsUsersViewRepository: OrganizationsUsersViewRepository,
+    @repository(OrganizationUserRepository) public organizationUserRepository: OrganizationUserRepository,
+    @repository(OrganizationRepository) public organizationRepository: OrganizationRepository,
+    @inject(PasswordHasherBindings.PASSWORD_HASHER) public hasher: BcryptHasher,
+    @inject(UserServiceBindings.USER_SERVICE) public userService: MyUserService,
+    @inject(TokenServiceBindings.TOKEN_SERVICE) public jwtService: JWTService
   ) { }
 
   //*** GENERATE USER PBKDF ***/
@@ -149,8 +142,7 @@ export class UserController {
     },
   })
   async pbkdf(
-    @requestBody()
-    userData: UserData
+    @requestBody() userData: UserData
   ): Promise<{ pbkdfResponse: PBKBFResponse }> {
     let response : PBKBFResponse = {
       code: '0',
@@ -201,8 +193,7 @@ export class UserController {
     },
   })
   async getPBKDF(
-    @requestBody()
-    userData: UserData
+    @requestBody() userData: UserData
   ): Promise<{ pbkdfPublicKeyResponse: PBKBFPublicKeyResponse }> {
     let response : PBKBFPublicKeyResponse = {
       code: '0',
@@ -363,8 +354,7 @@ export class UserController {
     },
   })
   async confirmAccount(
-    @requestBody()
-    confirmationToken: ConfirmationTokenData
+    @requestBody() confirmationToken: ConfirmationTokenData
   ): Promise<{ confirmationOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
@@ -454,6 +444,7 @@ export class UserController {
           PermissionKeys.GeneralOrganizationManagement,
           PermissionKeys.GeneralUsersManagement,
           PermissionKeys.GeneralStructuresManagement,
+          PermissionKeys.GeneralContentManagement,
           PermissionKeys.GeneralCountriesManagement,
           PermissionKeys.GeneralIconsManagement,
           PermissionKeys.GeneralCategoriesManagement,
@@ -482,6 +473,11 @@ export class UserController {
       default:
         userProfile.permissions = [
           PermissionKeys.DocWalletManagement,
+          PermissionKeys.ContentCreation,
+          PermissionKeys.ContentUpdate,
+          PermissionKeys.ContentDetail,
+          PermissionKeys.ContentsList,
+          PermissionKeys.ContentDelete,
           PermissionKeys.StructureList,
           PermissionKeys.StructureDetail,
           PermissionKeys.CountriesList,
@@ -542,8 +538,7 @@ export class UserController {
   @get('/users/me')
   @authenticate('jwt', { required: [PermissionKeys.AuthFeatures] })
   async me(
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<UserProfile> {
     return Promise.resolve(currentUser);
   }
@@ -569,8 +564,7 @@ export class UserController {
     },
   })
   async resetPassword(
-    @requestBody()
-    resetPasswordData: ResetPasswordData,
+    @requestBody() resetPasswordData: ResetPasswordData,
   ): Promise<{ resetPasswordOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
@@ -713,8 +707,7 @@ export class UserController {
     },
   })
   async confirmResetPassword(
-    @requestBody()
-    confirmResetPasswordData: ConfirmResetPasswordData,
+    @requestBody() confirmResetPasswordData: ConfirmResetPasswordData,
   ): Promise<{ confirmResetPasswordOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
@@ -818,10 +811,8 @@ export class UserController {
   })
   @authenticate('jwt', { required: [PermissionKeys.ProfileEdit] })
   async changePassword(
-    @requestBody()
-    changePasswordData: ChangePasswordData,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @requestBody() changePasswordData: ChangePasswordData,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<{ changePasswordOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
@@ -923,8 +914,7 @@ export class UserController {
     },
   })
   async verifyAnswers(
-    @requestBody()
-    verifyAnswersData: VerifyAnswersData,
+    @requestBody() verifyAnswersData: VerifyAnswersData,
   ): Promise<{ verifyAnswersOutcome: VerifyAnswersOutcome }> {
     let response : VerifyAnswersOutcome = {
       code: '0',
@@ -1020,8 +1010,7 @@ export class UserController {
   })
   @authenticate('jwt', { required: [PermissionKeys.OrganizationUsersManagement, PermissionKeys.GeneralUsersManagement] })
   async find(
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
     @param.query.object('filter', getFilterSchemaFor(User)) filter?: Filter<User>
   ): Promise<User[]> {
     let organizationFilter = false;
@@ -1084,8 +1073,7 @@ export class UserController {
   @authenticate('jwt', { required: [PermissionKeys.ProfileEdit, PermissionKeys.OrganizationUsersManagement, PermissionKeys.GeneralUsersManagement] })
   async findById(
     @param.path.string('id') id: string,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<User> {
     // Check if specified the id
     if (!id) {
@@ -1126,8 +1114,7 @@ export class UserController {
   @authenticate('jwt', { required: [PermissionKeys.ProfileEdit, PermissionKeys.OrganizationUsersManagement, PermissionKeys.GeneralUsersManagement] })
   async updateById(
     @param.path.string('id') id: string,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
     @requestBody({
       content: {
         'application/json': { schema: getModelSchemaRef(User, { partial: true })}
@@ -1234,10 +1221,8 @@ export class UserController {
     },
   })
   async inviteUser(
-    @requestBody()
-    invitation: Invitation,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @requestBody() invitation: Invitation,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<{ invitationOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
@@ -1372,10 +1357,8 @@ export class UserController {
   })
   async changePermissionsUser(
     @param.path.string('id') id: string,
-    @requestBody()
-    permissions: Permissions,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @requestBody() permissions: Permissions,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<{ changePermissionsOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
@@ -1432,8 +1415,7 @@ export class UserController {
     },
   })
   async confirmInvitation(
-    @requestBody()
-    invitationToken: InvitationTokenData
+    @requestBody() invitationToken: InvitationTokenData
   ): Promise<{ invitationOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
@@ -1562,10 +1544,8 @@ export class UserController {
   })
   @authenticate('jwt', { required: [PermissionKeys.OrganizationUsersManagement] })
   async removeOrganizationUser(
-    @requestBody()
-    removeOrganizationUser: OrganizationUserData,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @requestBody() removeOrganizationUser: OrganizationUserData,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<{ removeOrganizationUserOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
@@ -1737,10 +1717,8 @@ export class UserController {
   })
   @authenticate('jwt', { required: [PermissionKeys.GeneralUsersManagement] })
   async confirmAdmin(
-    @requestBody()
-    confirmAdmin: OrganizationUserData,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @requestBody() confirmAdmin: OrganizationUserData,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<{ setAdminOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
@@ -1851,10 +1829,8 @@ export class UserController {
   })
   @authenticate('jwt', { required: [PermissionKeys.GeneralUsersManagement] })
   async removeAdmin(
-    @requestBody()
-    removeAdmin: OrganizationUserData,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @requestBody() removeAdmin: OrganizationUserData,
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<{ delAdminOutcome: OperationOutcome }> {
     let response : OperationOutcome = {
       code: '0',
@@ -1952,6 +1928,7 @@ export class UserController {
   }
 
   //*** REMOVE ALL USER DATA ***/
+  @authenticate('jwt', { required: [PermissionKeys.ProfileEdit] })
   @del('/users', {
     responses: {
       '204': {
@@ -1960,8 +1937,7 @@ export class UserController {
     },
   })
   async deleteCurrentUser(
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<void> {
     await this.userRepository.deleteById(currentUser.idUser);
   }
@@ -1970,8 +1946,7 @@ export class UserController {
   @authenticate('jwt', { required: [PermissionKeys.MyOrganizationList] })
   @get('/users/my-organizations')
   async getMyOrganizations(
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<OrganizationsUsersView[]> {
     const filter: Filter = { where: { "idUser": currentUser.idUser, "confirmed": true }, order: ["name"] };
     const myOrganizations = await this.organizationsUsersViewRepository.find(filter);
@@ -2001,8 +1976,7 @@ export class UserController {
   })
   async changeOrganization(
     @param.path.string('id') id: string,
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUser: UserProfile
+    @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
   ): Promise<{ token: string }> {
     const filter: Filter = { where: { "idUser": currentUser.idUser } };
     const user = await this.userRepository.findOne(filter);
@@ -2015,6 +1989,7 @@ export class UserController {
           PermissionKeys.GeneralOrganizationManagement,
           PermissionKeys.GeneralUsersManagement,
           PermissionKeys.GeneralStructuresManagement,
+          PermissionKeys.GeneralContentManagement,
           PermissionKeys.GeneralCountriesManagement,
           PermissionKeys.GeneralIconsManagement,
           PermissionKeys.GeneralCategoriesManagement,

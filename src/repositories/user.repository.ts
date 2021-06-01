@@ -12,23 +12,14 @@ export type Credentials = {
   password: string;
 };
 
-export class UserRepository extends DefaultCrudRepository<
-  User,
-  typeof User.prototype.idUser,
-  UserRelations
-  > {
-  public readonly userTokens: HasManyRepositoryFactory<
-  UserToken, 
-  typeof User.prototype.idUser
-  >;
-  public readonly organizationUser: HasManyRepositoryFactory<
-  OrganizationUser,
-  typeof User.prototype.idUser
-  >;
+export class UserRepository extends DefaultCrudRepository
+  <User, typeof User.prototype.idUser, UserRelations> {
+  public readonly userTokens: HasManyRepositoryFactory<UserToken, typeof User.prototype.idUser>;
+  public readonly organizationUser: HasManyRepositoryFactory<OrganizationUser, typeof User.prototype.idUser>;
+
   constructor(
     @inject('datasources.GppDataSource') dataSource: GppDataSource,
-    @repository.getter('OrganizationUserRepository')
-    organizationUserRepositoryGetter: Getter<OrganizationUserRepository>,
+    @repository.getter('OrganizationUserRepository') organizationUserRepositoryGetter: Getter<OrganizationUserRepository>,
   ) {
     super(User, dataSource);
     this.organizationUser = this.createHasManyRepositoryFactoryFor('organizationUser', organizationUserRepositoryGetter);
