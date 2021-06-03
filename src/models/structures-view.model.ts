@@ -116,6 +116,19 @@ export class StructuresView extends Entity {
   iconmarker?: string;
 
   @property({
+    type: 'string',
+    length: 30,
+    postgresql: {columnName: 'publicationStatus', dataType: 'character varying', dataLength: 30, dataPrecision: null, dataScale: null, nullable: 'YES'},
+  })
+  publicationStatus?: string;
+
+  @property({
+    type: 'string',
+    postgresql: {columnName: 'rejectionDescription', dataType: 'text', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'YES'},
+  })
+  rejectionDescription?: string;
+
+  @property({
     type: 'number',
     required: false
   })
