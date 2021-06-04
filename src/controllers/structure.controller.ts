@@ -964,8 +964,12 @@ export class StructureController {
       let htmlText = process.env.STRUCTURE_REQUEST_PUBLICATION_EMAIL_HTML;
       htmlText = htmlText?.replace(/%structureName%/g, structure.name!);
 
+      let adminEMails: string[] = [];
+      const adminEMailsENV = process.env.ADMIN_EMAILS ? process.env.ADMIN_EMAILS : '';
+      adminEMails = adminEMailsENV?.split(',');
+
       const msg = {
-        to: process.env.ADMIN_EMAILS,
+        to: adminEMails,
         from: process.env.STRUCTURE_REQUEST_PUBLICATION_EMAIL_FROM_EMAIL,
         replyTo: currentUser.email!,
         fromname: process.env.STRUCTURE_REQUEST_PUBLICATION_EMAIL_FROM_NAME,
@@ -1057,6 +1061,10 @@ export class StructureController {
         }
       }
 
+      let adminEMails: string[] = [];
+      const adminEMailsENV = process.env.ADMIN_EMAILS ? process.env.ADMIN_EMAILS : '';
+      adminEMails = adminEMailsENV?.split(',');
+
       if (toEmails.length > 0) {
         switch (publicationOperation.publicationStatus) {
           case 'published':
@@ -1072,7 +1080,7 @@ export class StructureController {
             const msg = {
               to: toEmails,
               from: process.env.STRUCTURE_PUBLISHED_EMAIL_FROM_EMAIL,
-              replyTo: process.env.ADMIN_EMAILS,
+              replyTo: adminEMails,
               fromname: process.env.STRUCTURE_PUBLISHED_EMAIL_FROM_NAME,
               subject: emailSubject,
               text: emailText,
@@ -1112,7 +1120,7 @@ export class StructureController {
             const msg2 = {
               to: toEmails,
               from: process.env.STRUCTURE_REJECTED_EMAIL_FROM_EMAIL,
-              replyTo: process.env.ADMIN_EMAILS,
+              replyTo: adminEMails,
               fromname: process.env.STRUCTURE_REJECTED_EMAIL_FROM_NAME,
               subject: emailSubject,
               text: emailText,
