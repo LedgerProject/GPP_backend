@@ -1080,7 +1080,7 @@ export class StructureController {
             const msg = {
               to: toEmails,
               from: process.env.STRUCTURE_PUBLISHED_EMAIL_FROM_EMAIL,
-              replyTo: adminEMails,
+              replyTo: adminEMails[0],
               fromname: process.env.STRUCTURE_PUBLISHED_EMAIL_FROM_NAME,
               subject: emailSubject,
               text: emailText,
@@ -1120,7 +1120,7 @@ export class StructureController {
             const msg2 = {
               to: toEmails,
               from: process.env.STRUCTURE_REJECTED_EMAIL_FROM_EMAIL,
-              replyTo: adminEMails,
+              replyTo: adminEMails[0],
               fromname: process.env.STRUCTURE_REJECTED_EMAIL_FROM_NAME,
               subject: emailSubject,
               text: emailText,
