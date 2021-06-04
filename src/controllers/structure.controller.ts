@@ -1122,9 +1122,9 @@ export class StructureController {
               from: process.env.STRUCTURE_REJECTED_EMAIL_FROM_EMAIL,
               replyTo: adminEMails[0],
               fromname: process.env.STRUCTURE_REJECTED_EMAIL_FROM_NAME,
-              subject: emailSubject,
-              text: emailText,
-              html: htmlText,
+              subject: emailSubject2,
+              text: emailText2,
+              html: htmlText2,
             }
 
             await sgMail
