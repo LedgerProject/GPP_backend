@@ -11,8 +11,10 @@ pipeline {
     stage('Preparation') {
       agent any
       steps { 
-        def buildName = Jenkins.instance.getItem('test').lastSuccessfulBuild.displayName
-        sh 'echo Use Branch: ${SELECTED_BRANCH} with ${BUILD_ID} and ${buildName}' 
+        script {
+          def buildName = Jenkins.instance.getItem('test').lastSuccessfulBuild.displayName
+          sh 'echo Use Branch: ${SELECTED_BRANCH} with ${BUILD_ID} and ${buildName}' 
+        }
       }
     }
 
