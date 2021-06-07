@@ -11,7 +11,7 @@ pipeline {
     stage('Preparation') {
       agent any
       steps { 
-        sh 'echo Use Branch: ${SELECTED_BRANCH}' 
+        sh 'echo Use Branch: ${SELECTED_BRANCH} with ${BUILD_ID}' 
       }
     }
 
