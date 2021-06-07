@@ -13,7 +13,7 @@ pipeline {
       steps { 
         script {
           def buildName = Jenkins.instance.getItem('test').lastSuccessfulBuild.displayName
-          sh 'echo Use Branch: ${SELECTED_BRANCH} with ${BUILD_ID} and ${buildName}' 
+          sh 'echo Use Branch: ${SELECTED_BRANCH} with ${BUILD_ID} and $buildName' 
         }
       }
     }
