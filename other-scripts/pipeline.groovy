@@ -12,7 +12,7 @@ pipeline {
       agent any
       steps { 
         script {
-          def buildName = Jenkins.instance.getItem('test').lastSuccessfulBuild.displayName
+          def buildName = Jenkins.instance.getItem('test').lastSuccessfulBuild
           sh 'echo Use Branch: ${SELECTED_BRANCH} with ${BUILD_ID} and ${buildName}' 
         }
       }
