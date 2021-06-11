@@ -47,7 +47,7 @@ pipeline {
           sh 'docker ps -q -a --filter="name=gpp" | xargs docker rm -f'
         }
 
-        sh 'docker run -d --network="host" --name gpp-${BUILD_NUMBER} ${REPO_NAME}:latest'        
+        sh 'docker run -d --network="host" --restart=always --name gpp-${BUILD_NUMBER} ${REPO_NAME}:latest'        
 
         }
       }
