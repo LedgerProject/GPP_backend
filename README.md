@@ -75,6 +75,7 @@ streamlined use of the resources.
 * loopback/cli: LoopBack CLI tool for creating controllers, models, repositories and more.
 * loopback/context: Current context for LoopBack applications, based on cls-hooked.
 * loopback/core: provides the foundation for the LoopBack app.
+* loopback/cron: schedule jobs using cron based schedule.
 * loopback/openapi-spec-builder: create OpenAPI specification documents in your tests using the builder pattern.
 * loopback/openapi-v3: decorators that describe LoopBack artifacts as OpenAPI 3.0.0 metadata and utilities that transfer LoopBack metadata to OpenAPI 3.0.0 specifications.
 * loopback/repository: this module provides a common set of interfaces for interacting with databases.
@@ -94,6 +95,14 @@ streamlined use of the resources.
 * isemail: email address validation library.
 * js-base64: base64 transcoder.
 * salted-md5: salted MD5 hash.
+* sendgrid/mail: Twilio SendGrid node.js mail services.
+* export-to-excel: export data to Excel.
+* xlsx-import: import data from an xlsx file using configured pattern and defined typescript types.
+* ipfs-http-client: a client library for the IPFS HTTP API.
+* keypair-lib: component to generate and regenerate a keypair, in a deterministic and private way.
+* nano-ipfs-store: lightweight library to store and get data to/from IPFS.
+* uuid: ror the creation of RFC4122 UUIDs.
+
 
 ### Development dependencies
 
@@ -120,7 +129,7 @@ streamlined use of the resources.
   * controllers: implements operations defined by the application’s API. It implements the application’s business logic and acts as a bridge between the HTTP/REST API and domain/database models.
   * datasources: configuration for a Connector instance that represents data in an external system.
   * interceptors: reusable functions to provide aspect-oriented logic around method invocations.
-  * model: describes objects, for example, users, categories, structures. Defines a list of properties with name, type, and other constraints.
+  * models: describes objects, for example, users, categories, structures. Defines a list of properties with name, type, and other constraints.
   * repositories: specialized Service interface that provides strong-typed data access (for example, CRUD) operations of a domain model against the underlying database or service.
   * scenarios: various zenroom scenarious.
   * services: various services functions.
@@ -173,6 +182,38 @@ SALT=<salt used to encrypt files chunks>
 
 # GLOBAL PASSPORT PROJECT OPERATOR KEY
 GPP_REGISTRATION_KEY=<key used to register global passport project operator>
+
+# IPFS
+IPFS_GATEWAY=<ipfs gateway>
+
+# SENDGRID
+SENDGRID_API_KEY=<twilio sendgrid api key for sending emails>
+
+# PORTAL
+PORTAL_URL=<portal url>
+
+# SAWROOM CONFIGURATION
+SAWROOM_WRITE_URI=<sawroom write url>
+SAWROOM_READ_URI=<sawroom read url>
+APIROOM_BASE_URI=<apiroom base url>
+APIROOM_WRITE_DICTIONARY_PATH=<apiroom write dictionary path>
+APIROOM_READ_PATH=<apiroom read path>
+
+# BACKEND CREDENTIALS
+BACKEND_PRIVATE_KEY=<backend private key>
+BACKEND_PUBLIC_KEY=<backend public key>
+BACKEND_PASSWORD=<backend password>
+
+# CHANGE HERE TO OVERRIDE THE CONTRACTS
+# SERVER_SIDE_CONTRACT=<zenroom server side contract>
+# CLIENT_SIDE_CONTRACT=<zenroom client side contract>
+
+# CHANGE HERE TO OVERRIDE FOLDER OR FILENAME default: prop/questions-en_GB.json
+QUESTION_FOLDER=<question folder>
+QUESTION_FILE_PREPEND=<question file prepend>
+
+# ADMINISTRATOR E-MAILS
+ADMIN_EMAILS=<admin emails separated by comma>
 ```
 
 Here an example
@@ -201,6 +242,38 @@ SALT=my_very_strong_salt
 
 # GLOBAL PASSPORT PROJECT OPERATOR KEY
 GPP_REGISTRATION_KEY=my_very_strong_gpp_password
+
+# IPFS
+IPFS_GATEWAY=http://127.0.0.1:5001
+
+# SENDGRID
+SENDGRID_API_KEY=SG.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+# PORTAL
+PORTAL_URL=https://www.myawesomeportalurl.com
+
+# SAWROOM CONFIGURATION
+SAWROOM_WRITE_URI=http://xxx.xxx.xxx.xxx:xxxx
+SAWROOM_READ_URI=http://xxx.xxx.xxx.xxx:xxxx
+APIROOM_BASE_URI=https://apiroom.net/api/myapirooaccount
+APIROOM_WRITE_DICTIONARY_PATH=/apiroom-write-dictionary-path
+APIROOM_READ_PATH=/apiroom-read-dictionary-path
+
+# BACKEND CREDENTIALS
+BACKEND_PRIVATE_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=
+BACKEND_PUBLIC_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=
+BACKEND_PASSWORD=my-awesome-backend-password
+
+# CHANGE HERE TO OVERRIDE THE CONTRACTS
+# SERVER_SIDE_CONTRACT=<zenroom server side contract>
+# CLIENT_SIDE_CONTRACT=<zenroom client side contract>
+
+# CHANGE HERE TO OVERRIDE FOLDER OR FILENAME default: prop/questions-en_GB.json
+QUESTION_FOLDER=<question folder>
+QUESTION_FILE_PREPEND=<question file prepend>
+
+# ADMINISTRATOR E-MAILS
+ADMIN_EMAILS=<admin emails separated by comma>
 ```
 
 Finally run this script and wait that the service start:
@@ -250,4 +323,4 @@ npm start
 
 ## How the backend works
 
-TODO
+Please visit (https://www.globalpassportproject.org) for more information.

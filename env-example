@@ -52,7 +52,7 @@ QUESTION_FOLDER=<question folder>
 QUESTION_FILE_PREPEND=<question file prepend>
 
 # ADMINISTRATOR E-MAILS
-ADMIN_EMAILS=[]
+ADMIN_EMAILS=<admin emails separated by comma>
 
 # CONFIRM ACCOUNT E-MAIL
 CONFIRM_ACCOUNT_EMAIL_FROM_EMAIL=<sender e-mail>
@@ -138,7 +138,7 @@ STRUCTURE_PUBLISHED_EMAIL_SUBJECT=<send structure published email subject>  | pa
 STRUCTURE_PUBLISHED_EMAIL_TEXT=<send structure published email plain text>  | params: %structureName%
 STRUCTURE_PUBLISHED_EMAIL_HTML=<send structure published email html text>   | params: %structureName%
 
-# SEND STRUCTURE REJETED E-MAIL
+# SEND STRUCTURE REJECTED E-MAIL
 STRUCTURE_REJECTED_EMAIL_FROM_EMAIL=<sender e-mail>
 STRUCTURE_REJECTED_EMAIL_FROM_NAME=<sender name>
 STRUCTURE_REJECTED_EMAIL_SUBJECT=<send structure rejected email subject>  | params: %structureName%
