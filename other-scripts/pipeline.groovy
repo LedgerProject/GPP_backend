@@ -47,9 +47,9 @@ pipeline {
         def ret = sh(script: 'docker ps -q --filter="name=gpp"', returnStdout: true)
         println ret
 
-        sh 'echo var is ${ret}'
+        sh 'echo var is '+ ${ret}
 
-        sh 'docker run -d --network="host" ${REPO_NAME}:latest --name gpp-${BUILD_NUMBER}"
+        sh 'docker run -d --network="host" ${REPO_NAME}:latest --name gpp-'+ ${BUILD_NUMBER}
 
         }
       }
