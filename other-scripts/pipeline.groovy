@@ -43,7 +43,7 @@ pipeline {
       steps {
         script {
 
-        def oldContainer = sh(script: 'docker ps -q --filter="name=gpp"', returnStdout: true)
+        def oldContainer = sh(script: 'docker ps -q -a --filter="name=gpp"', returnStdout: true)
 
         sh 'docker run -d --network="host" --name gpp-${BUILD_NUMBER} ${REPO_NAME}:latest'
         if (oldContainer){
