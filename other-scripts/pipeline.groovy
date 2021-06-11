@@ -23,7 +23,9 @@ pipeline {
       steps {
         script {
 
+        sh 'cp /var/node.js/GPP_backend/.env /var/lib/jenkins/workspace/test'
         sh "docker build -t ${REPO_NAME} ."
+        sh 'rm -rf .env'
 
         //def REPOSITORY_URL =  "${REPO_NAME}" + ":build-" + "${BUILD_NUMBER}"
         //sh "docker tag ${REPO_NAME}:latest ${REPOSITORY_URL}"
