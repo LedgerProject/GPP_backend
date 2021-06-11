@@ -11,7 +11,9 @@ pipeline {
     stage('Preparation') {
       agent any
       steps { 
-        sh 'echo Use Branch: ${SELECTED_BRANCH}' 
+        script {
+          sh 'echo Building ${REPO_NAME} on the branch: ${SELECTED_BRANCH} with build id: ${BUILD_ID}' 
+        }
       }
     }
 
@@ -20,10 +22,9 @@ pipeline {
       steps {
         script {
 
+        sh 'cp /var/node.js/GPP_backend/.env /var/lib/jenkins/workspace/test'
         sh "docker build -t ${REPO_NAME} ."
-
-        //def REPOSITORY_URL =  "${REPO_NAME}" + ":build-" + "${BUILD_NUMBER}"
-        //sh "docker tag ${REPO_NAME}:latest ${REPOSITORY_URL}"
+        sh 'rm -rf .env'
 
         }
       }
@@ -41,8 +42,12 @@ pipeline {
       steps {
         script {
 
-        sh 'docker ps -q --filter ancestor="${REPO_NAME}:latest" | xargs -r docker stop'
-        sh 'docker run -d --network="host" ${REPO_NAME}:latest'
+        def oldContainers = sh(script: 'docker ps -q -a --filter="name=gpp"', returnStdout: true)
+        if (oldContainers){
+          sh 'docker ps -q -a --filter="name=gpp" | xargs docker rm -f'
+        }
+
+        sh 'docker run -d --network="host" --name gpp-${BUILD_NUMBER} ${REPO_NAME}:latest'        
 
         }
       }
