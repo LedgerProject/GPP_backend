@@ -44,13 +44,10 @@ pipeline {
       steps {
         script {
 
-        sh 'CID=$(docker ps -q --filter="name=gpp");'
         ret = sh(script: 'docker ps -q --filter="name=gpp"', returnStdout: true)
-        echo ret
-        sh 'echo $ret'
-        println ret
 
-        sh 'docker run -d --network="host" ${REPO_NAME}:latest --name gpp-${BUILD_NUMBER}'
+        sh 'docker run -d --network="host" --name gpp-${BUILD_NUMBER} ${REPO_NAME}:latest'
+        sh 'docker rm -f $ret'
 
         }
       }
