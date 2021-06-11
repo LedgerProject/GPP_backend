@@ -25,9 +25,6 @@ pipeline {
 
         sh "docker build -t ${REPO_NAME} ."
 
-        //def REPOSITORY_URL =  "${REPO_NAME}" + ":build-" + "${BUILD_NUMBER}"
-        //sh "docker tag ${REPO_NAME}:latest ${REPOSITORY_URL}"
-
         }
       }
     }
@@ -45,9 +42,11 @@ pipeline {
         script {
 
         sh 'CID=$(docker ps -a -q --filter="name=gpp");'
-        sh 'echo $CID'
 
         sh 'docker run -d --network="host" --name gpp-${BUILD_NUMBER} ${REPO_NAME}:latest'
+        
+        //eliminates old docker running image
+        sh 'docker rm -f $CID'
 
         }
       }
