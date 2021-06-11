@@ -44,10 +44,10 @@ pipeline {
       steps {
         script {
 
-        
+        def ret = sh(script: 'docker ps -q --filter="name=gpp"', returnStdout: true)
+        println ret
+
         sh 'docker run -d --network="host" ${REPO_NAME}:latest --name gpp-'+ "${BUILD_NUMBER}"
-        def myvar = sh 'docker ps -q --filter="name=gpp"'
-        sh 'echo ${myvar}'
 
         }
       }
