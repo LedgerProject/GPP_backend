@@ -44,8 +44,10 @@ pipeline {
       steps {
         script {
 
-        sh 'docker ps -q --filter ancestor="${REPO_NAME}:latest" | xargs -r docker stop'
-        sh 'docker run -d --network="host" ${REPO_NAME}:latest'
+        
+        sh 'docker run -d --network="host" ${REPO_NAME}:latest --name gpp-'+ "${BUILD_NUMBER}"
+        def myvar = sh 'docker ps -q --filter="name=gpp"'
+        sh 'echo ${myvar}'
 
         }
       }
