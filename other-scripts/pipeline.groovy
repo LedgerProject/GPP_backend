@@ -27,9 +27,6 @@ pipeline {
         sh "docker build -t ${REPO_NAME} ."
         sh 'rm -rf .env'
 
-        //def REPOSITORY_URL =  "${REPO_NAME}" + ":build-" + "${BUILD_NUMBER}"
-        //sh "docker tag ${REPO_NAME}:latest ${REPOSITORY_URL}"
-
         }
       }
     }
@@ -46,10 +43,13 @@ pipeline {
       steps {
         script {
 
-        ret = sh(script: 'docker ps -q --filter="name=gpp"', returnStdout: true)
+        def oldContainer = sh(script: 'docker ps -q --filter="name=gpp"', returnStdout: true)
 
         sh 'docker run -d --network="host" --name gpp-${BUILD_NUMBER} ${REPO_NAME}:latest'
-        sh 'docker rm -f' + ret
+        if (oldContainer){
+          sh 'docker rm -f ' + oldContainer
+        }
+        
 
         }
       }
