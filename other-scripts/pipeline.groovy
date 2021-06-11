@@ -49,7 +49,7 @@ pipeline {
         ret = sh(script: 'docker ps -q --filter="name=gpp"', returnStdout: true)
 
         sh 'docker run -d --network="host" --name gpp-${BUILD_NUMBER} ${REPO_NAME}:latest'
-        sh 'docker rm -f ${ret}'
+        sh 'docker rm -f' + ret
 
         }
       }
