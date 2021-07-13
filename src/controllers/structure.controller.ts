@@ -129,13 +129,20 @@ export class StructureController {
       }
     }
 
-    // Check if the alias is already assigned
-    const filter: Filter = { where: { alias : structure.alias }};
-    const aliasExists = await this.structureRepository.findOne(filter);
+    // Check if alias exists
+    let aliasExists = true;
+    let aliasCount = 0;
+    let structureAlias = structure.alias;
+    while (aliasExists) {
+      aliasExists = await this.structureAliasExists(structureAlias);
 
-    if (aliasExists !== null) {
-      throw new HttpErrors.Conflict("The alias specified is already assigned, please change it");
+      if (aliasExists) {
+        aliasCount++;
+        structureAlias = structure.alias + '_' + aliasCount;
+      }
     }
+
+    structure.alias = structureAlias;
 
     // Set the publication status based on logged user type
     if (this.user.userType === 'gppOperator') {
@@ -1154,5 +1161,17 @@ export class StructureController {
     }
 
     return Promise.resolve({ messageOutcome: response });
+  }
+
+  // Check if the alias is already assigned
+  private async structureAliasExists(currentAlias : string) {
+    const filter: Filter = { where: { alias : currentAlias }};
+    const aliasExists = await this.structureRepository.findOne(filter);
+
+    if (aliasExists !== null) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
