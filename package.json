@@ -70,7 +70,7 @@
     "ipfs-http-client": "^48.2.1",
     "isemail": "^3.2.0",
     "js-base64": "^3.5.2",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "keypair-lib": "^1.0.7",
     "loopback-connector-openapi": "^6.2.0",
     "loopback-connector-postgresql": "^5.2.0",
