@@ -6,27 +6,27 @@
 /**
  * Max number of chars for file chunks
  */
-export const CHUNK_MAX_CHAR_SIZE : number = 700000;
+export const CHUNK_MAX_CHAR_SIZE: number = 700000;
 
 /**
  * Max number of chars for file chunks
  */
-export const BASE64_ENCODING : string = 'base64';
+export const BASE64_ENCODING: string = 'base64';
 
 /**
  * Alphabet chars
  */
-export const ALPHABET_CHARS : string = '0123456789';
+export const ALPHABET_CHARS: string = '0123456789';
 
 /**
  * User token LENGTH
  */
-export const USER_TOKEN_LENGTH : number = 6;
+export const USER_TOKEN_LENGTH: number = 6;
 
 /**
  * Milliseconds needed to have a minute
  */
-export const MINUTES_IN_MILLISECONDS : number = 60000;
+export const MINUTES_IN_MILLISECONDS: number = 60000;
 
 /**
  * Default value for user token validity
@@ -52,8 +52,14 @@ export const SAWROOM_READ_URI = process.env.SAWROOM_READ_URI!;
 
 export const APIROOM_BASE_URI = process.env.APIROOM_BASE_URI!;
 
-export const APIROOM_WRITE_DICTIONARY_ENDPOINT = APIROOM_BASE_URI+process.env.APIROOM_WRITE_DICTIONARY_PATH!;
+export const APIROOM_WRITE_DICTIONARY_ENDPOINT = APIROOM_BASE_URI + process.env.APIROOM_WRITE_DICTIONARY_PATH!;
 
-export const APIROOM_READ_ENDPOINT = APIROOM_BASE_URI+process.env.APIROOM_READ_PATH!;
+export const APIROOM_READ_ENDPOINT = APIROOM_BASE_URI + process.env.APIROOM_READ_PATH!;
+
+export const FANTOM_RPC_ENDPOINT = process.env.FANTOM_RPC_ENDPOINT;
+
+export const FANTOM_CONTRACT_ADDRESS = process.env.FANTOM_CONTRACT_ADDRESS;
+
+export const FANTOM_WALLET_PRIVATE_KEY = process.env.FANTOM_WALLET_PRIVATE_KEY;
 
 

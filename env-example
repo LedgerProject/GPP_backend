@@ -38,6 +38,11 @@ APIROOM_BASE_URI=<apiroom base url>
 APIROOM_WRITE_DICTIONARY_PATH=<apiroom write dictionary path>
 APIROOM_READ_PATH=<apiroom read path>
 
+# FANTOM CONFIGURATION
+FANTOM_RPC_ENDPOINT=<fantom rpc endpoint>
+FANTOM_CONTRACT_ADDRESS=<fantom contract address>
+FANTOM_WALLET_PRIVATE_KEY=<fantom wallet private key>
+
 # BACKEND CREDENTIALS
 BACKEND_PRIVATE_KEY=<backend private key>
 BACKEND_PUBLIC_KEY=<backend public key>

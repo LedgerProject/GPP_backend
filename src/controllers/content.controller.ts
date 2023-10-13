@@ -7,7 +7,7 @@ import { SecurityBindings, UserProfile } from '@loopback/security';
 // GPP imports
 import { ContentRepository, ContentMediaRepository, ContentMediaEncryptedChunksRepository, UserRepository } from '../repositories';
 import { PermissionKeys } from '../authorization/permission-keys';
-import { Content, ContentMedia, ContentMediaEncryptedChunk, User} from '../models';
+import { Content, ContentMedia, ContentMediaEncryptedChunk, User } from '../models';
 import { checkContentOwner } from '../services/content.service';
 import { getFilesAndFields } from '../services/file-upload.service';
 import { MEMORY_UPLOAD_SERVICE } from '../keys';
@@ -15,21 +15,21 @@ import { MemoryUploadHandler, TempFile } from '../types';
 import { chunkString, generateFixedLengthRandomString } from '../services/string-util';
 import { decryptContentMedia, encrypt, decryptString } from '../services/zenroom-service';
 import { uploadStringToIPFS } from '../services/ipfs-service';
-import { writeIntoBlockchain } from '../services/sawroom-service';
+import { writeIntoBlockchain } from '../services/blockchain-service';
 import { TokenServiceBindings } from '../authorization/keys';
 import { JWTService } from '../services/jwt-service';
 import { ATTACHMENT_FILENAME, BASE64_ENCODING, CHUNK_MAX_CHAR_SIZE } from '../constants';
 
 export class ContentController {
   constructor(
-    @repository(ContentRepository) public contentRepository : ContentRepository,
-    @repository(ContentMediaRepository) public contentMediaRepository : ContentMediaRepository,
-    @repository(ContentMediaEncryptedChunksRepository) public contentMediaEncryptedChunkRepository : ContentMediaEncryptedChunksRepository,
-    @repository(UserRepository) public userRepository : UserRepository,
+    @repository(ContentRepository) public contentRepository: ContentRepository,
+    @repository(ContentMediaRepository) public contentMediaRepository: ContentMediaRepository,
+    @repository(ContentMediaEncryptedChunksRepository) public contentMediaEncryptedChunkRepository: ContentMediaEncryptedChunksRepository,
+    @repository(UserRepository) public userRepository: UserRepository,
     @inject(SecurityBindings.USER) public user: UserProfile,
     @inject(TokenServiceBindings.TOKEN_SERVICE) public jwtService: JWTService,
     @inject(MEMORY_UPLOAD_SERVICE) private memoryUploadHandler: MemoryUploadHandler,
-  ) {}
+  ) { }
 
   //*** INSERT ***/
   @post('/contents', {
@@ -43,10 +43,14 @@ export class ContentController {
   @authenticate('jwt', { required: [PermissionKeys.ContentCreation] })
   async create(
     @requestBody({
-      content: { 'application/json': { schema: getModelSchemaRef(Content, {
-        title: 'NewContent',
-        exclude: ['idContent'],
-      })}}
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Content, {
+            title: 'NewContent',
+            exclude: ['idContent'],
+          })
+        }
+      }
     })
     content: Omit<Content, 'idContent'>,
     @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile
@@ -73,7 +77,7 @@ export class ContentController {
     @param.path.string('id') id: string,
     @requestBody({
       content: {
-        'application/json': { schema: getModelSchemaRef(Content, { partial: true })}
+        'application/json': { schema: getModelSchemaRef(Content, { partial: true }) }
       }
     })
     content: Content,
@@ -94,7 +98,7 @@ export class ContentController {
     responses: {
       '200': {
         description: 'Array of Content model instances',
-        content: {'application/json': {schema: {type: 'array', items: getModelSchemaRef(Content, {includeRelations: true})}}}
+        content: { 'application/json': { schema: { type: 'array', items: getModelSchemaRef(Content, { includeRelations: true }) } } }
       },
     },
   })
@@ -117,12 +121,12 @@ export class ContentController {
     //
     return this.contentRepository.find(filter);
   }
-  
+
   //*** UPLOAD FILE ***/
   @post('/contents/{id}/upload', {
     responses: {
       200: {
-        content: {'application/json': {schema: {type: 'object'}}},
+        content: { 'application/json': { schema: { type: 'object' } } },
         description: 'User content file upload',
       },
     },
@@ -159,21 +163,21 @@ export class ContentController {
             const randomString = generateFixedLengthRandomString('0123456789abcdefghijklmnopqrstuvwxyz', 10);
 
             // Apply the base64 encoding to the file
-            const contents : string = fileUploaded.buffer.toString(BASE64_ENCODING);
+            const contents: string = fileUploaded.buffer.toString(BASE64_ENCODING);
             let indexId = 0;
 
             // Save the content
-            this.saveContentMedia(id, randomString, fileUploaded).then((createdContentMedia:ContentMedia) => {
+            this.saveContentMedia(id, randomString, fileUploaded).then((createdContentMedia: ContentMedia) => {
               // Generate chunk files
-              const stringChunks : RegExpMatchArray | null = chunkString(contents, CHUNK_MAX_CHAR_SIZE);    
+              const stringChunks: RegExpMatchArray | null = chunkString(contents, CHUNK_MAX_CHAR_SIZE);
               stringChunks!.forEach((element: string) => {
-                const encryptedObject = encrypt(element, randomString);     
+                const encryptedObject = encrypt(element, randomString);
                 encryptedObject.indexId = indexId;
                 indexId++;
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 this.saveContentMediaChunk(encryptedObject, createdContentMedia.idContentMedia);
-              }); 
-              
+              });
+
               resolve(createdContentMedia);
             }).catch(errDocument => console.log(errDocument));
           }
@@ -187,7 +191,7 @@ export class ContentController {
     responses: {
       '200': {
         description: 'Array of Content Media model instances',
-        content: {'application/json': {schema: {type: 'array', items: getModelSchemaRef(ContentMedia, {includeRelations: true})}}}
+        content: { 'application/json': { schema: { type: 'array', items: getModelSchemaRef(ContentMedia, { includeRelations: true }) } } }
       },
     },
   })
@@ -223,7 +227,7 @@ export class ContentController {
   @post('/contents/{id}/download/{idMedia}', {
     responses: {
       200: {
-        content: {'application/json': {schema: {type: 'object'}}},
+        content: { 'application/json': { schema: { type: 'object' } } },
         description: 'User content file download',
       },
     },
@@ -235,7 +239,7 @@ export class ContentController {
     @inject(RestBindings.Http.RESPONSE) response: Response,
     @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
     @param.query.object('filter', getFilterSchemaFor(ContentMedia)) filter?: Filter<ContentMedia>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
     if (currentUser.userType === 'user') {
       // Check if content is owned by the logged user
@@ -254,9 +258,9 @@ export class ContentController {
     }
     const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
     const where = queryFilters.impose({
-      and : [{
-        idContent: id, 
-        idContentMedia : idMedia
+      and: [{
+        idContent: id,
+        idContentMedia: idMedia
       }]
     }).build();
     filter.where = where;
@@ -264,26 +268,27 @@ export class ContentController {
     const contentMedia = await this.contentMediaRepository.findOne(filter)
 
     if (contentMedia) {
-      const fileName : string = contentMedia.filename;
-      let mimeType : string = '';
+      const fileName: string = contentMedia.filename;
+      let mimeType: string = '';
 
       if (contentMedia.mimeType) {
         mimeType = contentMedia.mimeType;
       }
 
-      const chunksFilter: Filter = { where: { 
+      const chunksFilter: Filter = {
+        where: {
           "idContentMedia": idMedia
         },
         order: ['chunkIndexId ASC']
       };
-      const encryptedChunks : ContentMediaEncryptedChunk[] = await this.contentMediaEncryptedChunkRepository.find(chunksFilter);
+      const encryptedChunks: ContentMediaEncryptedChunk[] = await this.contentMediaEncryptedChunkRepository.find(chunksFilter);
       let textDecrypted = "";
 
       for await (const chunk of encryptedChunks) {
         const result = await decryptContentMedia(chunk, contentMedia.key);
         textDecrypted = textDecrypted + result.textDecrypted;
       }
-  
+
       const fileContents = Buffer.from(textDecrypted, BASE64_ENCODING);
       response.writeHead(200, {
         'Content-disposition': ATTACHMENT_FILENAME + fileName,
@@ -300,7 +305,7 @@ export class ContentController {
   @post('/contents/{id}/download-base64/{idMedia}', {
     responses: {
       200: {
-        content: {'application/json': {schema: {type: 'object'}}},
+        content: { 'application/json': { schema: { type: 'object' } } },
         description: 'User content file base64 download',
       },
     },
@@ -312,7 +317,7 @@ export class ContentController {
     @inject(RestBindings.Http.RESPONSE) response: Response,
     @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
     @param.query.object('filter', getFilterSchemaFor(ContentMedia)) filter?: Filter<ContentMedia>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
     if (currentUser.userType === 'user') {
       // Check if content is owned by the logged user
@@ -331,9 +336,9 @@ export class ContentController {
     }
     const queryFilters = new WhereBuilder<AnyObject>(filter?.where);
     const where = queryFilters.impose({
-      and : [{
-        idContent: id, 
-        idContentMedia : idMedia
+      and: [{
+        idContent: id,
+        idContentMedia: idMedia
       }]
     }).build();
     filter.where = where;
@@ -341,26 +346,27 @@ export class ContentController {
     const contentMedia = await this.contentMediaRepository.findOne(filter)
 
     if (contentMedia) {
-      const fileName : string = contentMedia.filename;
-      let mimeType : string = '';
+      const fileName: string = contentMedia.filename;
+      let mimeType: string = '';
 
       if (contentMedia.mimeType) {
         mimeType = contentMedia.mimeType;
       }
 
-      const chunksFilter: Filter = { where: { 
+      const chunksFilter: Filter = {
+        where: {
           "idContentMedia": idMedia
         },
         order: ['chunkIndexId ASC']
       };
-      const encryptedChunks : ContentMediaEncryptedChunk[] = await this.contentMediaEncryptedChunkRepository.find(chunksFilter);
+      const encryptedChunks: ContentMediaEncryptedChunk[] = await this.contentMediaEncryptedChunkRepository.find(chunksFilter);
       let textDecrypted = "";
 
       for await (const chunk of encryptedChunks) {
         const result = await decryptContentMedia(chunk, contentMedia.key);
         textDecrypted = textDecrypted + result.textDecrypted;
       }
-  
+
       response.end(textDecrypted);
     } else {
       throw new HttpErrors.Forbidden("Content not related");
@@ -415,17 +421,17 @@ export class ContentController {
       }
 
       // Check if file is related to the content
-      const filterRelated: Filter = { where: { "idContent": id, "idContentMedia": idMedia} };
+      const filterRelated: Filter = { where: { "idContent": id, "idContentMedia": idMedia } };
       const contentRelated = await this.contentMediaRepository.findOne(filterRelated);
       if (!contentRelated) {
-          throw new HttpErrors.Forbidden("Content not related");
+        throw new HttpErrors.Forbidden("Content not related");
       }
     }
 
     await this.contentMediaRepository.deleteById(idMedia);
   }
 
-  private async saveContentMedia(idContent: string, key: string, fileUploaded: TempFile) : Promise<ContentMedia>{
+  private async saveContentMedia(idContent: string, key: string, fileUploaded: TempFile): Promise<ContentMedia> {
     const newContentMedia: ContentMedia = new ContentMedia();
     newContentMedia.idContent = idContent;
     newContentMedia.filename = fileUploaded.originalname;
@@ -437,7 +443,7 @@ export class ContentController {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async saveContentMediaChunk(objectToSave: any, contentMediaUUIDReference: string) : Promise<ContentMediaEncryptedChunk> {
+  private async saveContentMediaChunk(objectToSave: any, contentMediaUUIDReference: string): Promise<ContentMediaEncryptedChunk> {
     const contentMediaEncryptedChunk: ContentMediaEncryptedChunk = new ContentMediaEncryptedChunk();
     contentMediaEncryptedChunk.header = objectToSave.secret_message.header;
     contentMediaEncryptedChunk.text = objectToSave.secret_message.text;
@@ -454,11 +460,14 @@ export class ContentController {
       "ipfsPath": contentMediaEncryptedChunk.ipfsPath
     }
 
-    contentMediaEncryptedChunk.transactionId = await writeIntoBlockchain(jsonToSave);
-    if(contentMediaEncryptedChunk.transactionId){
+    const savedChunk = await this.contentMediaEncryptedChunkRepository.save(contentMediaEncryptedChunk);
+
+    contentMediaEncryptedChunk.transactionId = await writeIntoBlockchain(jsonToSave, savedChunk.getId());
+    if (contentMediaEncryptedChunk.transactionId) {
       contentMediaEncryptedChunk.status = 'PENDING';
     }
+    this.contentMediaEncryptedChunkRepository.save(contentMediaEncryptedChunk);
+    return await this.contentMediaEncryptedChunkRepository.save(contentMediaEncryptedChunk);
 
-    return this.contentMediaEncryptedChunkRepository.save(contentMediaEncryptedChunk);
   }
 }
