@@ -1,14 +1,14 @@
 import { DocumentEncryptedChunk, ContentMediaEncryptedChunk } from '../models';
 import { ENCRYPT, DECRYPT, ENCRYPT_STRING } from '../scenarios/zenroom-scenarios'
 import { retrieveStringFromIPFS } from '../services/ipfs-service';
-import { retrieveJsonFromBlockchain } from './sawroom-service';
+import { retrieveJsonFromBlockchain } from './blockchain-service';
 const zenroom = require('zenroom');
 const saltedMd5 = require('salted-md5');
 
 /* 
   This function is using zenroom to encrypt a given string with the password
 */
-export function encrypt(stringToEncrypt: string, password:string) {
+export function encrypt(stringToEncrypt: string, password: string) {
   const savedLines: any = []
 
   const printFunction = (text: any) => {
@@ -31,14 +31,14 @@ export function encrypt(stringToEncrypt: string, password:string) {
     .keys(keys)
     .data(data)
     .zencode_exec()
-  
+
   return JSON.parse(savedLines);
 }
 
 /* 
   This function is using zenroom to decrypt a specific chunk
 */
-export async function decrypt(chunk: any, password:string) {
+export async function decrypt(chunk: any, password: string) {
   const savedLines: any = []
   const printFunction = (text: any) => {
     savedLines.push(text)
@@ -65,14 +65,14 @@ export async function decrypt(chunk: any, password:string) {
     .keys(keys)
     .data(data)
     .zencode_exec()
-  
+
   return JSON.parse(savedLines);
 }
 
 /* 
   This function is using zenroom to decrypt a specific chunk
 */
-export async function decryptContentMedia(chunk: ContentMediaEncryptedChunk, password:string) {
+export async function decryptContentMedia(chunk: ContentMediaEncryptedChunk, password: string) {
   let text = chunk.text;
   let checksum = chunk.checksum;
   let header = chunk.header;
@@ -87,7 +87,7 @@ export async function decryptContentMedia(chunk: ContentMediaEncryptedChunk, pas
     ipfsPath = json.ipfsPath ? json.ipfsPath : ipfsPath;
   }
 
-  if (ipfsPath){
+  if (ipfsPath) {
     text = await retrieveStringFromIPFS(ipfsPath);
   }
 
@@ -117,11 +117,11 @@ export async function decryptContentMedia(chunk: ContentMediaEncryptedChunk, pas
     .keys(keys)
     .data(data)
     .zencode_exec()
-  
+
   return JSON.parse(savedLines);
 }
 
-export function encryptString(stringToEncrypt: string, password:string) {
+export function encryptString(stringToEncrypt: string, password: string) {
   const savedLines: any = []
 
   const printFunction = (text: any) => {
@@ -144,14 +144,14 @@ export function encryptString(stringToEncrypt: string, password:string) {
     .keys(keys)
     .data(data)
     .zencode_exec()
-  
+
   return JSON.parse(savedLines);
 }
 
 /* 
   This function is using zenroom to decrypt a specific string
 */
-export async function decryptString(stringToDerypt: string, checksum: string, header: string, iv: string, password:string) {
+export async function decryptString(stringToDerypt: string, checksum: string, header: string, iv: string, password: string) {
   const savedLines: any = []
   const printFunction = (text: any) => {
     savedLines.push(text)
@@ -178,6 +178,6 @@ export async function decryptString(stringToDerypt: string, checksum: string, he
     .keys(keys)
     .data(data)
     .zencode_exec()
-  
+
   return JSON.parse(savedLines);
 }
