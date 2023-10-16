@@ -79,6 +79,7 @@
     "salted-md5": "^4.0.2",
     "uuid": "^8.3.2",
     "web3": "^4.1.2",
+    "web3-eth-contract": "^4.1.0",
     "xlsx-import": "^2.3.4",
     "zenroom": "^1.1.5-c780a69"
   },
