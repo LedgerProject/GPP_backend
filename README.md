@@ -192,12 +192,10 @@ SENDGRID_API_KEY=<twilio sendgrid api key for sending emails>
 # PORTAL
 PORTAL_URL=<portal url>
 
-# SAWROOM CONFIGURATION
-SAWROOM_WRITE_URI=<sawroom write url>
-SAWROOM_READ_URI=<sawroom read url>
-APIROOM_BASE_URI=<apiroom base url>
-APIROOM_WRITE_DICTIONARY_PATH=<apiroom write dictionary path>
-APIROOM_READ_PATH=<apiroom read path>
+# FANTOM CONFIGURATION
+FANTOM_RPC_ENDPOINT=<fantom rpc endpoint>
+FANTOM_CONTRACT_ADDRESS=<fantom contract address>
+FANTOM_WALLET_PRIVATE_KEY=<fantom wallet private key>
 
 # BACKEND CREDENTIALS
 BACKEND_PRIVATE_KEY=<backend private key>
@@ -258,6 +256,11 @@ SAWROOM_READ_URI=http://xxx.xxx.xxx.xxx:xxxx
 APIROOM_BASE_URI=https://apiroom.net/api/myapirooaccount
 APIROOM_WRITE_DICTIONARY_PATH=/apiroom-write-dictionary-path
 APIROOM_READ_PATH=/apiroom-read-dictionary-path
+
+# FANTOM CONFIGURATION
+FANTOM_RPC_ENDPOINT=https://rpcapi.fantom.network/
+FANTOM_CONTRACT_ADDRESS=0xXXXXXXXXXXXXXXXXXXXXX
+FANTOM_WALLET_PRIVATE_KEY=0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 # BACKEND CREDENTIALS
 BACKEND_PRIVATE_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=

@@ -44,18 +44,8 @@ export const USER_BLOCK_REQUEST_TOKEN_DEFAULT_VALIDITY_IN_MINS = 60;
 export const ATTACHMENT_FILENAME = 'attachment; filename=';
 
 /**
- * Sawroom endpoints
+ * Fantom endpoints
  */
-export const SAWROOM_WRITE_URI = process.env.SAWROOM_WRITE_URI!;
-
-export const SAWROOM_READ_URI = process.env.SAWROOM_READ_URI!;
-
-export const APIROOM_BASE_URI = process.env.APIROOM_BASE_URI!;
-
-export const APIROOM_WRITE_DICTIONARY_ENDPOINT = APIROOM_BASE_URI + process.env.APIROOM_WRITE_DICTIONARY_PATH!;
-
-export const APIROOM_READ_ENDPOINT = APIROOM_BASE_URI + process.env.APIROOM_READ_PATH!;
-
 export const FANTOM_RPC_ENDPOINT = process.env.FANTOM_RPC_ENDPOINT;
 
 export const FANTOM_CONTRACT_ADDRESS = process.env.FANTOM_CONTRACT_ADDRESS;

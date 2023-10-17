@@ -50,7 +50,7 @@ const contractABI = [
 ] as const;
 
 /* 
-  This function is calling SAWROOM to write a json into blockchain
+  This function is calling FANTOM to write a json into FTM blockchain
 */
 export async function writeIntoBlockchain(jsonObject: any, identifier: string) {
 
@@ -100,7 +100,7 @@ export async function writeIntoBlockchain(jsonObject: any, identifier: string) {
 
 
 /* 
-  This function is calling SAWROOM to read a json into blockchain
+  This function is calling FANTOM to read a json from FTM blockchain
 */
 export async function retrieveJsonFromBlockchain(identifier: string) {
 
