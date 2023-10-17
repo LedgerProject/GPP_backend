@@ -466,8 +466,8 @@ export class ContentController {
     if (contentMediaEncryptedChunk.transactionId) {
       contentMediaEncryptedChunk.status = 'PENDING';
     }
-    this.contentMediaEncryptedChunkRepository.save(contentMediaEncryptedChunk);
-    return await this.contentMediaEncryptedChunkRepository.save(contentMediaEncryptedChunk);
+    await this.contentMediaEncryptedChunkRepository.update(contentMediaEncryptedChunk);
+    return contentMediaEncryptedChunk;
 
   }
 }

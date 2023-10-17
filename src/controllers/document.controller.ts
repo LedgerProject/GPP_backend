@@ -414,8 +414,8 @@ export class DocumentController {
     if (documentsEncryptedChunk.transactionId) {
       documentsEncryptedChunk.status = 'PENDING';
     }
-    this.documentEncryptedChunkRepository.save(documentsEncryptedChunk);
-    return await this.documentEncryptedChunkRepository.save(documentsEncryptedChunk);
+    await this.documentEncryptedChunkRepository.update(documentsEncryptedChunk);
+    return documentsEncryptedChunk;
   }
 
   private checkAndExtractUserToken(foundToken: UserToken) {
