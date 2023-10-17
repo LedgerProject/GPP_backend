@@ -1,4 +1,4 @@
-import { DocumentEncryptedChunk, ContentMediaEncryptedChunk } from '../models';
+import { ContentMediaEncryptedChunk } from '../models';
 import { ENCRYPT, DECRYPT, ENCRYPT_STRING } from '../scenarios/zenroom-scenarios'
 import { retrieveStringFromIPFS } from '../services/ipfs-service';
 import { retrieveJsonFromBlockchain } from './blockchain-service';
