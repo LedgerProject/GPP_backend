@@ -12,8 +12,9 @@ const headers = {
 export async function writeIntoBlockchain(jsonObject: any) {
 
   const messageToEncrypt = JSON.stringify(jsonObject);
+  const salt = process.env.SALT || '';
 
-  const encryptedJson = await encryptString(messageToEncrypt, process.env.SALT);
+  const encryptedJson = await encryptString(messageToEncrypt, salt);
 
   const response = await fetch(FANTOM_WRITE_ENDPOINT, {
     method: 'POST',
