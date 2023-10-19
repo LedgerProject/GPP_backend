@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-const concurrentContext = new Map();
 /* 
   This function is calling FANTOM to write a json into blockchain
 */
@@ -19,12 +18,8 @@ export async function writeIntoBlockchain(jsonObject: any) {
   const messageToEncrypt = JSON.stringify(jsonObject);
 
   let identifier = uuidv4();
-  console.log(identifier)
-  //DEVO CHIAMARE ZENROOM PRIMA PER GENERARE un nuovo messageToEncrypt
-  //const encryptedJson = await encryptString(messageToEncrypt, identifier);
 
-  //DEVO CONVERTIRE IN BASE64 
-  //const base64ToSave = Buffer.from(JSON.stringify(encryptedJson)).toString('base64');
+  //DEVO CONVERTIRE IN BASE64
   const base64ToSave = Buffer.from(messageToEncrypt).toString('base64');
 
   // Create a transaction object
@@ -77,10 +72,7 @@ export async function retrieveJsonFromBlockchain(identifier: string) {
     // Call the retrieve method
     const contractString: string = await contract.methods.retrieve(identifier).call();
     const convertedString = Buffer.from(contractString, 'base64').toString('utf-8');
-    //let resultingJSON = JSON.parse(convertedString)
-    //resultingJSON = JSON.parse(convertedString)
 
-    //const decodedString = await decryptString(resultingJSON.text, resultingJSON.checksum, resultingJSON.header, resultingJSON.iv, identifier);
     let decodedJSON = JSON.parse(convertedString);
 
     return decodedJSON;

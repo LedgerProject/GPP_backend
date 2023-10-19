@@ -1,5 +1,5 @@
 import { FANTOM_READ_ENDPOINT, FANTOM_WRITE_ENDPOINT } from "../constants";
-import { encryptString } from '../services/zenroom-service';
+import { encryptString, decryptString } from '../services/zenroom-service';
 const fetch = require("node-fetch");
 /* 
   This function is calling FANTOM to write a json into blockchain
@@ -33,7 +33,7 @@ export async function writeIntoBlockchain(jsonObject: any) {
 }
 
 /* 
-  This function is calling SAWROOM to read a json into blockchain
+  This function is calling FANTOM to read a json into blockchain
 */
 export async function retrieveJsonFromBlockchain(transactionId: string) {
 
@@ -47,7 +47,11 @@ export async function retrieveJsonFromBlockchain(transactionId: string) {
   try {
     const result = await response.json();
 
-    return JSON.parse(result.textDecrypted);
+    let resultingJSON = JSON.parse(result);
+
+    const decodedJSON = await decryptString(resultingJSON.text, resultingJSON.checksum, resultingJSON.header, resultingJSON.iv, transactionId);
+
+    return decodedJSON;
   } catch (err) {
     console.log(".retrieveJsonFromBlockchain ERROR: Impossible to READ from FANTOM: ", err);
   }
