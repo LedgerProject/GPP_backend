@@ -1,6 +1,6 @@
 import { Filter } from '@loopback/repository';
 import { DocumentEncryptedChunksRepository, ContentMediaEncryptedChunksRepository } from '../repositories';
-import { retrieveJsonFromBlockchain } from './fantom-service';
+import { retrieveJsonFromBlockchain, writeIntoBlockchain } from './fantom-service';
 
 export async function movePendingToCommitted(documentEncryptedChunksRepository: DocumentEncryptedChunksRepository): Promise<void> {
     const statusPendingFilter: Filter = { where: { "status": "PENDING" } };
@@ -20,6 +20,27 @@ export async function movePendingToCommitted(documentEncryptedChunksRepository: 
     console.log(".movePendingToCommitted gpp-cronjobs ended");
 }
 
+export async function moveNullToPending(documentEncryptedChunksRepository: DocumentEncryptedChunksRepository): Promise<void> {
+    const statusPendingFilter: Filter = { where: { "status": null } };
+    const allChunksinNullState = await documentEncryptedChunksRepository.find(statusPendingFilter);
+    console.log(".moveNullToPending gpp-cronjobs started: it found", allChunksinNullState.length, "chunks in null");
+    allChunksinNullState.forEach(async chunk => {
+        let jsonToSave = {
+            "header": chunk.header,
+            "checksum": chunk.checksum,
+            "iv": chunk.iv,
+            "ipfsPath": chunk.ipfsPath
+        }
+
+        chunk.transactionId = await writeIntoBlockchain(jsonToSave);
+        if (chunk.transactionId) {
+            chunk.status = 'PENDING';
+        }
+        documentEncryptedChunksRepository.save(chunk);
+    });
+    console.log(".moveNullToPending gpp-cronjobs ended");
+}
+
 export async function movePendingToCommittedContentMedia(contentMediaEncryptedChunksRepository: ContentMediaEncryptedChunksRepository): Promise<void> {
     const statusPendingFilter: Filter = { where: { "status": "PENDING" } };
     const allChunksinPendingState = await contentMediaEncryptedChunksRepository.find(statusPendingFilter);
@@ -36,4 +57,25 @@ export async function movePendingToCommittedContentMedia(contentMediaEncryptedCh
         }
     });
     console.log(".movePendingToCommittedContentMedia gpp-cronjobs ended");
+}
+
+export async function moveNullToPendingContentMedia(contentMediaEncryptedChunksRepository: ContentMediaEncryptedChunksRepository): Promise<void> {
+    const statusPendingFilter: Filter = { where: { "status": null } };
+    const allChunksinNullState = await contentMediaEncryptedChunksRepository.find(statusPendingFilter);
+    console.log(".moveNullToPendingContentMedia gpp-cronjobs started: it found", allChunksinNullState.length, "chunks in null");
+    allChunksinNullState.forEach(async chunk => {
+        let jsonToSave = {
+            "header": chunk.header,
+            "checksum": chunk.checksum,
+            "iv": chunk.iv,
+            "ipfsPath": chunk.ipfsPath
+        }
+
+        chunk.transactionId = await writeIntoBlockchain(jsonToSave);
+        if (chunk.transactionId) {
+            chunk.status = 'PENDING';
+        }
+        contentMediaEncryptedChunksRepository.save(chunk);
+    });
+    console.log(".moveNullToPendingContentMedia gpp-cronjobs ended");
 }
