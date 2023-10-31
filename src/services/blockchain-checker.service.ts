@@ -33,6 +33,7 @@ export async function moveNullToPending(documentEncryptedChunksRepository: Docum
         }
 
         chunk.transactionId = await writeIntoBlockchain(jsonToSave);
+        console.log(chunk.transactionId)
         if (chunk.transactionId) {
             chunk.status = 'PENDING';
         }
