@@ -17,7 +17,7 @@ export class MyCronJob extends CronJob {
         // do the work
         this.performMyJob();
       },
-      cronTime: '*/10 * * * * *', // Every ten second
+      cronTime: '*/5 * * * *', // Every ten second
       start: true,
     });
   }
