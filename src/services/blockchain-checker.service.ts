@@ -32,9 +32,9 @@ export async function moveNullToPending(documentEncryptedChunksRepository: Docum
             "ipfsPath": chunk.ipfsPath
         }
 
-        chunk.transactionId = await writeIntoBlockchain(jsonToSave);
-        console.log(chunk.transactionId)
-        if (chunk.transactionId) {
+        let response = await writeIntoBlockchain(jsonToSave);
+        if (response) {
+            chunk.transactionId = response.identifier;
             chunk.status = 'PENDING';
         }
         documentEncryptedChunksRepository.save(chunk);
