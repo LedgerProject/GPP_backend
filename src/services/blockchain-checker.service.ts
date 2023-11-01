@@ -21,9 +21,9 @@ export async function movePendingToCommitted(documentEncryptedChunksRepository: 
 }
 
 export async function moveNullToPending(documentEncryptedChunksRepository: DocumentEncryptedChunksRepository): Promise<void> {
-    const statusPendingFilter: Filter = { where: { "status": null } };
+    const statusPendingFilter: Filter = { where: { "status": null }, limit: 1 };
     const allChunksinNullState = await documentEncryptedChunksRepository.find(statusPendingFilter);
-    console.log(".moveNullToPending gpp-cronjobs started: it found", allChunksinNullState.length, "chunks in null");
+    console.log(".moveNullToPending gpp-cronjobs started ");
     allChunksinNullState.forEach(async chunk => {
         let jsonToSave = {
             "header": chunk.header,
@@ -32,6 +32,7 @@ export async function moveNullToPending(documentEncryptedChunksRepository: Docum
             "ipfsPath": chunk.ipfsPath
         }
 
+        console.log(".moveNullToPending gpp-cronjobs trying to write " + chunk.idDocument);
         let response = await writeIntoBlockchain(jsonToSave);
         if (!response.error) {
             chunk.transactionId = response.identifier;
@@ -61,9 +62,9 @@ export async function movePendingToCommittedContentMedia(contentMediaEncryptedCh
 }
 
 export async function moveNullToPendingContentMedia(contentMediaEncryptedChunksRepository: ContentMediaEncryptedChunksRepository): Promise<void> {
-    const statusPendingFilter: Filter = { where: { "status": null } };
+    const statusPendingFilter: Filter = { where: { "status": null }, limit: 1 };
     const allChunksinNullState = await contentMediaEncryptedChunksRepository.find(statusPendingFilter);
-    console.log(".moveNullToPendingContentMedia gpp-cronjobs started: it found", allChunksinNullState.length, "chunks in null");
+    console.log(".moveNullToPendingContentMedia gpp-cronjobs started");
     allChunksinNullState.forEach(async chunk => {
         let jsonToSave = {
             "header": chunk.header,
@@ -72,6 +73,7 @@ export async function moveNullToPendingContentMedia(contentMediaEncryptedChunksR
             "ipfsPath": chunk.ipfsPath
         }
 
+        console.log(".moveNullToPendingContentMedia gpp-cronjobs trying to write " + chunk.idDocument);
         chunk.transactionId = await writeIntoBlockchain(jsonToSave);
         if (chunk.transactionId) {
             chunk.status = 'PENDING';
