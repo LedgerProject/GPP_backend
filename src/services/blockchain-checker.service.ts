@@ -8,7 +8,7 @@ export async function movePendingToCommitted(documentEncryptedChunksRepository: 
     console.log(".movePendingToCommitted gpp-cronjobs started: it found", allChunksinPendingState.length, "chunks in PENDING");
     allChunksinPendingState.forEach(async chunk => {
         //Cerca se il chunk ora è scritto sulla blockchain
-        let json = await retrieveJsonFromBlockchain(chunk.transactionId!);
+        let json = await retrieveJsonFromBlockchain(chunk.transactionId!, chunk.idDocument);
         if (json) {
             //Json is different from null, it means we retrieved something from blockchain
             chunk.status = 'COMMITTED';
@@ -49,7 +49,7 @@ export async function movePendingToCommittedContentMedia(contentMediaEncryptedCh
     console.log(".movePendingToCommittedContentMedia gpp-cronjobs started: it found", allChunksinPendingState.length, "chunks in PENDING");
     allChunksinPendingState.forEach(async chunk => {
         //Cerca se il chunk ora è scritto sulla blockchain
-        let json = await retrieveJsonFromBlockchain(chunk.transactionId!);
+        let json = await retrieveJsonFromBlockchain(chunk.transactionId!, chunk.idDocument);
         if (json) {
             //Json is different from null, it means we retrieved something from blockchain
             chunk.status = 'COMMITTED';

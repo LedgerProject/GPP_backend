@@ -35,7 +35,7 @@ export async function writeIntoBlockchain(jsonObject: any) {
 /* 
   This function is calling FANTOM to read a json into blockchain
 */
-export async function retrieveJsonFromBlockchain(transactionId: string) {
+export async function retrieveJsonFromBlockchain(transactionId: string, idDocument: string) {
 
   const apiFantomUrl = `${FANTOM_READ_ENDPOINT}/${transactionId}`
 
@@ -49,7 +49,7 @@ export async function retrieveJsonFromBlockchain(transactionId: string) {
 
     let resultingJSON = JSON.parse(result);
 
-    const decodedJSON = await decryptString(resultingJSON.text, resultingJSON.checksum, resultingJSON.header, resultingJSON.iv, transactionId);
+    const decodedJSON = await decryptString(resultingJSON.text, resultingJSON.checksum, resultingJSON.header, resultingJSON.iv, idDocument);
 
     return decodedJSON;
   } catch (err) {
