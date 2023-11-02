@@ -71,9 +71,18 @@ export async function retrieveJsonFromBlockchain(identifier: string) {
   try {
     // Call the retrieve method
     const contractString: string = await contract.methods.retrieve(identifier).call();
+    console.log("contractString");
+    console.log(contractString);
     const convertedString = Buffer.from(contractString, 'base64').toString('utf-8');
+    console.log("convertedString");
+    console.log(convertedString);
 
-    return convertedString;
+    let decodedJSON = JSON.parse(convertedString);
+
+    console.log("decodedJSON");
+    console.log(decodedJSON);
+
+    return decodedJSON;
   } catch (err) {
     console.log(".retrieveJsonFromBlockchain ERROR: Impossible to READ from FANTOM: ", err);
     throw err;
