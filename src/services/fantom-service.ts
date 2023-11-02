@@ -45,6 +45,10 @@ export async function retrieveJsonFromBlockchain(transactionId: string, idDocume
   });
 
   try {
+    const res = await response;
+    console.log("LEGGO DA BLOCKCHAIN");
+    console.log(res);
+    console.log(res.text());
     const result = await response.json();
 
     let resultingJSON = JSON.parse(result);
