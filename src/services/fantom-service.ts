@@ -39,10 +39,7 @@ export async function retrieveJsonFromBlockchain(transactionId: string, idDocume
 
   const apiFantomUrl = `${FANTOM_READ_ENDPOINT}/${transactionId}`
 
-  const response = await fetch(apiFantomUrl, {
-    method: 'GET',
-    headers: headers
-  });
+  const response = await fetch(apiFantomUrl);
 
   try {
     const result = await response.json();
