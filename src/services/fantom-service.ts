@@ -48,7 +48,7 @@ export async function retrieveJsonFromBlockchain(transactionId: string, idDocume
     console.log("FANTOM result:");
     console.log(result);
 
-    let resultingJSON = JSON.parse(result);
+    let resultingJSON = result;
     console.log("FANTOM resultinJson");
     console.log(resultingJSON)
 
