@@ -45,10 +45,12 @@ export async function retrieveJsonFromBlockchain(transactionId: string, idDocume
   try {
     console.log("ANCORA NON CHIAMO FANTOM");
     const result = await response.json();
+    console.log("FANTOM result:");
     console.log(result);
 
     let resultingJSON = JSON.parse(result);
-    console.log("FANTOM resultinJson:" + resultingJSON);
+    console.log("FANTOM resultinJson");
+    console.log(resultingJSON)
 
     const decodedJSON = await decryptString(resultingJSON.text, resultingJSON.checksum, resultingJSON.header, resultingJSON.iv, idDocument);
     console.log("FANTOM decodedJSON:" + decodedJSON);
