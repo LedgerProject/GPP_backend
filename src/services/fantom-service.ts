@@ -40,20 +40,16 @@ export async function retrieveJsonFromBlockchain(transactionId: string, idDocume
   const apiFantomUrl = `${FANTOM_READ_ENDPOINT}/${transactionId}`
 
   const response = await fetch(apiFantomUrl);
-  console.log("API FANTOM URL: " + apiFantomUrl);
+  const salt = process.env.SALT || '';
 
   try {
-    console.log("ANCORA NON CHIAMO FANTOM");
+
     const result = await response.json();
-    console.log("FANTOM result:");
     console.log(result);
 
     let resultingJSON = result.secret_message;
-    console.log("FANTOM resultinJson");
-    console.log(resultingJSON)
 
-    const decodedJSON = await decryptString(resultingJSON.text, resultingJSON.checksum, resultingJSON.header, resultingJSON.iv, idDocument);
-    console.log("FANTOM decodedJSON:" + decodedJSON);
+    const decodedJSON = await decryptString(resultingJSON.text, resultingJSON.checksum, resultingJSON.header, resultingJSON.iv, salt);
 
     return decodedJSON;
   } catch (err) {
