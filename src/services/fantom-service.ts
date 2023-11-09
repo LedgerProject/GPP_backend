@@ -40,11 +40,12 @@ export async function retrieveJsonFromBlockchain(transactionId: string, idDocume
   const apiFantomUrl = `${FANTOM_READ_ENDPOINT}/${transactionId}`
 
   const response = await fetch(apiFantomUrl);
+  console.log("API FANTOM URL: " + apiFantomUrl);
 
   try {
     console.log("ANCORA NON CHIAMO FANTOM");
     const result = await response.json();
-    console.log("FANTOM result:" + result);
+    console.log(result);
 
     let resultingJSON = JSON.parse(result);
     console.log("FANTOM resultinJson:" + resultingJSON);
