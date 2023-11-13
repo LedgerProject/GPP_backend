@@ -15,7 +15,6 @@ import { MemoryUploadHandler, TempFile } from '../types';
 import { chunkString } from '../services/string-util';
 import { decrypt, encrypt, decryptString } from '../services/zenroom-service';
 import { uploadStringToIPFS } from '../services/ipfs-service';
-import { writeIntoBlockchain } from '../services/fantom-service';
 import { TokenServiceBindings } from '../authorization/keys';
 import { JWTService } from '../services/jwt-service';
 import { ATTACHMENT_FILENAME, BASE64_ENCODING, CHUNK_MAX_CHAR_SIZE, USER_BLOCK_REQUEST_TOKEN_DEFAULT_VALIDITY_IN_MINS, MINUTES_IN_MILLISECONDS } from '../constants';
@@ -400,18 +399,6 @@ export class DocumentController {
     documentsEncryptedChunk.idDocument = documentUUIDReference;
     documentsEncryptedChunk.chunkIndexId = objectToSave.indexId;
     documentsEncryptedChunk.ipfsPath = await uploadStringToIPFS(documentsEncryptedChunk.text!);
-
-    let jsonToSave = {
-      "header": documentsEncryptedChunk.header,
-      "checksum": documentsEncryptedChunk.checksum,
-      "iv": documentsEncryptedChunk.iv,
-      "ipfsPath": documentsEncryptedChunk.ipfsPath
-    }
-
-    documentsEncryptedChunk.transactionId = await writeIntoBlockchain(jsonToSave);
-    if (documentsEncryptedChunk.transactionId) {
-      documentsEncryptedChunk.status = 'PENDING';
-    }
 
     return this.documentEncryptedChunkRepository.save(documentsEncryptedChunk);
   }

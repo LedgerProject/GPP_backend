@@ -8,7 +8,7 @@ export async function movePendingToCommitted(documentEncryptedChunksRepository: 
     console.log(".movePendingToCommitted gpp-cronjobs started: it found", allChunksinPendingState.length, "chunks in PENDING");
     allChunksinPendingState.forEach(async chunk => {
         //Cerca se il chunk ora è scritto sulla blockchain
-        let json = await retrieveJsonFromBlockchain(chunk.transactionId!, chunk.idDocument);
+        let json = await retrieveJsonFromBlockchain(chunk.transactionId!, chunk.idDocumentEncryptedChunk);
         if (json) {
             //Json is different from null, it means we retrieved something from blockchain
             chunk.status = 'COMMITTED';
@@ -33,7 +33,7 @@ export async function moveNullToPending(documentEncryptedChunksRepository: Docum
         }
 
         console.log(".moveNullToPending gpp-cronjobs trying to write " + chunk.idDocument);
-        let response = await writeIntoBlockchain(jsonToSave);
+        let response = await writeIntoBlockchain(jsonToSave, chunk.idDocumentEncryptedChunk);
         if (!response.error) {
             chunk.transactionId = response.identifier;
             chunk.status = 'PENDING';
@@ -49,7 +49,7 @@ export async function movePendingToCommittedContentMedia(contentMediaEncryptedCh
     console.log(".movePendingToCommittedContentMedia gpp-cronjobs started: it found", allChunksinPendingState.length, "chunks in PENDING");
     allChunksinPendingState.forEach(async chunk => {
         //Cerca se il chunk ora è scritto sulla blockchain
-        let json = await retrieveJsonFromBlockchain(chunk.transactionId!, chunk.idDocument);
+        let json = await retrieveJsonFromBlockchain(chunk.transactionId!, chunk.idContentMediaEncryptedChunk);
         if (json) {
             //Json is different from null, it means we retrieved something from blockchain
             chunk.status = 'COMMITTED';
@@ -74,7 +74,7 @@ export async function moveNullToPendingContentMedia(contentMediaEncryptedChunksR
         }
 
         console.log(".moveNullToPendingContentMedia gpp-cronjobs trying to write " + chunk.idDocument);
-        chunk.transactionId = await writeIntoBlockchain(jsonToSave);
+        chunk.transactionId = await writeIntoBlockchain(jsonToSave, chunk.idContentMediaEncryptedChunk);
         if (chunk.transactionId) {
             chunk.status = 'PENDING';
         }

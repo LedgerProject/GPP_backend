@@ -80,7 +80,7 @@ export async function decryptContentMedia(chunk: ContentMediaEncryptedChunk, pas
   let ipfsPath = chunk.ipfsPath;
 
   if (chunk.status === 'COMMITTED' && chunk.transactionId) {
-    let json = await retrieveJsonFromBlockchain(chunk.transactionId, chunk.idDocument);
+    let json = await retrieveJsonFromBlockchain(chunk.transactionId, chunk.idContentMediaEncryptedChunk);
     checksum = json.checksum;
     header = json.header;
     iv = json.iv;
