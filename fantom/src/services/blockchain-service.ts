@@ -26,6 +26,7 @@ export async function writeIntoBlockchain(jsonObject: any) {
   const txObject = contract.methods.addSecret(identifier, base64ToSave);
 
   const fantomPrivateKey = process.env.FANTOM_WALLET_PRIVATE_KEY || '';
+  const maxFTMToSpend = Number(process.env.MAX_FTM_TO_SPEND ?? 0.10);
 
   // Get the account from the private key
   const account = web3.eth.accounts.privateKeyToAccount(fantomPrivateKey);
@@ -35,26 +36,31 @@ export async function writeIntoBlockchain(jsonObject: any) {
   const gasPrice = await web3.eth.getGasPrice();
   const gas = await txObject.estimateGas({ from: account.address });
   const data = txObject.encodeABI();
+  const estimatedTxInFTM: number = Number(gasPrice * gas) * 0.000000000000000001;
 
-  const tx: any = {
-    from: account.address,
-    to: process.env.FANTOM_CONTRACT_ADDRESS,
-    gas,
-    gasPrice,
-    data,
-  };
+  if (estimatedTxInFTM <= maxFTMToSpend) {
+    const tx: any = {
+      from: account.address,
+      to: process.env.FANTOM_CONTRACT_ADDRESS,
+      gas,
+      gasPrice,
+      data,
+    };
 
-  try {
-    const signedTx = await web3.eth.accounts.signTransaction(tx, fantomPrivateKey);
-    const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
-    console.log('Transaction Hash:', receipt.transactionHash);
-    console.log('Transaction Receipt:', receipt);
+    try {
+      const signedTx = await web3.eth.accounts.signTransaction(tx, fantomPrivateKey);
+      const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 
-    return identifier;
-  } catch (err) {
-    console.log(".writeIntoBlockchain ERROR: Impossible to WRITE to FANTOM: ", err);
-    throw err;
+      return identifier;
+    } catch (err) {
+      console.log(".writeIntoBlockchain ERROR: Impossible to WRITE to FANTOM: ", err);
+      throw err;
+    }
+  } else {
+    console.log(`.writeIntoBlockchain: Actual FTM price ${estimatedTxInFTM} is too expensive, we'll try when it's cheaper `);
+    throw "Too expensive";
   }
+
 }
 
 
@@ -71,18 +77,9 @@ export async function retrieveJsonFromBlockchain(identifier: string) {
   try {
     // Call the retrieve method
     const contractString: string = await contract.methods.retrieve(identifier).call();
-    console.log("contractString");
-    console.log(contractString);
     const convertedString = Buffer.from(contractString, 'base64').toString('utf-8');
-    console.log("convertedString");
-    console.log(convertedString);
 
-    let decodedJSON = JSON.parse(convertedString);
-
-    console.log("decodedJSON");
-    console.log(decodedJSON);
-
-    return decodedJSON;
+    return JSON.parse(convertedString);
   } catch (err) {
     console.log(".retrieveJsonFromBlockchain ERROR: Impossible to READ from FANTOM: ", err);
     throw err;
