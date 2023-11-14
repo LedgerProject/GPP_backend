@@ -44,6 +44,24 @@ export async function decrypt(chunk: any, password: string) {
     savedLines.push(text)
   }
 
+  let text = chunk.text;
+  let checksum = chunk.checksum;
+  let header = chunk.header;
+  let iv = chunk.iv;
+  let ipfsPath = chunk.ipfsPath;
+
+  if (chunk.status === 'COMMITTED' && chunk.transactionId) {
+    let json = await retrieveJsonFromBlockchain(chunk.transactionId, chunk.idDocumentEncryptedChunk);
+    checksum = json.checksum;
+    header = json.header;
+    iv = json.iv;
+    ipfsPath = json.ipfsPath ? json.ipfsPath : ipfsPath;
+  }
+
+  if (ipfsPath) {
+    text = await retrieveStringFromIPFS(ipfsPath);
+  }
+
   const md5Password = saltedMd5(password, process.env.SALT);
 
   const keys: any = {
@@ -52,10 +70,10 @@ export async function decrypt(chunk: any, password: string) {
 
   const data: any = {
     "secret_message": {
-      "checksum": chunk.checksum,
-      "header": chunk.header,
-      "iv": chunk.iv,
-      "text": chunk.text
+      "checksum": checksum,
+      "header": header,
+      "iv": iv,
+      "text": text
     }
   }
 
