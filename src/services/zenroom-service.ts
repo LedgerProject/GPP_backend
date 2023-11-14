@@ -79,12 +79,13 @@ export async function decrypt(chunk: any, password: string) {
     }
   }
 
-  zenroom
+  /*zenroom
     .print(printFunction)
     .script(DECRYPT)
     .keys(keys)
     .data(data)
     .zencode_exec()
+    */
 
   return JSON.parse(savedLines);
 }
