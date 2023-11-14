@@ -58,12 +58,11 @@ export async function decrypt(chunk: any, password: string) {
 
   if (chunk.status === 'COMMITTED' && chunk.transactionId) {
     let json = await retrieveJsonFromBlockchain(chunk.transactionId, chunk.idDocumentEncryptedChunk);
-    console.log(typeof json);
-    console.log(json);
-    checksum = json.checksum;
-    header = json.header;
-    iv = json.iv;
-    ipfsPath = json.ipfsPath ? json.ipfsPath : ipfsPath;
+    let decryptedJson = json.textDecrypted;
+    checksum = decryptedJson.checksum;
+    header = decryptedJson.header;
+    iv = decryptedJson.iv;
+    ipfsPath = decryptedJson.ipfsPath ? decryptedJson.ipfsPath : ipfsPath;
   }
   console.log(checksum);
   console.log(header);
