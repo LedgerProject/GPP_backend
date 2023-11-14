@@ -52,6 +52,8 @@ export async function decrypt(chunk: any, password: string) {
 
   if (chunk.status === 'COMMITTED' && chunk.transactionId) {
     let json = await retrieveJsonFromBlockchain(chunk.transactionId, chunk.idDocumentEncryptedChunk);
+    console.log("LETTO DA BLOCKCHAIN")
+    console.log(json);
     checksum = json.checksum;
     header = json.header;
     iv = json.iv;
@@ -76,7 +78,6 @@ export async function decrypt(chunk: any, password: string) {
       "text": text
     }
   }
-  console.log(data);
 
   zenroom
     .print(printFunction)
