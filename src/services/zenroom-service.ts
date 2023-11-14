@@ -76,6 +76,7 @@ export async function decrypt(chunk: any, password: string) {
       "text": text
     }
   }
+  console.log(data);
 
   zenroom
     .print(printFunction)
