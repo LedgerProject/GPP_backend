@@ -192,12 +192,9 @@ SENDGRID_API_KEY=<twilio sendgrid api key for sending emails>
 # PORTAL
 PORTAL_URL=<portal url>
 
-# SAWROOM CONFIGURATION
-SAWROOM_WRITE_URI=<sawroom write url>
-SAWROOM_READ_URI=<sawroom read url>
-APIROOM_BASE_URI=<apiroom base url>
-APIROOM_WRITE_DICTIONARY_PATH=<apiroom write dictionary path>
-APIROOM_READ_PATH=<apiroom read path>
+# FANTOM CONFIGURATION
+FANTOM_WRITE_ENDPOINT=<fantom write endpoint>
+FANTOM_READ_ENDPOINT=<fantom read endpoint>
 
 # BACKEND CREDENTIALS
 BACKEND_PRIVATE_KEY=<backend private key>
@@ -252,12 +249,9 @@ SENDGRID_API_KEY=SG.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 # PORTAL
 PORTAL_URL=https://www.myawesomeportalurl.com
 
-# SAWROOM CONFIGURATION
-SAWROOM_WRITE_URI=http://xxx.xxx.xxx.xxx:xxxx
-SAWROOM_READ_URI=http://xxx.xxx.xxx.xxx:xxxx
-APIROOM_BASE_URI=https://apiroom.net/api/myapirooaccount
-APIROOM_WRITE_DICTIONARY_PATH=/apiroom-write-dictionary-path
-APIROOM_READ_PATH=/apiroom-read-dictionary-path
+# FANTOM CONFIGURATION
+FANTOM_WRITE_ENDPOINT=http://xxx.xxx.xxx.xxx:xxxx
+FANTOM_READ_ENDPOINT=http://xxx.xxx.xxx.xxx:xxxx
 
 # BACKEND CREDENTIALS
 BACKEND_PRIVATE_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=

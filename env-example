@@ -31,12 +31,9 @@ SENDGRID_API_KEY=<sendgrid api key>
 # PORTAL
 PORTAL_URL=<portal url>
 
-# SAWROOM CONFIGURATION
-SAWROOM_WRITE_URI=<sawroom write url>
-SAWROOM_READ_URI=<sawroom read url>
-APIROOM_BASE_URI=<apiroom base url>
-APIROOM_WRITE_DICTIONARY_PATH=<apiroom write dictionary path>
-APIROOM_READ_PATH=<apiroom read path>
+# FANTOM CONFIGURATION
+FANTOM_WRITE_ENDPOINT=<fantom write endpoint>
+FANTOM_READ_ENDPOINT=<fantom read endpoint>
 
 # BACKEND CREDENTIALS
 BACKEND_PRIVATE_KEY=<backend private key>
