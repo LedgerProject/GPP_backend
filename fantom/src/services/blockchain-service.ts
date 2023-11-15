@@ -9,7 +9,7 @@ dotenv.config();
   This function is calling FANTOM to write a json into blockchain
 */
 export async function writeIntoBlockchain(jsonObject: any) {
-  const web3 = new Web3(process.env.FANTOM_RPC_ENDPOINT); // Replace with the Fantom network RPC endpoint
+  const web3 = new Web3(process.env.FANTOM_RPC_ENDPOINT);
 
   // Create a contract instance
   const contract = new Contract(contractABI, process.env.FANTOM_CONTRACT_ADDRESS);
@@ -18,8 +18,6 @@ export async function writeIntoBlockchain(jsonObject: any) {
   const messageToEncrypt = JSON.stringify(jsonObject);
 
   let identifier = uuidv4();
-
-  //DEVO CONVERTIRE IN BASE64
   const base64ToSave = Buffer.from(messageToEncrypt).toString('base64');
 
   // Create a transaction object
@@ -65,11 +63,11 @@ export async function writeIntoBlockchain(jsonObject: any) {
 
 
 /* 
-  This function is calling FANTOM to read a json into blockchain
+  This function is calling FANTOM to read a json from blockchain
 */
 
 export async function retrieveJsonFromBlockchain(identifier: string) {
-  const web3 = new Web3(process.env.FANTOM_RPC_ENDPOINT); // Replace with the Fantom network RPC endpoint
+  const web3 = new Web3(process.env.FANTOM_RPC_ENDPOINT);
 
   const contract = new Contract(contractABI, process.env.FANTOM_CONTRACT_ADDRESS);
   contract.setProvider(web3.currentProvider);
