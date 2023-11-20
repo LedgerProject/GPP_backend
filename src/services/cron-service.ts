@@ -1,5 +1,6 @@
 import { CronJob, cronJob } from '@loopback/cron';
 import { movePendingToCommitted, movePendingToCommittedContentMedia, moveNullToPending, moveNullToPendingContentMedia } from './blockchain-checker.service';
+import { moveNullToIPFS } from './ipfs-checker.service';
 import { checkExpiredTokens } from './token.service';
 import { DocumentEncryptedChunksRepository, ContentMediaEncryptedChunksRepository, UserTokenRepository } from '../repositories';
 import { repository } from '@loopback/repository';
@@ -27,6 +28,7 @@ export class MyCronJob extends CronJob {
     moveNullToPendingContentMedia(this.contentMediaEncryptedChunkRepository);
     movePendingToCommitted(this.documentEncryptedChunkRepository);
     movePendingToCommittedContentMedia(this.contentMediaEncryptedChunkRepository);
+    moveNullToIPFS(this.documentEncryptedChunkRepository);
     checkExpiredTokens(this.userTokenRepository);
   }
 }
