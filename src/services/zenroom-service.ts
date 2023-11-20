@@ -59,9 +59,9 @@ export async function decrypt(chunk: any, password: string) {
     ipfsPath = decryptedJson.ipfsPath ? decryptedJson.ipfsPath : ipfsPath;
   }
 
-  /*if (ipfsPath) {
+  if (ipfsPath) {
     text = await retrieveStringFromIPFS(ipfsPath);
-  }*/
+  }
 
   const md5Password = saltedMd5(password, process.env.SALT);
 
